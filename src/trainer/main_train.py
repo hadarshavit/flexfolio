@@ -75,7 +75,7 @@ from aspeed.aspeedAll import AspeedAll
 
 class Trainer(object):
     '''
-        main class for training models for claspfolio
+        main class for training models for xfolio
     '''
     
     def __init__(self):
@@ -469,7 +469,7 @@ class Trainer(object):
     
     def __write_config(self, sel_dic, metainfo):
         '''
-           write config file for claspfolio
+           write config file for xfolio
         '''
         args_ = metainfo.options
         #=======================================================================
@@ -526,9 +526,9 @@ class Trainer(object):
 
 if __name__ == '__main__':
     
-    Printer.print_c("claspfolio Trainer!")
+    Printer.print_c("xfolio Trainer!")
     Printer.print_c("Published under GPLv2")
-    Printer.print_c("http://potassco.sourceforge.net/")
+    Printer.print_c("https://bitbucket.org/mlindauer/xfolio")
     trainer = Trainer()
     trainer.main(sys.argv[1:])
     

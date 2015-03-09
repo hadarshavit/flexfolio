@@ -32,7 +32,7 @@ from selector.selectionApp import SelectionBase
 
 #from misc.updater import Updater
 
-class Claspfolio(object):
+class Xfolio(object):
     '''
         main class of claspfolio
         execution plan:
@@ -210,9 +210,9 @@ class Claspfolio(object):
     
               
 if __name__ == '__main__':
-    Printer.print_c("claspfolio")
+    Printer.print_c("xfolio")
     Printer.print_c("published under GPLv2")
-    Printer.print_c("http://potassco.sourceforge.net/")
-    claspfolio = Claspfolio()
-    claspfolio.main(sys.argv[1:])
+    Printer.print_c("https://bitbucket.org/mlindauer/xfolio")
+    xfolio = Xfolio()
+    xfolio.main(sys.argv[1:])
     

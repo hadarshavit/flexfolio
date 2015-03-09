@@ -23,8 +23,7 @@ class Parser(object):
         '''
         self._arg_parser = argparse.ArgumentParser(
                                             description = '''
-                                            ATTENTION: claspfolio 2.1 in the current version only selects algorithms wrt optimization of runtime on decision problems within a cutoff of 600 seconds.\n
-                                            claspfolio 2.1 does not support  any useful selection strategy for optimization problems
+                                            ATTENTION: xfolio in the current version only selects algorithms wrt optimization of runtime on decision problems
                                             '''
                                             )
         
@@ -36,11 +35,11 @@ class Parser(object):
             init argparse object with all command line arguments
         '''
         
-        __version__ = "2.1"
-        __updated__ = "16-10-2014"
+        __version__ = "1.0"
+        __updated__ = "09-03-2015"
         program_version = "v%s" % __version__
         program_build_date = str(__updated__)
-        program_version_message = 'claspfolio %s (%s)' % (program_version, program_build_date)
+        program_version_message = 'xfolio %s (%s)' % (program_version, program_build_date)
     
         self._arg_parser.add_argument('-V', '--version', action='version', version=program_version_message)
         

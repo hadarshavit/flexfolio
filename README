@@ -1,78 +1,56 @@
-claspfolio 2
-An algorithm selection tool, especially for Answer Set Programming
-http://potassco.sourceforge.net/
+xfolio 
+an algorithm selection tool and the successor of claspfolio 2.0 (see POTASSCO)
 
 LICENSE
-  claspfolio is part of the Potassco project hosted at SourceForge.
-  It is distributed under the GNU Public Licens. See COPYING for
+  xfolio is part of the XXX project.
+  It is distributed under the GNU Public License. See COPYING for
   details regarding the license.
   
 OVERVIEW
-  claspfolio is an algorithm selection tool. It is primarly designed for 
-  solving ASP problems (in lparse format). But it supports theoretically
-  also all other Boolean Constraint areas. 
+  xfolio is an algorithm selection tool. 
+  It is written in Python (Serie 2.7) and uses external binaries
+  as, e.g., clasp to determine an algorithm schedule.
   
-  claspfolio is written in Python (Serie 2.7) and uses external binaries
-  as, e.g., claspre.
-  
-  Detailed information, source code, are available at: http://potassco.sourceforge.net/
+  Detailed information, source code, are available at: https://bitbucket.org/mlindauer/xfolio
 
 RESTRICTIONS
 
-  claspfolio 2.0 in the current version only selects algorithms wrt 
-  optimization of runtime on decision problems within a cutoff of 600 seconds
-  claspfolio 2.0 does not support  any useful selection strategy for optimization problems
-
+  xfolio in the current version only selects algorithms wrt 
+  optimization of runtime on decision problems.
+  
 REQUIREMENTS:
 
   * Python 2.7
-  * numpy, liac-arff and scikit learn (tested with 0.14.1; http://scikit-learn.org/dev/index.html):
+  * numpy, liac-arff and scikit learn (tested with 0.15.0; http://scikit-learn.org/dev/index.html):
     pip install -U scikit-learn
     Requirements of scikit learn: 
       sudo apt-get install build-essential python-dev python-numpy python-setuptools python-scipy libatlas-dev libatlas3-base
   * To use "--approach ASPEED" or "--aspeed-opt", you need to have executable binaries of gringo (Serie 3), clasp (Serie 2.1) 
     and the runsolver (http://www.cril.univ-artois.fr/~roussel/runsolver/) in ./binaries
     In addition, write permissions are needed in the current directory (".") for temporary files
-  * To extract features with claspre, claspre (Serie 2) has to be in ./binaries as an executable binary
     
   
 PACKAGE CONTENTS
   COPYING      - GNU Public License
   CHANGELOG    - Major changes between versions
   README       - This file
-  src/claspfolio.py  - Script to run claspfolio
+  src/xfolio.py  - Script to run xfolio
   src/trainer/main_train.py
-  			   - Script to train models for claspfolio
+  			   - Script to train models for xfolio
   src/		   - source directory
-  binaries/	   - directory with pre-compiled binaries, e.g., claspre
-  models/	   - directory with trained models to execute claspfolio
+  binaries/	   - directory with pre-compiled binaries, e.g., clasp
   
 USAGE
-  claspfolio reads(grounded) problem instances from a given file (e.g., problem.lp).
-  In addition, a further parameter has to be specified
-    --configfile <file> : configuration file with all necessary information about trained models (e.g., can be found in ./models/release2.1/config.json)
- 
-  echo "a." | ./binaries/gringo | python src/claspfolio.py -I - -C models/release2.1/config.json
-  or
-  python src/claspfolio.py -I problem.lp -C models/release2.1/config.json
-  
-  For further parameters, call:
-    python src/claspfolio.py -h
+      python src/trainer/main.py -h
     
 TRAINING:
-  To train claspfolio, a directory with files in the ASlib format (--coseal-dir) has to be provided (see aslib.net). 
-  Furthermore you have to decide for:
+  To train xfolio, a directory with files in the ASlib format (--coseal-dir) has to be provided (see aslib.net). 
+  Furthermore, you have to provide a dictionary for model related files:
   	--modeldir 				directory for saving models (ATTENTION: overwrites old files!)
-  	
-  claspfolio-2.1.0 was trained with:
-  	python src/trainer/main_train.py --coseal-dir models/release2.1/training/ --model-dir ./models/release2.1/ --crossfold -1
-  	
-  For further parameters, call:
-    	python src/trainer/main_train.py -h
-
+ 
  CONTACT:
  	Marius Lindauer
- 	University of Potsdam and University of Freiburg
- 	manju@cs.uni-potsdam.de
+ 	University of Freiburg
+ 	lindauer@cs.uni-freiburg.de
  	
   
