@@ -1,0 +1,13 @@
+# 2.2.0
+
+ * implemented SNNAP approach
+ * some minor changes of the default configuration 
+ * fixed some little issues
+
+# 2.1.0
+
+ * fixed several bugs
+ * fixed claspre for instances without constraints
+ * retrained models (same training data as in 2.0)
+ * changed default configuration (based on autofolio results)
+ * support of newest ASlib format
