@@ -60,7 +60,7 @@ class TainerParser(object):
         # REQ_GROUP.add_argument('--features', dest='feats', action='store', default=None, help='instance features in csv (first col with instance names')
         # REQ_GROUP.add_argument('--cutoff', dest='cutoff', action='store', type=int, default=None, help='cutoff time')
         #=======================================================================
-        REQ_GROUP.add_argument('--coseal-dir', dest='coseal', action='store', default=None, required=True, help='directory with files in COSEAL format')
+        REQ_GROUP.add_argument('--aslib-dir', dest='coseal', action='store', default=None, required=True, help='directory with files in COSEAL format')
         REQ_GROUP.add_argument('--model-dir', dest='model_dir', action='store', default="./models", required=True, help='Path to save trained models')
         #REQ_GROUP.add_argument('--nFeats', dest='n_feats', action='store', default=32, type=int, help="number of parsed features")
         
