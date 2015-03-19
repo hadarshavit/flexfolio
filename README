@@ -2,20 +2,20 @@ flexfolio
 an algorithm selection tool and the successor of claspfolio 2.0 (see POTASSCO)
 
 LICENSE
-  xfolio is part of the XXX project.
+  flexfolio is part of the XXX project.
   It is distributed under the GNU Public License. See COPYING for
   details regarding the license.
   
 OVERVIEW
-  xfolio is an algorithm selection tool. 
+  flexfolio is an algorithm selection tool. 
   It is written in Python (Serie 2.7) and uses external binaries
   as, e.g., clasp to determine an algorithm schedule.
   
-  Detailed information, source code, are available at: https://bitbucket.org/mlindauer/xfolio
+  Detailed information, source code, are available at: https://bitbucket.org/mlindauer/flexfolio
 
 RESTRICTIONS
 
-  xfolio in the current version only selects algorithms wrt 
+  flexfolio in the current version only selects algorithms wrt 
   optimization of runtime on decision problems.
   
 REQUIREMENTS:
@@ -34,9 +34,9 @@ PACKAGE CONTENTS
   COPYING      - GNU Public License
   CHANGELOG    - Major changes between versions
   README       - This file
-  src/xfolio.py  - Script to run xfolio
+  src/flexfolio.py  - Script to run flexfolio
   src/trainer/main_train.py
-  			   - Script to train models for xfolio
+  			   - Script to train models for flexfolio
   src/		   - source directory
   binaries/	   - directory with pre-compiled binaries, e.g., clasp
   
@@ -44,7 +44,7 @@ USAGE
       python src/trainer/main.py -h
     
 TRAINING:
-  To train xfolio, a directory with files in the ASlib format (--coseal-dir) has to be provided (see aslib.net). 
+  To train flexfolio, a directory with files in the ASlib format (--coseal-dir) has to be provided (see aslib.net). 
   Furthermore, you have to provide a dictionary for model related files:
   	--modeldir 				directory for saving models (ATTENTION: overwrites old files!)
  

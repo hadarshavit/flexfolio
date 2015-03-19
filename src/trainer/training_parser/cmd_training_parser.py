@@ -14,7 +14,7 @@ from misc.printer import Printer
 
 class TainerParser(object):
     '''
-     parse the input of the xfolio trainer
+     parse the input of the flexfolio trainer
     '''
 
 
@@ -122,13 +122,13 @@ class TainerParser(object):
         SNNAP_GROUP.add_argument('--best_n', dest='best_n', action='store', default=1, type=int, help="consider the best n solvers at ranking prediction (should be at most as large as the number of algorithms")
         
         ASPEED_GROUP = self._arg_parser.add_argument_group("ASPEED Options (requires --aspeed-opt)")
-        ASPEED_GROUP.add_argument('--aspeed-opt', dest='aspeed_opt', action='store_true', default=False, help="Combine xfolio with an algorithm schedule computed with aspeed")
+        ASPEED_GROUP.add_argument('--aspeed-opt', dest='aspeed_opt', action='store_true', default=False, help="Combine flexfolio with an algorithm schedule computed with aspeed")
         ASPEED_GROUP.add_argument('--concentrate', dest='aspeed_concentrate', action='store_true', default=False, help="concentrate on unsolved instances for selector training (filter solved instances before training)")
-        ASPEED_GROUP.add_argument('--max-solver', dest='aspeed_max_solver', action='store', default=3, type=int, help="maximal size of aspeed schedule (excl. xfolio)")
+        ASPEED_GROUP.add_argument('--max-solver', dest='aspeed_max_solver', action='store', default=3, type=int, help="maximal size of aspeed schedule (excl. flexfolio)")
         ASPEED_GROUP.add_argument('--opt-mode', dest='aspeed_opt_mode', action='store', default=3, type=int, help="third optimization criterion of aspeed (see encoding)")
         ASPEED_GROUP.add_argument('--mem-limit', dest='aspeed_mem_limit', action='store', default=4000, type=int, help="maximal memory used by gringo and clasp")
         ASPEED_GROUP.add_argument('--time-limit', dest='aspeed_time_limit', action='store', default=300, type=int, help="maximal time used by each gringo and clasp")
-        ASPEED_GROUP.add_argument('--time-pre-solvers', dest='aspeed_pre_slice', action='store', default=10000, type=int, help="maximal time used by the presolvers in the schedule (all others solvers than xfolio")
+        ASPEED_GROUP.add_argument('--time-pre-solvers', dest='aspeed_pre_slice', action='store', default=10000, type=int, help="maximal time used by the presolvers in the schedule (all others solvers than flexfolio")
         ASPEED_GROUP.add_argument('--clasp-path', dest='aspeed_clasp', action='store', default=None, help="path to clasp binary")
         ASPEED_GROUP.add_argument('--gringo-path', dest='aspeed_gringo', action='store', default=None, help="path to gringo (3.x) binary")
         ASPEED_GROUP.add_argument('--runsolver-path', dest='aspeed_runsolver', action='store', default=None, help="path to runsolver binary")
@@ -153,7 +153,7 @@ class TainerParser(object):
         TES_GROUP.add_argument('--train-set', dest='train_set', action='store', default=None, type=cv_def, help='Pairs of Repetition and Fold: \"(#rep1;#fold1),(#rep2;#fold2)...\" to define training set (disjunction)')
         TES_GROUP.add_argument('--classevaluation', dest='class_evaluation', action='store_true', default=False, help='extract classes based on paths and train on all instances except a class')
         TES_GROUP.add_argument('--seed', dest='seed', action='store', default=12345, type=int, help='random seed for reproducibility')
-        TES_GROUP.add_argument('--print-times', dest='print_time', action='store', default=None, help='file for writing csv runtime file with xfolio performance (with penalized scores)')
+        TES_GROUP.add_argument('--print-times', dest='print_time', action='store', default=None, help='file for writing csv runtime file with flexfolio performance (with penalized scores)')
         TES_GROUP.add_argument('--sigtest-threads', dest='sigtest_threads', action='store_true', default=False, help='perform sigtest between threads and oracle')
         #=======================================================================
         # TES_GROUP.add_argument('--test-runtimes', dest='test_times', action='store', required=False, default= None, help='test instances: runtimes in csv (first col with instance names')    
