@@ -40,7 +40,7 @@ class Plotter(object):
                 optimal_speedup.append(thread_perf_dic[1]/i)
         
         #t_line = ax.plot(list(thread_perf_dic.keys()),list(thread_perf_dic.values()), color="k", label="claspfolio")
-        ax.plot(x,y, color="k", marker="+", markersize=15, label="claspfolio")
+        ax.plot(x,y, color="k", marker="+", markersize=15, label="flexfolio")
         ax.plot(x,optimal_speedup, color="k", marker="*", markersize=15, label="optimal speedup")
         ax.plot(x,[oracle_perf]*len(x), color="k", label="oracle")
         
@@ -68,10 +68,10 @@ class Plotter(object):
         ax = fig.add_subplot(111)
         solvers = selected_solver_times.keys()
         indexes = np.arange(len(solvers))+0.5
-        claspfolio = list(selected_solver_times[s] for s in solvers)
+        flexfolio = list(selected_solver_times[s] for s in solvers)
         oracle = list(oracle_time[s] for s in solvers)
 
-        ax.bar(indexes,claspfolio, width, color="r", label="actual times spend")
+        ax.bar(indexes,flexfolio, width, color="r", label="actual times spend")
         ax.bar(indexes+width, oracle, width, color="y", label="optimal times spend")
         
         ax.set_xticks(indexes+width)

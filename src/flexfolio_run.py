@@ -32,7 +32,7 @@ from selector.selectionApp import SelectionBase
 
 #from misc.updater import Updater
 
-class Xfolio(object):
+class Flexfolio(object):
     '''
         main class of claspfolio
         execution plan:
@@ -86,7 +86,7 @@ class Xfolio(object):
                 exit_: exit after stop?
         '''
 
-        features = Claspfolio.extractor[ex_dic["class"].upper()]().run_extractor(ex_dic,instance)
+        features = Flexfolio.extractor[ex_dic["class"].upper()]().run_extractor(ex_dic,instance)
         
         if features_stop and exit_:
             Printer.print_c("Features: %s" % (",".join(map(str,features))))
@@ -148,7 +148,7 @@ class Xfolio(object):
             for file_ in files_:
                 instance = open(os.path.join(r,file_),"r")
                 Printer.print_c("\n"+instance.name)
-                features = Claspfolio.extractor[ex_dic["class"].upper()]().run_extractor(ex_dic, instance)
+                features = Flexfolio.extractor[ex_dic["class"].upper()]().run_extractor(ex_dic, instance)
                 if not features:
                     continue
                 
@@ -213,6 +213,6 @@ if __name__ == '__main__':
     Printer.print_c("xfolio")
     Printer.print_c("published under GPLv2")
     Printer.print_c("https://bitbucket.org/mlindauer/xfolio")
-    xfolio = Xfolio()
+    xfolio = Flexfolio()
     xfolio.main(sys.argv[1:])
     

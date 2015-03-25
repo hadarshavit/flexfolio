@@ -34,7 +34,7 @@ class TrainTestValidator(Validator):
                 config_dic : solver alias -> command line
             Returns
                 dictionary with all generated files and meta informations
-                inst_par10_dict: claspfolio performance : instance name -> par10 runtime
+                inst_par10_dict: flexfolio performance : instance name -> par10 runtime
         '''
         seed = meta_info.options.seed
         folds = meta_info.options.crossfold

@@ -280,11 +280,11 @@ class Validator(object):
     
     def _write_csv_runtimes(self, file_name, instance_dict, inst_par10_dict, solver_list):
         '''
-            write in file_name csv file with runtimes of all solvers and claspfolio per instance
+            write in file_name csv file with runtimes of all solvers and flexfolio per instance
             Args:
                 file_name
                 instance_dict: instance name -> instance()
-                inst_par10_dict: instance name -> par10 of claspfolio
+                inst_par10_dict: instance name -> par10 of flexfolio
                 solver_list: list of solver names (alignment as used in Instance())
         '''
         

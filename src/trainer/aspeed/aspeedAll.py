@@ -37,7 +37,7 @@ class AspeedAll(object):
         self.__max_feat_time = None
         self.write_tmp = None
         
-        self.__NUM_SOLVERS = str(num_solvers) # exclusive claspfolio (if it is not selected, it gets nevertheless the unused time)
+        self.__NUM_SOLVERS = str(num_solvers) # exclusive flexfolio (if it is not selected, it gets nevertheless the unused time)
         self.__OPTMODE = str(opt_mode) # third optimization criterion (see encoding)
         
         if not os.path.isfile(self.__CLASP):

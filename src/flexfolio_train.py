@@ -7,7 +7,7 @@ Created on Nov 8, 2012
 @author: manju
 
 calls:
-TODO: add exemple calls
+python src/flexfolio_train.py --aslib <ASLIB PATH>/ASP-POTASSCO/ --model-dir .
 '''
 
 import sys
@@ -21,61 +21,62 @@ cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( ins
 cmd_folder = os.path.realpath(os.path.join(cmd_folder, ".."))
 if cmd_folder not in sys.path:
     sys.path.append(cmd_folder)
-cmd_folder = os.path.realpath(os.path.join(cmd_folder, ".."))
+cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
+cmd_folder = os.path.realpath(os.path.join(cmd_folder, "trainer"))
 if cmd_folder not in sys.path:
     sys.path.append(cmd_folder)
     
 from misc.printer import Printer
 
-from training_parser.cmd_training_parser import TainerParser
+from trainer.training_parser.cmd_training_parser import TainerParser
 #from training_parser.reader import Reader
-from training_parser.coseal_reader import CosealReader
+from trainer.training_parser.coseal_reader import CosealReader
 
-from selection.classifiers4voting.svmVoting import SVMVoting
-from selection.classifiers4voting.randomforestVoting import RandomForestVoting
-from selection.classifiers4voting.gradientboostingVoting import GradientBoostingVoting
+from trainer.selection.classifiers4voting.svmVoting import SVMVoting
+from trainer.selection.classifiers4voting.randomforestVoting import RandomForestVoting
+from trainer.selection.classifiers4voting.gradientboostingVoting import GradientBoostingVoting
 
-from selection.regressors.lassoregression import LassoRegression
-from selection.regressors.ridgeregression import RidgeRegression
-from selection.regressors.svr import SVRRegressor
-from selection.regressors.rfregression import RandomForrestRegression
+from trainer.selection.regressors.lassoregression import LassoRegression
+from trainer.selection.regressors.ridgeregression import RidgeRegression
+from trainer.selection.regressors.svr import SVRRegressor
+from trainer.selection.regressors.rfregression import RandomForrestRegression
 
-from selection.regressorsSNNAP.lassoregression import LassoRegressionSNNAP 
-from selection.regressorsSNNAP.ridgeregression import RidgeRegressionSNNAP
-from selection.regressorsSNNAP.svr import SVRRegressorSNNAP
-from selection.regressorsSNNAP.rfregression import RandomForrestRegressionSNNAP
+from trainer.selection.regressorsSNNAP.lassoregression import LassoRegressionSNNAP 
+from trainer.selection.regressorsSNNAP.ridgeregression import RidgeRegressionSNNAP
+from trainer.selection.regressorsSNNAP.svr import SVRRegressorSNNAP
+from trainer.selection.regressorsSNNAP.rfregression import RandomForrestRegressionSNNAP
 
-from selection.classifiersMulti.randomForestMulti import RandomForestMulti
-from selection.classifiersMulti.gradientboostingMulti import GradientBoostingMulti
-from selection.classifiersMulti.svmMulti import SVMMulti
+from trainer.selection.classifiersMulti.randomForestMulti import RandomForestMulti
+from trainer.selection.classifiersMulti.gradientboostingMulti import GradientBoostingMulti
+from trainer.selection.classifiersMulti.svmMulti import SVMMulti
 
-from selection.clustering.KMeans import KMeansTrainer
-from selection.clustering.GM import GMTrainer
-from selection.clustering.Spectral import SpectralTrainer
+from trainer.selection.clustering.KMeans import KMeansTrainer
+from trainer.selection.clustering.GM import GMTrainer
+from trainer.selection.clustering.Spectral import SpectralTrainer
 
-from selection.NN import NearestNeighbourTrainer
-from selection.kNN import KNNTrainer
-from selection.SBS import SBSTrainer
-from selection.Ensemble import Ensemble
+from trainer.selection.NN import NearestNeighbourTrainer
+from trainer.selection.kNN import KNNTrainer
+from trainer.selection.SBS import SBSTrainer
+from trainer.selection.Ensemble import Ensemble
 
-from performancepreprocessing.contributor_filter import ContributorFilter
-from performancepreprocessing.correlator import Correlator
-from performancepreprocessing.instance_weighting import InstanceWeighter
-from performancepreprocessing.performancetransformation import PerformanceTransformator
-from performancepreprocessing.remove_algos import AlgoRemover
-from featurepreprocessing.forwardSelector import ForwardSelector
-from featurepreprocessing.normalizer import Normalizer
-from featurepreprocessing.Imputer import Imputer
+from trainer.performancepreprocessing.contributor_filter import ContributorFilter
+from trainer.performancepreprocessing.correlator import Correlator
+from trainer.performancepreprocessing.instance_weighting import InstanceWeighter
+from trainer.performancepreprocessing.performancetransformation import PerformanceTransformator
+from trainer.performancepreprocessing.remove_algos import AlgoRemover
+from trainer.featurepreprocessing.forwardSelector import ForwardSelector
+from trainer.featurepreprocessing.normalizer import Normalizer
+from trainer.featurepreprocessing.Imputer import Imputer
 
-from evalutor.crossValidator import CrossValidator
-from evalutor.classValidator import ClassValidator
-from evalutor.crossValidatorGiven import CrossValidatorGiven
-from evalutor.ttValidator import TrainTestValidator
-from aspeed.aspeedAll import AspeedAll
+from trainer.evalutor.crossValidator import CrossValidator
+from trainer.evalutor.classValidator import ClassValidator
+from trainer.evalutor.crossValidatorGiven import CrossValidatorGiven
+from trainer.evalutor.ttValidator import TrainTestValidator
+from trainer.aspeed.aspeedAll import AspeedAll
 
 class Trainer(object):
     '''
-        main class for training models for xfolio
+        main class for training models for flexfolio
     '''
     
     def __init__(self):
@@ -158,14 +159,14 @@ class Trainer(object):
             evaluator = ClassValidator(args_.update_sup, args_.print_time)
             evaluator.evaluate(self, meta_info, instance_dic, config_dic)
         
- #==============================================================================
- #        elif args_.test_times: # evaluation with test data
- #            instance_test_dic, solver_list, config_dic = \
- #                         reader.get_data(args_.test_times, args_.test_feats, args_.test_satunsat, args_.configs)
- #            evaluator = TestValidator(args_.update_sup, args_.print_time)
- #            evaluator.evaluate(self, args_, instance_dic, instance_test_dic, solver_list, config_dic, args_.seed)
- # #           evaluator.evaluate_invalids(invalid_f_runtime, ranks.index(0), meta_info.algorithm_cutoff_time)
- #==============================================================================
+#==============================================================================
+#        elif args_.test_times: # evaluation with test data
+#            instance_test_dic, solver_list, config_dic = \
+#                         reader.get_data(args_.test_times, args_.test_feats, args_.test_satunsat, args_.configs)
+#            evaluator = TestValidator(args_.update_sup, args_.print_time)
+#            evaluator.evaluate(self, args_, instance_dic, instance_test_dic, solver_list, config_dic, args_.seed)
+# #           evaluator.evaluate_invalids(invalid_f_runtime, ranks.index(0), meta_info.algorithm_cutoff_time)
+#==============================================================================
         else:
             # normal training
             selection_dic = self.train(meta_info, instance_dic, config_dic)
@@ -526,9 +527,9 @@ class Trainer(object):
 
 if __name__ == '__main__':
     
-    Printer.print_c("xfolio Trainer!")
+    Printer.print_c("flexfolio Trainer!")
     Printer.print_c("Published under GPLv2")
-    Printer.print_c("https://bitbucket.org/mlindauer/xfolio")
+    Printer.print_c("https://bitbucket.org/mlindauer/flexfolio")
     trainer = Trainer()
     trainer.main(sys.argv[1:])
     

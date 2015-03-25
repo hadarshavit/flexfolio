@@ -31,7 +31,7 @@ class ClassVoter(Selector):
             Parameter:
                 args: dictionary with attributes
                 features: list of float values
-                pwd: directory of claspfolio (search path for models)
+                pwd: directory of flexfolio (search path for models)
             Returns:
                 ordered list of configurations with their decision valuess
         '''

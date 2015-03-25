@@ -8,7 +8,7 @@ from abc import ABCMeta, abstractmethod
 
 class SelectorTrainer(object):
     '''
-     abstract class to train models for claspfolio
+     abstract class to train models for flexfolio
     '''
     __metaclass__ = ABCMeta
 

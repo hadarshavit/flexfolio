@@ -45,7 +45,7 @@ class Instance(object):
         elif "performance" in self._cost.keys():
             cost_dict = self._cost["performance"]
         else:
-            Printer.print_e("Neither runtime nor performance is used as cost metric.\nClaspfolio does not support these data sets.")
+            Printer.print_e("Neither runtime nor performance is used as cost metric.\flexfolio does not support these data sets.")
         self._cost_vec = [avg(cost_dict[algo]) for algo in algorithm_list] # ensure the same order in all vectors
         self._transformed_cost_vec = [avg(cost_dict[algo]) for algo in algorithm_list] # ensure the same order in all vectors
 

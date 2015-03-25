@@ -45,7 +45,7 @@ class Ensemble(Selector):
             Args:
                 args: selection_dic
                 features: list of features
-                pwd: directory of claspfolio (search path for models)
+                pwd: directory of flexfolio (search path for models)
         '''
         
         self._set_base_args(args, features)

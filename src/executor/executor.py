@@ -214,7 +214,7 @@ class Executor(object):
         Printer.print_verbose("[%d] Acquired Start Lock" %(id_))
         error_due_running = False
         if not os.path.isfile(command_line[0]):
-            extended = os.path.join(sys.path[-1],command_line[0]) #TODO: Hack to get path to claspfolio2 installation
+            extended = os.path.join(sys.path[-1],command_line[0]) #TODO: Hack to get path to flexfolio installation
             if os.path.isfile(extended):
                 command_line[0] = extended
             else:
@@ -347,7 +347,7 @@ class Executor(object):
             terminate all runnning solvers
             ensure beforehand only one threads calls this method!
             Args:
-                quit_: whether to terminate claspfolio of execution or not (bool)
+                quit_: whether to terminate flexfolio of execution or not (bool)
         '''
         # terminate all running threads
         self.__lock_start.acquire() # be sure that no one else is right now starting things

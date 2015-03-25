@@ -43,7 +43,7 @@ class FoldValidator(Validator):
                 seed: random seed
             Returns
                 dictionary with all generated files and meta informations
-                inst_par10_dict: claspfolio performance : instance name -> par10 runtime
+                inst_par10_dict: flexfolio performance : instance name -> par10 runtime
                 global_sbs_inst_par10_dict: sbs performance : instance name -> par10 runtime
         '''
         

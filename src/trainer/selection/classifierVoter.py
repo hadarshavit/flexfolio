@@ -28,7 +28,7 @@ class ClassifierVoter(SelectorTrainer):
     def train(self, instance_dic, solver_list, config_dic, cutoff,
               model_dir, f_indicator, n_feats):
         '''
-            train models for claspfolio based on classifcation models of libsvm
+            train models for flexfolio based on classifcation models of libsvm
             Args:
                 instance_dic: instance name -> Instance()
                 solver_list: list of solver names

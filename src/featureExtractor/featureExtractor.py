@@ -31,7 +31,7 @@ class FeatureExtractor(object):
         
         self._cmd = args_dic["path"].split(" ")
         if not os.path.isfile(self._cmd[0]):
-            extended = os.path.join(sys.path[-1],self._cmd[0]) #TODO: Hack to get path to claspfolio2 installation
+            extended = os.path.join(sys.path[-1],self._cmd[0]) #TODO: Hack to get path to flexfolio installation
             if os.path.isfile(extended):
                 self._cmd[0] = extended
             else:

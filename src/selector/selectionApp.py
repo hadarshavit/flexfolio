@@ -14,7 +14,7 @@ class SelectionBase(object):
         '''
             static method
             select algorithms and returns a list of scores for each algorithm
-            (removes dependencies to Claspfolio.selector from the outside
+            (removes dependencies to flexfolio.selector from the outside
             and allows post processing of the scores)
             Args:
                 selector_name: name of the selection approach
