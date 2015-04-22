@@ -16,6 +16,8 @@ from misc.printer import Printer
 from tempfile import NamedTemporaryFile
 from trainer.evalutor.statistical_tests.permutationtest import PermutationTest
 
+from ain_flexfolio import filter_data, update_selection_dic
+
 class Stats(object):
     
     def __init__(self, max_threads, solver_list):
@@ -114,8 +116,18 @@ class Validator(object):
             train model on training data
         '''
         
+#         # Apply data filtering
+#         filtered_instance_train, filtered_meta_info, selected_ft_arr = filter_data(instance_train, meta_info)
+#         instance_train, meta_info, selected_ft_arr = filter_data(instance_train, meta_info)
+        
         # TRAINING
         selection_dic = trainer.train(meta_info, instance_train, config_dic, save_models=False)
+#         selection_dic = trainer.train(filtered_meta_info, filtered_instance_train, config_dic, save_models=False)
+        
+#         update_selection_dic(instance_train, selection_dic, selected_ft_arr)
+        
+        
+        
 
         meta_info.options.aspeed_opt = self._aspeed_opt # restore setting in command line arguments (aspeed scheduler changes it to prevent infinite loops)
         solver_schedule = {1: {"claspfolio": meta_info.algorithm_cutoff_time}}

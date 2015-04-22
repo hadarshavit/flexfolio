@@ -13,6 +13,8 @@ from misc.printer import Printer
 from trainer.evalutor.validator import Validator, Stats
 from trainer.evalutor.plotter import Plotter
 
+from ain_flexfolio import filter_data, update_selection_dic, filter_instance_test
+
 class CrossValidator(Validator):
     '''
         perform cross validation evaluation
@@ -62,12 +64,22 @@ class CrossValidator(Validator):
                 Printer.print_w("NO TRAINING TEST SPLIT!")
                 instance_train = instance_train_dic
                 instance_test =  instance_train_dic
+                
+            # Apply data filtering
+            filtered_instance_train, filtered_meta_info, selected_ft_arr = filter_data(instance_train, meta_info)
             
             #TRAINING
-            selection_dic, solver_schedule = self.training(instance_train, meta_info, config_dic, trainer)
-
+#             selection_dic, solver_schedule = self.training(instance_train, meta_info, config_dic, trainer)
+            selection_dic, solver_schedule = self.training(filtered_instance_train, filtered_meta_info, config_dic, trainer)
+            
+#             update_selection_dic(instance_train, selection_dic, selected_ft_arr)
+            
+            filtered_instance_test = filter_instance_test(instance_test, selected_ft_arr)
+            
             # TEST / EVALUATION
-            self.testing(instance_test, meta_info, selection_dic, solver_schedule, stats)
+#             self.testing(instance_test, meta_info, selection_dic, solver_schedule, stats)
+            self.testing(filtered_instance_test, filtered_meta_info, selection_dic, solver_schedule, stats)
+
             
             #oracle_avg_time, oracle_spend_time_dict, oracle_par10, oracle_dict, oracle_tos = \
             #self._oracle_performance(instance_test, solver_list, meta_info.algorithm_cutoff_time)

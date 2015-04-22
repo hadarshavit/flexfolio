@@ -74,6 +74,8 @@ from trainer.evalutor.crossValidatorGiven import CrossValidatorGiven
 from trainer.evalutor.ttValidator import TrainTestValidator
 from trainer.aspeed.aspeedAll import AspeedAll
 
+from ain_flexfolio import filter_data
+
 class Trainer(object):
     '''
         main class for training models for flexfolio
@@ -135,6 +137,10 @@ class Trainer(object):
         #=======================================================================
         reader = CosealReader()
         instance_dic, meta_info, config_dic = reader.parse_coseal(args_.coseal, args_)
+        
+        
+        ## data filtering - AIN - available in crossValidator
+#         filtered_instance_dic, filtered_meta_info = filter_data(instance_dic, meta_info)
         
         
         if meta_info.cv_given and meta_info.options.test_set:
