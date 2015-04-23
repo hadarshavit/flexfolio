@@ -72,7 +72,7 @@ def choose_features(norm_ft_matrix, output_matrix, type, k_best_features=10, num
         ft_importance_arr = get_ft_importance(clsf, FeatureImportanceMethods.Gini)
         scores, top_ft_inx_arr = percentile_based_outlier(ft_importance_arr, ft_outlier_threshold_g)
         sorted_top_ft_inx_arr = np.sort(top_ft_inx_arr)
-        print("top_ft_inx_arr: ", top_ft_inx_arr)
+#         print("top_ft_inx_arr: ", top_ft_inx_arr)
 
         return scores, top_ft_inx_arr, ft_importance_arr, num_clusters
 

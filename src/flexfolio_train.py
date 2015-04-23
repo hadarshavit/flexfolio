@@ -74,7 +74,7 @@ from trainer.evalutor.crossValidatorGiven import CrossValidatorGiven
 from trainer.evalutor.ttValidator import TrainTestValidator
 from trainer.aspeed.aspeedAll import AspeedAll
 
-from ain_flexfolio import filter_data
+from ainovelty.ain_flexfolio import filter_data
 
 class Trainer(object):
     '''

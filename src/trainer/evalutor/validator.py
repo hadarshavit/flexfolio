@@ -16,7 +16,7 @@ from misc.printer import Printer
 from tempfile import NamedTemporaryFile
 from trainer.evalutor.statistical_tests.permutationtest import PermutationTest
 
-from ain_flexfolio import filter_data, update_selection_dic
+from ainovelty.ain_flexfolio import filter_data, update_selection_dic
 
 class Stats(object):
     

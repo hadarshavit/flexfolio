@@ -13,7 +13,7 @@ from misc.printer import Printer
 from trainer.evalutor.validator import Validator, Stats
 from trainer.evalutor.plotter import Plotter
 
-from ain_flexfolio import filter_data, update_selection_dic, filter_instance_test
+from ainovelty.ain_flexfolio import filter_data, update_selection_dic, filter_instance_test
 
 class CrossValidator(Validator):
     '''

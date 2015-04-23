@@ -264,7 +264,7 @@ def kmeans_adaptive(row_matrix, k_max, init_k_max = 10, clst_eval_metric = Clust
             best_score = score
             best_clst = clst
             best_k = k_val
-            print("INIT -> Best k = ", best_k, " - best_score = ", best_score)
+#             print("INIT -> Best k = ", best_k, " - best_score = ", best_score)
 
 
     if init_k_max < k_max: # adaptive
@@ -281,7 +281,7 @@ def kmeans_adaptive(row_matrix, k_max, init_k_max = 10, clst_eval_metric = Clust
             best_k = k_right
 
         while True:
-            print("Best k = ", best_k, "k_left = ", k_left, " - score = ", score_left, "k_right = ", k_right, " - score = ", score_right)
+#             print("Best k = ", best_k, "k_left = ", k_left, " - score = ", score_left, "k_right = ", k_right, " - score = ", score_right)
 
             diff = (k_right - k_left) / 2
             if score_left > score_right:
@@ -384,7 +384,7 @@ def gen_class_arr(row_matrix, type, k_for_kmeans=300, num_consc_wrs_steps = 0, k
                 return centroids, labels, num_clusters
 
 
-            print("k = ", (k+2), " - slh_score = ", slh_score)
+#             print("k = ", (k+2), " - slh_score = ", slh_score)
             if k == 0:
                 best_slh_score = slh_score
                 best_clst = clst

@@ -5,13 +5,18 @@
 import numpy as np
 import math
 import copy
+import warnings
 
 from sets import Set
-from data_io import *
-from experiment import Experiment
-from feature_analyzer import choose_features, InstanceClusteringFTType
-from ia_analyzer import choose_rep_alg_subset, AlgorithmSubsetSelectionDataType,\
+
+from ainovelty.data_io import *
+from ainovelty.experiment import Experiment
+from ainovelty.feature_analyzer import choose_features, InstanceClusteringFTType
+from ainovelty.ia_analyzer import choose_rep_alg_subset, AlgorithmSubsetSelectionDataType,\
     choose_rep_subset
+
+
+warnings.filterwarnings("ignore")
 
 # change with the train matrix, not with full matrix ??
 # or set this from fold info
@@ -171,36 +176,31 @@ def apply_ain(dio):
     # inst_per_cls, centroids_inst, labels_inst, num_clusters_inst = choose_rep_inst_subset(dio, i_latent_matrix, clustering_method = clst_method, is_cv_partial_data = True)
     per_inst_perf_criterion_arr = dio.i_perf_div_std
 
-    inst_clst_ft_matrix = None
-    if exp.inst_clst_ft_type == InstanceClusteringFTType.Descriptive:
-        inst_clst_ft_matrix = norm_ft_matrix
-    elif exp.inst_clst_ft_type == InstanceClusteringFTType.Latent:
-        inst_clst_ft_matrix = i_latent_matrix
-    elif exp.inst_clst_ft_type == InstanceClusteringFTType.DescriptiveLatent:
-        inst_clst_ft_matrix = np.concatenate((norm_ft_matrix, i_latent_matrix), 1)
-    elif exp.inst_clst_ft_type == InstanceClusteringFTType.DescriptiveSubset:
-        inst_clst_ft_matrix = norm_ft_matrix[:, sorted_top_ft_inx_arr]
-
-
-    inst_per_cls, centroids_inst, labels_inst, num_clusters_inst = choose_rep_subset(inst_clst_ft_matrix,
-                                                                                     per_inst_perf_criterion_arr,
-                                                                                     criterion_higher_better=True,
-                                                                                     clustering_method = exp.clst_method,
-                                                                                     k_max=5) ## dio.num_insts/3
-
-    list_of_clst_insts_lists = get_clst_info(centroids_inst,
-                                             labels_inst,
-                                             num_clusters_inst)
-    avg_clst_rank_matrix = calc_avg_clst_rank_matrix(dio.ia_rank_matrix,
-                                                     list_of_clst_insts_lists)
-    print("avg_clst_rank_matrix: ", avg_clst_rank_matrix)
-    clst_rank_score = calc_clst_rank_score(avg_clst_rank_matrix)
-    print("clst_rank_score: ", clst_rank_score)
-
-
+    to_change = False
+    while True:
+        if not to_change:
+            inst_clst_ft_matrix = i_latent_matrix
+        else:
+            inst_clst_ft_matrix = np.concatenate((norm_ft_matrix, i_latent_matrix), 1)
+        
+        inst_per_cls, centroids_inst, labels_inst, num_clusters_inst = choose_rep_subset(inst_clst_ft_matrix,
+                                                                                         per_inst_perf_criterion_arr,
+                                                                                         criterion_higher_better=True,
+                                                                                         clustering_method = exp.clst_method,
+                                                                                         k_max=dio.num_insts/4) ## dio.num_insts/3  
+        
+        if num_clusters_inst <= (dio.num_insts*0.01):
+            if to_change:
+                break
+            else:
+                to_change = True
+        else:
+            break
+            
+        
 
     sorted_inst_per_cls = np.sort(inst_per_cls)
-    print("inst_per_cls : ", inst_per_cls)
+#     print("inst_per_cls : ", inst_per_cls)
     print("(%d out of %d) Instances to keep are determined: %s" % (len(sorted_inst_per_cls),
                                                                           len(dio.ia_perf_matrix),
                                                                           str(sorted_inst_per_cls.tolist()).replace("[","").replace("]","").strip()))
@@ -309,6 +309,7 @@ def filter_instance_test(instance_test, selected_ft_arr):
         
         :param instance_test
         :param selected_ft_arr: numpy array - selected features
+        :return filtered_instance_test: dictionary
     '''
     
     filtered_instance_test = {}
@@ -352,7 +353,7 @@ def filter_data(instance_dic, meta_info):
     return filtered_instance_dic, filtered_meta_info, ft_arr
     
     
-
+    
 def main():
 
     ## TODO : pass args (to run from command prompt or easily change)
