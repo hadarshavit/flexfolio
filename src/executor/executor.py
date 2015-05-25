@@ -51,7 +51,7 @@ class Executor(object):
         self._confs_scores = confs_scores
         self._env = env_
     
-    def execute(self, threads, configurations, confs_scores, instance, env_, quit_ = True):
+    def execute(self, threads, configurations, confs_scores, instance, env_, quit_ = True, scheduling = False):
         '''
             exectues best n configurations in scores
             Parameter:
@@ -61,6 +61,7 @@ class Executor(object):
                 instance: name of instance to solver
                 env_: environment
                 quit_ : quit of solving?
+                scheduling : does the approach build schedules or select sole solvers?
         '''
         
         self.__set_args(threads, configurations, confs_scores, env_)
@@ -87,7 +88,14 @@ class Executor(object):
                 instance = instance.name
         
         Printer.print_c("\nExecute:")
-        
+
+        # if the selector delivered a schedule omit presolving etc. and interpret the confs_score dict as a schedule
+        if scheduling:
+            self.__run_schedule(confs_scores, instance)
+            Printer.print_verbose("[0] Notified - performing clean up")
+            self.__clean_up(quit_)
+            return self.__time, self.__solver, self.__status
+
         pre_solving_schedule = {} # solver name -> presolving time
         for conf_name, conf_dict in self._configurations.items():
             if conf_dict.get("presolving_time"):
@@ -155,7 +163,27 @@ class Executor(object):
             if pre_solving_schedule.get(conf_2_exec,None):
                 pre_solving_schedule.pop(conf_2_exec) # remove executed configuration from presolving
         return cmd_list, pre_solving_schedule
-        
+
+    def __run_schedule(self, schedule, instance):
+        '''
+            runs a schedule
+            Args:
+                schedule: dictionary containing solvers/times to be scheduled
+                instance: target problem instance
+        '''
+        for item in schedule:
+            solver = item.key
+            time = item.value
+            call = self._configurations[solver]["call"]
+            call = call.split(" ")
+            cmd_list = [(solver, -1.0, call)]
+            self.__start(cmd_list, instance, max_time = time)
+            self.__lock_waiting.wait()
+            if self.__is_successful(self.__status):
+                return
+        return
+
+
     def __start(self, cmd_list, instance, max_time = -1):
         '''
             start solver

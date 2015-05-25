@@ -16,6 +16,8 @@ class SelectionBase(object):
             select algorithms and returns a list of scores for each algorithm
             (removes dependencies to flexfolio.selector from the outside
             and allows post processing of the scores)
+            for scheduling approaches the result is to be interpreted as a
+            schedule (solvers + time assignments) instead of a score list
             Args:
                 selector_name: name of the selection approach
                 se_dic: selection dict of the learned models
@@ -32,6 +34,7 @@ class SelectionBase(object):
         from clustering import Clustering
         from snnap import SNNAP
         from KNN import KNearestNeighbor
+        from sunny import Sunny
         
         selector = {"CLASSVOTER": ClassVoter,
                 "CLASSMULTI": ClassMulti,
@@ -41,7 +44,8 @@ class SelectionBase(object):
                 "CLUSTERING": Clustering, 
                 "SNNAP": SNNAP,
                 "SBS": SBS,
-                "ENSEMBLE": Ensemble
+                "ENSEMBLE": Ensemble,
+                "SUNNY": Sunny
                 }
         
         list_conf_scores = selector[selector_name]().select_algorithms(se_dic, features, pwd)
