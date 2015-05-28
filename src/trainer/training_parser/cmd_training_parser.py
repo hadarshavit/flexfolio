@@ -277,13 +277,13 @@ class TainerParser(object):
             # try to apply default look ups
             main_path = os.path.dirname(sys.argv[0]) # a bit ugly but better than nothing ... really useful comment ....
             if not args_.aspeed_clasp:
-                args_.aspeed_clasp = os.path.join(main_path,"..","..","binaries/clasp")
+                args_.aspeed_clasp = os.path.join(main_path,"..","binaries/clasp")
             if not args_.aspeed_gringo:
-                args_.aspeed_gringo = os.path.join(main_path,"..","..","binaries/gringo")
+                args_.aspeed_gringo = os.path.join(main_path,"..","binaries/gringo")
             if not args_.aspeed_runsolver:
-                args_.aspeed_runsolver = os.path.join(main_path,"..","..","binaries/runsolver")
+                args_.aspeed_runsolver = os.path.join(main_path,"..","binaries/runsolver")
             if not args_.aspeed_enc:
-                args_.aspeed_enc = os.path.join(main_path,"aspeed/enc/encoding-bounded-paper-Step1.lp")
+                args_.aspeed_enc = os.path.join(main_path,"trainer/aspeed/enc/encoding-bounded-paper-Step1.lp")
             
             if not os.path.isfile(args_.aspeed_clasp):
                 Printer.print_e("File not found: %s" %(args_.aspeed_clasp))
