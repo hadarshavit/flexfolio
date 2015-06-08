@@ -18,11 +18,11 @@ class CrossValidator(Validator):
         perform cross validation evaluation
     '''
 
-    def __init__(self, update_sup, print_file):
+    def __init__(self, update_sup, print_file, max_threads):
         '''
         Constructor
         '''
-        Validator.__init__(self, update_sup, print_file)
+        Validator.__init__(self, update_sup, print_file, max_threads)
         self._instance_parts = []
         self._n_folds = 10
 

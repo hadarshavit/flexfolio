@@ -117,18 +117,13 @@ class Flexfolio(object):
         if clause_sharing: # replace executor for clause sharing with clasp mt
             self._executor = ExecutorClaspmt()
 
-        # check if the approach yields a schedule instead of single solver
-        scheduling = False
-        if se_dic["approach"]["scheduling"]:
-            scheduling = True
-        runtime, solver, status = self._executor.execute(al_dic["threads"], 
+        runtime, solver, status = self._executor.execute(al_dic["threads"],
                                                          se_dic["configurations"], 
                                                          list_conf_scores, 
                                                          instance, 
                                                          env_, 
-                                                         quit_ = (up_dic == None),
-                                                         scheduling = scheduling)
-        
+                                                         quit_ = (up_dic == None))
+
         if up_dic and runtime != -1: # update models
             self.update_models(features, runtime, status, solver, instance, up_dic, se_dic, ex_dic, ori_config_file)
 

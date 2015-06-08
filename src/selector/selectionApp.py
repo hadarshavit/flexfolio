@@ -47,6 +47,9 @@ class SelectionBase(object):
                 "ENSEMBLE": Ensemble,
                 "SUNNY": Sunny
                 }
+
+        # static list of approaches that apply online scheduling
+        schedulers = ["SUNNY"]
         
         list_conf_scores = selector[selector_name]().select_algorithms(se_dic, features, pwd)
 
@@ -63,5 +66,12 @@ class SelectionBase(object):
         unscored_solvers = solvers.difference(scored_solvers)
         for unscored in unscored_solvers:
             list_conf_scores.append((unscored,99999999999999999999999999))
-        
-        return list_conf_scores
+
+        if selector_name in schedulers:
+            return list_conf_scores
+        # transform the score list into the now used (solver, (score, time)) format needed for scheduling
+        else:
+            enhanced_list = []
+            for solver, score in list_conf_scores:
+                enhanced_list.append((solver,(score, -1)))
+            return enhanced_list

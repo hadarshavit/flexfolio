@@ -67,14 +67,15 @@ class TainerParser(object):
         TRA_GROUP = self._arg_parser.add_argument_group("Training Options")
         TRA_GROUP.add_argument('--feature-class', dest='feat_class', action='store', default="claspre2", choices=["claspre", "claspre2", "satzilla"], help='Class to extract features')
         TRA_GROUP.add_argument('--feature-extractor', dest='feature_path', action='store', help='Path to feature extractor binary')
-        TRA_GROUP.add_argument('--approach', dest='approach', action='store', default="CLASSVOTER", choices=["REGRESSION", "CLASSVOTER", "CLASSMULTI", "NN", "kNN", "CLUSTERING", "SNNAP", "SBS", "ENSEMBLE", "ASPEED"], help='selection approach')
+        TRA_GROUP.add_argument('--approach', dest='approach', action='store', default="CLASSVOTER", choices=["REGRESSION", "CLASSVOTER", "CLASSMULTI", "NN", "kNN", "CLUSTERING", "SNNAP", "SBS", "ENSEMBLE", "ASPEED", "SUNNY"], help='selection approach')
         TRA_GROUP.add_argument('--classifier', dest='classifier', action='store', default="RANDOMFOREST", choices=["SVM", "GRADIENTBOOSTING", "RANDOMFOREST"], help='classifier used for approach \"CLASSVOTER\"')
         TRA_GROUP.add_argument('--classifiermulti', dest='classifiermulti', action='store', default="RANDOMFOREST", choices=["SVM", "RANDOMFOREST", "GRADIENTBOOSTING"], help='classifier used for approach \"CLASSVOTER\"')
         TRA_GROUP.add_argument('--regressor', dest='regressor', action='store', default="RANDOMFOREST", choices=["SVR", "RIDGE", "LASSO", "RANDOMFOREST"], help='regressor used for approach \"REGRESSION\" and \"SNNAP\"')
         TRA_GROUP.add_argument('--clusteralgo', dest='cluster_algo', action='store', default="KMEANS", choices=["KMEANS","GM", "SPECTRAL"], help='clustering algorithm')
         TRA_GROUP.add_argument('--update-support', dest='update_sup', action='store_true', default=False, help="Remembers original training files and adds empty update files for new learnt information")
         TRA_GROUP.add_argument('--max-feature-time', dest='feat_time', action='store', default=-1, type=int, help="Maximal runtime of feature extractor (default: cutoff/10)")
-        
+        TRA_GROUP.add_argument('--max-threads', dest='max_threads', action='store', default=32, type=int, help="Maximal number of threads to be used (default: 32)")
+
         PER_GROUP = self._arg_parser.add_argument_group("Performance Preprocessing")
         PER_GROUP.add_argument('--approx-weights', dest='approx_weights', action='store', default="None", choices=["None","max","rmsd","nrmsd"], help="Approximate instance weights by the maximal penalty (max), the root mean squared distance to the minimal runtime (rmsd), normalized nrmsd (nrmsd)")
         PER_GROUP.add_argument('--performance_trans', dest='perf_trans', action='store', default="None", choices=["None","log","zscore"], help="Transform the performance data with log or zscore normalization")
@@ -115,7 +116,7 @@ class TainerParser(object):
         CLUST_GROUP = self._arg_parser.add_argument_group("Clustering Options (requires --approach CLUSTERING)")
         CLUST_GROUP.add_argument('--clu-max-clusters', dest='clu_max_cluster', action='store', default='sqrt', choices=['sqrt','log','solvers'], help="maximal number of clusters")
         
-        NN_GROUP = self._arg_parser.add_argument_group("kNN Options (requires --approach kNN|SNNAP)")
+        NN_GROUP = self._arg_parser.add_argument_group("kNN Options (requires --approach kNN|SNNAP|SUNNY)")
         NN_GROUP.add_argument('--kNN', dest='knn', action='store', default=1, type=int, help="k of k-NN")
         
         SNNAP_GROUP = self._arg_parser.add_argument_group("kNN Options (requires --approach SNNAP)")
@@ -174,7 +175,7 @@ class TainerParser(object):
         ADD_GROUP.add_argument('--verbose', dest='verbose', action='store', default=0, type=int, help='verbosity level of stdout')
     
         PRE_GROUP = self._arg_parser.add_argument_group("Pre-Configurations (overwrites other arguments")
-        PRE_GROUP.add_argument('--preconf', dest='pre_conf', action='store', required=False, default=None, choices=["satzilla09","satzilla11","isac","3s", "claspfolio", "measp", "sbs", "aspeed"], help='use configurations like satzilla, ISAC or 3S')
+        PRE_GROUP.add_argument('--preconf', dest='pre_conf', action='store', required=False, default=None, choices=["satzilla09","satzilla11","isac","3s", "claspfolio", "measp", "sbs", "aspeed", "sunny"], help='use configurations like satzilla, ISAC or 3S')
     
         HIDDEN_GROUP = self._arg_parser.add_argument_group("HIDDEN Options")
         HIDDEN_GROUP.add_argument('--table-format', dest='table_format', action='store_true', default=False, help=argparse.SUPPRESS)
@@ -376,6 +377,11 @@ class TainerParser(object):
             
         if args_.pre_conf == "aspeed":
             args_.approach = "ASPEED"          
-        
+
+        if args_.pre_conf == "sunny":
+            args_.approach = "SUNNY"
+            args_.knn = 16
+            args_.max_threads = 1
+
         return args_
     

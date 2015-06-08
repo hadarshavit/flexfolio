@@ -58,6 +58,7 @@ from trainer.selection.NN import NearestNeighbourTrainer
 from trainer.selection.kNN import KNNTrainer
 from trainer.selection.SBS import SBSTrainer
 from trainer.selection.Ensemble import Ensemble
+from trainer.selection.sunny import SunnyTrainer
 
 from trainer.performancepreprocessing.contributor_filter import ContributorFilter
 from trainer.performancepreprocessing.correlator import Correlator
@@ -110,7 +111,8 @@ class Trainer(object):
                                                  "SPECTRAL": SpectralTrainer
                                                 },
                                   "SBS": SBSTrainer(),
-                                  "ENSEMBLE": Ensemble
+                                  "ENSEMBLE": Ensemble,
+                                  "SUNNY": SunnyTrainer
                                   }
         
     def main(self,sys_argv):
@@ -138,10 +140,10 @@ class Trainer(object):
         
         
         if meta_info.cv_given and meta_info.options.test_set:
-            evaluator = TrainTestValidator(args_.update_sup, args_.print_time)
+            evaluator = TrainTestValidator(args_.update_sup, args_.print_time, args_.max_threads)
             evaluator.evaluate(self, meta_info, instance_dic, config_dic)
         elif meta_info.cv_given:
-            evaluator = CrossValidatorGiven(args_.update_sup, args_.print_time)
+            evaluator = CrossValidatorGiven(args_.update_sup, args_.print_time, args_.max_threads)
             evaluator.evaluate(self, meta_info, instance_dic, config_dic, threads=args_.threads_aspeed)
             
         #=======================================================================
@@ -151,12 +153,12 @@ class Trainer(object):
         #=======================================================================
         
         elif args_.crossfold >= 0: # cross fold validation 
-            evaluator = CrossValidator(args_.update_sup, args_.print_time)
+            evaluator = CrossValidator(args_.update_sup, args_.print_time, args_.max_threads)
 #            evalutor.evaluate_invalids(invalid_f_runtime, ranks.index(0), meta_info.algorithm_cutoff_time)
             evaluator.evaluate(self, meta_info, instance_dic, config_dic, threads=args_.threads_aspeed)
         
         elif args_.class_evaluation: #TODO: probably broken!
-            evaluator = ClassValidator(args_.update_sup, args_.print_time)
+            evaluator = ClassValidator(args_.update_sup, args_.print_time, args_.max_threads)
             evaluator.evaluate(self, meta_info, instance_dic, config_dic)
         
 #==============================================================================
@@ -429,6 +431,14 @@ class Trainer(object):
             selection_dic = trainer_obj.train(instance_dic, solver_list, config_dic,
                                                            meta_info.algorithm_cutoff_time, args_.model_dir, 
                                                            feature_indicator, n_feats, trainers, meta_info, self)
+
+        if args_.approach == "SUNNY":
+            trainer_obj = self.selection_methods[args_.approach](k=args_.knn, save_models=save_models)
+            Printer.print_c("Train with %s" %(str(trainer_obj)))
+            selection_dic = trainer_obj.train(instance_dic, solver_list, config_dic,
+                                                           meta_info.algorithm_cutoff_time, args_.model_dir,
+                                                           feature_indicator, n_feats,
+                                                           meta_info, trainer)
 
         selection_dic = trainer_obj.set_backup_solver(selection_dic, ranks)
 
