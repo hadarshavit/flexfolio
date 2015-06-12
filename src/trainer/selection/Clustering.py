@@ -94,6 +94,7 @@ class ClusteringTrainer(SelectorTrainer):
         #                                    crossfolds=self.__CROSSFOLD)
         
         # map instance name to cluster
+        maximal_clusters = max(maximal_clusters, max(clusters)+1)
         instance_cluster_list = []
         for _ in range(0,maximal_clusters):  instance_cluster_list.append([])
         for name, cluster in zip(instances, clusters):

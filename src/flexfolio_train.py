@@ -51,6 +51,7 @@ from trainer.selection.classifiersMulti.gradientboostingMulti import GradientBoo
 from trainer.selection.classifiersMulti.svmMulti import SVMMulti
 
 from trainer.selection.clustering.KMeans import KMeansTrainer
+from trainer.selection.clustering.GMeans import GMeansTrainer
 from trainer.selection.clustering.GM import GMTrainer
 from trainer.selection.clustering.Spectral import SpectralTrainer
 
@@ -106,6 +107,7 @@ class Trainer(object):
                                   "NN":         NearestNeighbourTrainer, 
                                   "kNN":        KNNTrainer,
                                   "CLUSTERING": {"KMEANS" : KMeansTrainer,           
+                                                 "GMEANS" : GMeansTrainer,  
                                                  "GM" : GMTrainer,
                                                  "SPECTRAL": SpectralTrainer
                                                 },
@@ -403,6 +405,10 @@ class Trainer(object):
                                                            feature_indicator, n_feats)
         if args_.approach == "CLUSTERING":
             if args_.cluster_algo == "KMEANS":
+                trainer_obj = self.selection_methods[args_.approach][args_.cluster_algo](max_clusters=args_.clu_max_cluster, 
+                                                                                         plot_cluster=args_.clu_plot_cluster)
+                
+            if args_.cluster_algo == "GMEANS":
                 trainer_obj = self.selection_methods[args_.approach][args_.cluster_algo](max_clusters=args_.clu_max_cluster, 
                                                                                          plot_cluster=args_.clu_plot_cluster)
                 
