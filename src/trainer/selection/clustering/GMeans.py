@@ -36,7 +36,7 @@ class GMeansTrainer(ClusteringTrainer):
         
         Printer.print_verbose("Train Clustering with GMEANS")  
         
-        trainer = GMeans(n_init=self._REPETITIONS,random_state=self.__SEED, restarts=1)#, minimum_samples_per_cluster=10)
+        trainer = GMeans(n_init=self._REPETITIONS,random_state=self.__SEED, restarts=1, minimum_samples_per_cluster=10)
         
         labels = trainer.fit_predict(X)
         
