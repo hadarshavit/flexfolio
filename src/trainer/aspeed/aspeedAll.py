@@ -69,7 +69,7 @@ class AspeedAll(object):
         
         Printer.print_c("\n>>> Algorithm Scheduler: Aspeed <<<\n")
         
-        evaluator = CrossValidator(False,None)
+        evaluator = CrossValidator(False,None,self.__THREADS)
         
         folds_back = meta_info.options.crossfold 
         meta_info.options.aspeed_opt = False #prevent infinite loop
@@ -114,7 +114,17 @@ class AspeedAll(object):
         args_.crossfold = folds_back
         
         return core_solver_time_dict
-            
+
+    def optimize_schedule_online(self, instance_dict, solver_list, cutoff, feat_time, model_dir):
+
+        self.__max_feat_time = feat_time
+        self.write_tmp = model_dir
+
+        fact_file = self.__write_facts(None, instance_dict, cutoff)
+        core_solver_time_dict = self.__call_solver(fact_file, solver_list)
+
+        return core_solver_time_dict
+
     def __write_facts(self, cf_dict, instance_dict, cutoff):
         '''
             write asp facts of solver runtimes
@@ -127,7 +137,7 @@ class AspeedAll(object):
         fp = NamedTemporaryFile(suffix=".facts", prefix="ASPEED", dir=self.write_tmp, delete=self.__DELETE)
         
         fp.write("kappa(%d).\n" %(int(cutoff)))
-        
+
         instances = list(instance_dict.keys())
         
         #claspfolio time; solver c0

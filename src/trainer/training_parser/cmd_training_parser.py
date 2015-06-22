@@ -67,7 +67,7 @@ class TainerParser(object):
         TRA_GROUP = self._arg_parser.add_argument_group("Training Options")
         TRA_GROUP.add_argument('--feature-class', dest='feat_class', action='store', default="claspre2", choices=["claspre", "claspre2", "satzilla"], help='Class to extract features')
         TRA_GROUP.add_argument('--feature-extractor', dest='feature_path', action='store', help='Path to feature extractor binary')
-        TRA_GROUP.add_argument('--approach', dest='approach', action='store', default="CLASSVOTER", choices=["REGRESSION", "CLASSVOTER", "CLASSMULTI", "NN", "kNN", "CLUSTERING", "SNNAP", "SBS", "ENSEMBLE", "ASPEED", "SUNNY"], help='selection approach')
+        TRA_GROUP.add_argument('--approach', dest='approach', action='store', default="CLASSVOTER", choices=["REGRESSION", "CLASSVOTER", "CLASSMULTI", "NN", "kNN", "CLUSTERING", "SNNAP", "SBS", "ENSEMBLE", "ASPEED", "SUNNY", "ISA"], help='selection approach')
         TRA_GROUP.add_argument('--classifier', dest='classifier', action='store', default="RANDOMFOREST", choices=["SVM", "GRADIENTBOOSTING", "RANDOMFOREST"], help='classifier used for approach \"CLASSVOTER\"')
         TRA_GROUP.add_argument('--classifiermulti', dest='classifiermulti', action='store', default="RANDOMFOREST", choices=["SVM", "RANDOMFOREST", "GRADIENTBOOSTING"], help='classifier used for approach \"CLASSVOTER\"')
         TRA_GROUP.add_argument('--regressor', dest='regressor', action='store', default="RANDOMFOREST", choices=["SVR", "RIDGE", "LASSO", "RANDOMFOREST"], help='regressor used for approach \"REGRESSION\" and \"SNNAP\"')
@@ -116,13 +116,16 @@ class TainerParser(object):
         CLUST_GROUP = self._arg_parser.add_argument_group("Clustering Options (requires --approach CLUSTERING)")
         CLUST_GROUP.add_argument('--clu-max-clusters', dest='clu_max_cluster', action='store', default='sqrt', choices=['sqrt','log','solvers'], help="maximal number of clusters")
         
-        NN_GROUP = self._arg_parser.add_argument_group("kNN Options (requires --approach kNN|SNNAP|SUNNY)")
+        NN_GROUP = self._arg_parser.add_argument_group("kNN Options (requires --approach kNN|SNNAP|SUNNY|ISA)")
         NN_GROUP.add_argument('--kNN', dest='knn', action='store', default=1, type=int, help="k of k-NN")
         
         SNNAP_GROUP = self._arg_parser.add_argument_group("kNN Options (requires --approach SNNAP)")
         SNNAP_GROUP.add_argument('--best_n', dest='best_n', action='store', default=1, type=int, help="consider the best n solvers at ranking prediction (should be at most as large as the number of algorithms")
-        
-        ASPEED_GROUP = self._arg_parser.add_argument_group("ASPEED Options (requires --aspeed-opt)")
+
+        SUNNY_GROUP = self._arg_parser.add_argument_group("SUNNY Options (requires --approach SUNNY)")
+        SUNNY_GROUP.add_argument('--sunny-max-solver', dest='sunny_max_solver', action='store', default=0, type=int, help="maximal size of schedule (0 means no maximum)")
+
+        ASPEED_GROUP = self._arg_parser.add_argument_group("ASPEED Options (requires --aspeed-opt or --approach ISA)")
         ASPEED_GROUP.add_argument('--aspeed-opt', dest='aspeed_opt', action='store_true', default=False, help="Combine flexfolio with an algorithm schedule computed with aspeed")
         ASPEED_GROUP.add_argument('--concentrate', dest='aspeed_concentrate', action='store_true', default=False, help="concentrate on unsolved instances for selector training (filter solved instances before training)")
         ASPEED_GROUP.add_argument('--max-solver', dest='aspeed_max_solver', action='store', default=3, type=int, help="maximal size of aspeed schedule (excl. flexfolio)")
@@ -134,7 +137,10 @@ class TainerParser(object):
         ASPEED_GROUP.add_argument('--gringo-path', dest='aspeed_gringo', action='store', default=None, help="path to gringo (3.x) binary")
         ASPEED_GROUP.add_argument('--runsolver-path', dest='aspeed_runsolver', action='store', default=None, help="path to runsolver binary")
         ASPEED_GROUP.add_argument('--enc-path', dest='aspeed_enc', action='store', default=None, help="path to aspeed encoding file")
-        
+
+
+
+
         ENSEMBLE_GROUP = self._arg_parser.add_argument_group("ENSEMBLE Options (requires --approach ENSEMBLE)")
         ENSEMBLE_GROUP.add_argument('--sub-size', dest='ensemble_sub_size', action='store', default=0.7, type=float, help="percentage of subsampled training sets (0<x<1)")
         ENSEMBLE_GROUP.add_argument('--n-models', dest='ensemble_num_models', action='store', default="0,3,0,0,3,3", type=str, help="number of trained models for <REGRESSION>,<CLASSVOTER>,<CLASSMULTI>,<NN>,<kNN>,<KMEANS>")
@@ -175,7 +181,7 @@ class TainerParser(object):
         ADD_GROUP.add_argument('--verbose', dest='verbose', action='store', default=0, type=int, help='verbosity level of stdout')
     
         PRE_GROUP = self._arg_parser.add_argument_group("Pre-Configurations (overwrites other arguments")
-        PRE_GROUP.add_argument('--preconf', dest='pre_conf', action='store', required=False, default=None, choices=["satzilla09","satzilla11","isac","3s", "claspfolio", "measp", "sbs", "aspeed", "sunny"], help='use configurations like satzilla, ISAC or 3S')
+        PRE_GROUP.add_argument('--preconf', dest='pre_conf', action='store', required=False, default=None, choices=["satzilla09","satzilla11","isac","3s", "claspfolio", "measp", "sbs", "aspeed", "sunny", "aspeedknn"], help='use configurations like satzilla, ISAC or 3S')
     
         HIDDEN_GROUP = self._arg_parser.add_argument_group("HIDDEN Options")
         HIDDEN_GROUP.add_argument('--table-format', dest='table_format', action='store_true', default=False, help=argparse.SUPPRESS)
@@ -274,17 +280,17 @@ class TainerParser(object):
         #=======================================================================
         
         #aspeed paths
-        if args_.aspeed_opt:
+        if args_.aspeed_opt or args_.approach == "ISA":
             # try to apply default look ups
             main_path = os.path.dirname(sys.argv[0]) # a bit ugly but better than nothing ... really useful comment ....
             if not args_.aspeed_clasp:
-                args_.aspeed_clasp = os.path.join(main_path,"..","..","binaries/clasp")
+                args_.aspeed_clasp = os.path.join(main_path,"..","binaries/clasp")
             if not args_.aspeed_gringo:
-                args_.aspeed_gringo = os.path.join(main_path,"..","..","binaries/gringo")
+                args_.aspeed_gringo = os.path.join(main_path,"..","binaries/gringo")
             if not args_.aspeed_runsolver:
-                args_.aspeed_runsolver = os.path.join(main_path,"..","..","binaries/runsolver")
+                args_.aspeed_runsolver = os.path.join(main_path,"..","binaries/runsolver")
             if not args_.aspeed_enc:
-                args_.aspeed_enc = os.path.join(main_path,"aspeed/enc/encoding-bounded-paper-Step1.lp")
+                args_.aspeed_enc = os.path.join(main_path,"trainer/aspeed/enc/encoding-bounded-paper-Step1.lp")
             
             if not os.path.isfile(args_.aspeed_clasp):
                 Printer.print_e("File not found: %s" %(args_.aspeed_clasp))
@@ -380,7 +386,12 @@ class TainerParser(object):
 
         if args_.pre_conf == "sunny":
             args_.approach = "SUNNY"
-            args_.knn = 16
+            args_.knn = -1
+            args_.max_threads = 1
+
+        if args_.pre_conf == "isa":
+            args_.approach = "ISA"
+            args_.knn = -1
             args_.max_threads = 1
 
         return args_

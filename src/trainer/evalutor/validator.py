@@ -34,6 +34,8 @@ class Stats(object):
         self._test_n = 0
         self.presolved = 0
         self.unsolved = 0  # instances that are not solved by any algorithm AND not presolved
+        self.schedule_size_sum = 0
+        self.solver_count = len(solver_list)
 
     def print_stats(self, oracle_avg_time, oracle_spend_time_dict, oracle_par10, oracle_tos, cutoff):
         Printer.print_c("\n >>> Instances: %d <<<" % (self._test_n))
@@ -83,6 +85,12 @@ class Stats(object):
         #Printer.print_c("RMSE per #Thread: %s" %(str(self.thread_rmse_dic)))
         Printer.print_nearly_verbose("Solver Selection Frequencies (#Threads -> Solvers):")
         Printer.print_nearly_verbose(str(json.dumps(self.solver_stats, indent=2)))
+
+        Printer.print_nearly_verbose("Average schedule size = %s" % str(round(float(self.schedule_size_sum)
+                                                                              /self._test_n, 1)))
+
+        Printer.print_nearly_verbose("Number of available solvers = %s" % str(self.solver_count))
+
         Printer.print_c("Time used by each solver: %s" % (str(self.spend_time)))
         Printer.print_c("Optimal Time used by each solver: %s" % (str(oracle_spend_time_dict)))
 
@@ -186,18 +194,21 @@ class Validator(object):
                 stats.presolved += 1
             else:
                 if not instance._features is None and feature_time < meta_info.options.feat_time:  #TODO: does not make sense in case of feature imputation
-                    list_conf_scores = self._select(meta_info.options.approach, selection_dic,
+                    dic_thread_schedule = self._select(meta_info.options.approach, selection_dic,
                                                     copy.deepcopy(instance._features))
                 else:
-                    list_conf_scores = self._extract_backup_scores(selection_dic)
+                    dic_thread_schedule = self._extract_backup_scores(selection_dic)
 
                 thread_time_dic, thread_rmse_dic, thread_timeout_dic, selected_solvers, spend_time_dict = \
-                    self._get_time(list_conf_scores,
+                    self._get_time(dic_thread_schedule,
                                    instance._cost_vec,
                                    min(feature_time, meta_info.options.feat_time),
                                    solver_list,
                                    meta_info.algorithm_cutoff_time,
                                    solver_schedule, satzilla_mode=meta_info.options.test_mode == "satzilla")
+
+                stats.schedule_size_sum += sum(1 for element in dic_thread_schedule[1] if element[1][1] != 0)
+
             par10_per_set += thread_time_dic[1]
             stats._test_n += 1
             stats.spend_time = dict(
@@ -215,7 +226,7 @@ class Validator(object):
                 # update models
                 #---------------------------------------------- if self._update:
                 #------ updater = Updater(up_dic, selection_dic, None, None)
-                # selection_dic = updater.update_models(thread_time_dic[1], instance.get_features(), instance.get_class(), list_conf_scores[0][0], instance)
+                # selection_dic = updater.update_models(thread_time_dic[1], instance.get_features(), instance.get_class(), dic_thread_schedule[0][0], instance)
                 #-------------------------------------- up_dic["n_new"] += 1
         # ------------- Printer.print_verbose(str(global_thread_timeout_dic))
         Printer.print_c(
@@ -327,7 +338,7 @@ class Validator(object):
             thread_index += 1
         return solver_stats
 
-    def _get_time(self, list_conf_scores, times, ftime, solver_list, cutoff, solver_schedule, satzilla_mode=False):
+    def _get_time(self, dic_thread_schedule, times, ftime, solver_list, cutoff, solver_schedule, satzilla_mode=False):
         '''
             look for runtime of given runtimes (times) while selecting solvers from list_conf_scores
             Parameter:
@@ -358,7 +369,7 @@ class Validator(object):
         for core, core_schedule in solver_schedule.items():
             sorted_schedules[core] = sorted(core_schedule.iteritems(), key=operator.itemgetter(1))  #
 
-        max_threads = min(self._MAX_THREADS, len(list_conf_scores))
+        max_threads = min(self._MAX_THREADS, len(dic_thread_schedule))
 
         thread_time_dic = {}  #dict((x+1,used_time) for x in range(0,max_threads))
         thread_rmse_dic = {}  #dict((x+1,rmse) for x in range(0,max_threads))
@@ -378,7 +389,7 @@ class Validator(object):
             else:
                 if threads == 1:
                     used_time = ftime  #feature time only on first core
-                    selected = ["claspfolio", list_conf_scores[threads - 1][0]]
+                    selected = ["claspfolio", dic_thread_schedule[threads][0][0]]
                 else:
                     used_time = 0  # first step: compute features
                     selected = ["claspfolio"]  # simplify only on the first thread
@@ -413,28 +424,21 @@ class Validator(object):
                     #Printer.print_w("Something strange happened because pre-solving schedule was too short (Thread %d)..." %(threads))
 
                 solved = False
-                time_slot_sum = 0
 
-                for solver, values in list_conf_scores:
+                for solver, values in dic_thread_schedule[threads]:
                     idx = solver_list.index(solver)
                     time = times[idx]
                     time_slot = values[1]
                     if time_slot == -1:
                         time_slot = cutoff
-                    time_slot_sum += time_slot
-                    # if a previous thread is able to treat this solver, go to the next one
-                    if time_slot_sum <= (threads -1) * cutoff:
-                        continue
-                    # if the cutoff was reached for this thread exit the loop
-                    if time_slot_sum > threads * cutoff:
-                        break
                     if threads == 1:
                         spend_time_dic[solver] += min(time_slot, time)
                     if time > time_slot:
                         used_time += time_slot
                     else:
                         used_time += time
-                        solved = True
+                        if used_time <= cutoff:
+                            solved = True
                         break
 
                 complete_time = used_time
@@ -460,6 +464,7 @@ class Validator(object):
             rmse = math.pow(math.log(min_time) - math.log(oracle_time), self.__RMSE_NORM)
             thread_rmse_dic[thread] = rmse
 
+
         return thread_time_dic, thread_rmse_dic, thread_timeout_dic, [], spend_time_dic
 
     def _add_dics(self, a, b):
@@ -480,11 +485,13 @@ class Validator(object):
             backup_score_dict[algo_name] = backup_score
         sorted_scores = sorted(backup_score_dict.iteritems(), key=operator.itemgetter(1))
 
-        enhanced_list = []
+        dic_thread_schedule = {}
+        thread = 1
         for solver, score in sorted_scores:
-            enhanced_list.append((solver, (score, -1)))
+            dic_thread_schedule[thread] = [(solver, (score, -1))]
+            thread += 1
 
-        return enhanced_list
+        return dic_thread_schedule
 
     def _extract_par1_from_par10(self, par10, timeouts, cutoff):
         '''
@@ -493,6 +500,22 @@ class Validator(object):
             REMOVE - added in Stats
         '''
         return par10 - (timeouts * cutoff * (10 - 1))
+
+    def _get_schedule_stats(self, schedule):
+        solver_count = 0
+        max_time_slot = 0
+        min_time_slot = schedule[0][1]
+        for _, score_time in schedule:
+            if score_time[1] > 0:
+                solver_count += 1
+                max_time_slot = max(max_time_slot, score_time[1])
+                min_time_slot = min(min_time_slot, score_time[1])
+
+        schedule_stats_dic = {"solver_count":solver_count,
+                              "max_time_slot":max_time_slot,
+                              "min_time_slot":min_time_slot}
+
+        return schedule_stats_dic
 
 
     def _oracle_performance(self, instance_dic, solver_list, cutoff, stats=None):

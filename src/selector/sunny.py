@@ -7,7 +7,6 @@ from selector import Selector
 from misc.printer import Printer
 
 import math
-import operator
 import os
 
 class Sunny(Selector):
@@ -24,38 +23,38 @@ class Sunny(Selector):
         '''
         Constructor
         '''
-        
-    
+
+
     def select_algorithms(self, se_dic, features, pwd=""):
         ''' select nearest neighbors, build schedule '''
-        
+
         self._set_base_args(se_dic, features)
-        
+
         self._normalize(self._normalization["approach"], self._normalization["filter"], features)
-        
+
         if not self._features:
             return None
-        
+
         model_file = se_dic["approach"]["model"]
-        
+
         if isinstance(model_file, str):
             data_list = self.__create_data_list(model_file, pwd, len(features))
         else:
             data_list = model_file
-        
+
         k = se_dic["approach"]["k"]
         cutoff = se_dic["approach"]["cutoff"]
-        
+
         schedule = self.__build_schedule(data_list, self._features, k, cutoff, se_dic)
 
         return schedule
-        
+
     def __create_data_list(self, model_file, pwd, n_feats):
         '''
             read saved performance and feature data
         '''
         fp = open(os.path.join(pwd,model_file),"r")
-        
+
         data_list = []
         for line in fp:
             line = line.replace("\n","")
@@ -70,14 +69,14 @@ class Sunny(Selector):
                      }
                 data_list.append(point)
         fp.close()
-        
+
         return data_list
-    
+
     def __build_schedule(self, data_list, features, k, cutoff, se_dic):
         '''
             look through all training instances and remember for each encountered solver the nearest distance
         '''
-        
+
         tuples_dist_perfs = []
         for point in data_list:
                 inst_features = point["features"]
@@ -91,33 +90,68 @@ class Sunny(Selector):
                     #Printer.print_w("I may encountered the given instance previously!")
                     #Printer.print_w(str(features))
                     #Printer.print_w(str(inst_features))
-                    
+
                 tuples_dist_perfs.append((distance,perfs))
-        
+
         tuples_dist_perfs.sort()
         k_nearest_perfs = map(lambda x: x[1], tuples_dist_perfs[:k])
         n_perfs = len(k_nearest_perfs[0])
         average_perfs = reduce(lambda x,y: [sum(pair) for pair in zip(x, y)], k_nearest_perfs, [0]*n_perfs)
 
         # get the total number of timeslots
-        slots = sum(sum(perf < cutoff for perf in perfs) for perfs in k_nearest_perfs) + sum(sum(perf < cutoff for perf in perfs) == 0 for perfs in k_nearest_perfs)
-        slots = 0
+        slots = []  # slots per solver
+        scores = [] # score sum for each solver (needed for tie breaking if solver count is limited)
+        backup_slots = 0
+        for i in range(0, n_perfs):
+            slots.append(0)
+            scores.append(0)
+
+        #  give each solver a slot for every solved instance
         for perfs in k_nearest_perfs:
             solved = False
-            for perf in perfs:
-                if perf <= cutoff:
-                    slots += 1
+            for i in range(0, n_perfs):
+                if perfs[i] <= cutoff:
+                    slots[i] += 1
                     solved = True
+                scores[i] += min(perfs[i], cutoff)
+            # unsolved instances go to the backup solver
             if not solved:
-                slots += 1
+                backup_slots += 1
 
-        time_slot = cutoff/slots
+
+        max_solvers = se_dic["approach"]["max_solvers"]
+        # if specified, limit the list of solvers that get time slots
+        if max_solvers > 0:
+            # get the minimal number of slots needed to stay in the schedule
+            slot_threshold = sorted(slots, reverse=True)[max_solvers - 1]
+            used_solvers = 0
+            tiebreak_list = []
+            for i in range(0, len(slots)):
+                # erase the slots of filtered solvers
+                if slots[i] < slot_threshold:
+                    slots[i] = 0
+                # solvers that meet the threshold are kept for comparison
+                elif slots[i] == slot_threshold:
+                    tiebreak_list.append((i, scores[i]))
+                # solvers above the threshold stay in
+                else:
+                    used_solvers += 1
+            remaining_slots = max_solvers - used_solvers
+            tiebreak_list.sort(key = lambda x:x[1])
+            counter = 0
+            # decide which of the tied solvers to keep, depending on their scores
+            for index,_ in tiebreak_list:
+                if counter >= remaining_slots:
+                    slots[index] = 0
+                counter += 1
+
+        time_slot = cutoff/(sum(slots) + backup_slots)
         tot_time = 0;
 
         # assign time to each solver proportional to the number of solved instances
         solver_times = []
         for i in range(0, n_perfs):
-            solver_times.append(sum(perfs[i] < cutoff for perfs in k_nearest_perfs) * time_slot)
+            solver_times.append(slots[i] * time_slot)
             tot_time += solver_times[i]
 
         # save computed solver time slots and their average performances in pairs
@@ -138,14 +172,14 @@ class Sunny(Selector):
 
         for (solver,tuple) in sorted_times:
             Printer.print_verbose("[%s]: %f, %f" %(solver, tuple[0], tuple[1]))
-        
-        return sorted_times
-                
+
+        return {1: sorted_times}
+
     def __get_euclidean_dist(self,vect1, vect2):
         squares = list( math.pow(f1-f2,2) for f1,f2 in zip(vect1,vect2))
         sum_squares = sum(squares)
         return math.sqrt(sum_squares)
-    
+
     def __map_ids_2_names(self, scores, conf_dic):
         '''
             map id of solver to its name

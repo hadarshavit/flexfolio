@@ -59,6 +59,7 @@ from trainer.selection.kNN import KNNTrainer
 from trainer.selection.SBS import SBSTrainer
 from trainer.selection.Ensemble import Ensemble
 from trainer.selection.sunny import SunnyTrainer
+from trainer.selection.instanceSpecificAspeed import ISATrainer
 
 from trainer.performancepreprocessing.contributor_filter import ContributorFilter
 from trainer.performancepreprocessing.correlator import Correlator
@@ -112,7 +113,8 @@ class Trainer(object):
                                                 },
                                   "SBS": SBSTrainer(),
                                   "ENSEMBLE": Ensemble,
-                                  "SUNNY": SunnyTrainer
+                                  "SUNNY": SunnyTrainer,
+                                  "ISA": ISATrainer
                                   }
         
     def main(self,sys_argv):
@@ -433,12 +435,30 @@ class Trainer(object):
                                                            feature_indicator, n_feats, trainers, meta_info, self)
 
         if args_.approach == "SUNNY":
-            trainer_obj = self.selection_methods[args_.approach](k=args_.knn, save_models=save_models)
+            trainer_obj = self.selection_methods[args_.approach](k=args_.knn, max_solvers=args_.sunny_max_solver,
+                                                                 save_models=save_models)
             Printer.print_c("Train with %s" %(str(trainer_obj)))
             selection_dic = trainer_obj.train(instance_dic, solver_list, config_dic,
                                                            meta_info.algorithm_cutoff_time, args_.model_dir,
                                                            feature_indicator, n_feats,
                                                            meta_info, trainer)
+
+        if args_.approach == "ISA":
+            trainer_obj = self.selection_methods[args_.approach](k=args_.knn, save_models=save_models)
+            Printer.print_c("Train with %s" %(str(trainer_obj)))
+            selection_dic = trainer_obj.train(instance_dic, solver_list, config_dic,
+                                                           meta_info.algorithm_cutoff_time, args_.model_dir,
+                                                           feature_indicator, n_feats, args_.feat_time,
+                                                           meta_info, trainer,
+                                                           args_.aspeed_clasp,
+                                                           args_.aspeed_gringo,
+                                                           args_.aspeed_runsolver,
+                                                           args_.aspeed_enc,
+                                                           args_.aspeed_mem_limit,
+                                                           args_.aspeed_max_solver,
+                                                           args_.aspeed_opt_mode,
+                                                           args_.aspeed_pre_slice,
+                                                           args_.threads_aspeed)
 
         selection_dic = trainer_obj.set_backup_solver(selection_dic, ranks)
 

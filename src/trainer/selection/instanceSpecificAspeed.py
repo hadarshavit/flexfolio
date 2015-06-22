@@ -7,17 +7,18 @@ import os
 import sys
 import math
 
+
 from trainer.selection.selector import SelectorTrainer
 from trainer.evalutor.crossValidator import CrossValidator
 from misc.printer import Printer
 
-class SunnyTrainer(SelectorTrainer):
+class ISATrainer(SelectorTrainer):
     '''
-        trainer for SUNNY; does not train anything, merely writes the needed config file
+        trainer for Instance Specific Aspeed scheduling
     '''
 
 
-    def __init__(self, k=-1, max_solvers = 0, save_models=True):
+    def __init__(self, k=-1, save_models=True):
         '''
             Constructor
         '''
@@ -26,16 +27,16 @@ class SunnyTrainer(SelectorTrainer):
         self._norm_approach = "Zscore"
         
         self.k = k
-        self.max_solvers = max_solvers
         
         self._UNKNOWN_CODE = -512
         self._MAX_K = 32
    
     def __repr__(self):
-        return "SUNNY"
+        return "Instance Specific Aspeed"
    
     def train(self, instance_dic, solver_list, config_dic, cutoff, model_dir, f_indicator, n_feats, 
-                meta_info, trainer):
+                feat_time, meta_info, trainer, clasp, gringo, runsolver, enc, mem_limit,
+                max_solver, opt_mode, pre_sclice, threads):
         '''
             train model
             Args:
@@ -71,16 +72,26 @@ class SunnyTrainer(SelectorTrainer):
                     conf_dic[solver] = solver_dic
         sel_dic = {
                    "approach": {
-                                "approach" : "SUNNY",
+                                "approach" : "ISA",
                                 "k" : self.k,
-                                "max_solvers" : self.max_solvers,
                                 "model" : model_name,
-                                "cutoff": self._cutoff
+                                "cutoff": self._cutoff,
+                                "feat_time": feat_time,
+                                "model_dir": model_dir,
+                                "clasp": clasp,
+                                "gringo": gringo,
+                                "runsolver": runsolver,
+                                "enc": enc,
+                                "mem_limit": mem_limit,
+                                "max_solver": max_solver,
+                                "opt_mode": opt_mode,
+                                "pre_slice": pre_sclice,
+                                "threads": threads
                                 },
                    "normalization" : {
                                       "filter"  : f_indicator                           
                                  },
-                   "configurations":conf_dic                        
+                   "configurations":conf_dic
                    }
         return sel_dic
         

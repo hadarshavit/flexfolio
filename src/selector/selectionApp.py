@@ -35,6 +35,7 @@ class SelectionBase(object):
         from snnap import SNNAP
         from KNN import KNearestNeighbor
         from sunny import Sunny
+        from instanceSpecificAspeed import InstanceSpecificAspeed
         
         selector = {"CLASSVOTER": ClassVoter,
                 "CLASSMULTI": ClassMulti,
@@ -45,16 +46,20 @@ class SelectionBase(object):
                 "SNNAP": SNNAP,
                 "SBS": SBS,
                 "ENSEMBLE": Ensemble,
-                "SUNNY": Sunny
+                "SUNNY": Sunny,
+                "ISA": InstanceSpecificAspeed
                 }
 
         # static list of approaches that apply online scheduling
-        schedulers = ["SUNNY"]
+        schedulers = ["SUNNY", "ISA"]
         
         list_conf_scores = selector[selector_name]().select_algorithms(se_dic, features, pwd)
 
         if list_conf_scores is None:
             return None
+
+        if selector_name in schedulers:
+            return list_conf_scores
 
         if se_dic["approach"].get("correlation"):
             postprocessor = CorrelationPostProcessing()
@@ -65,13 +70,14 @@ class SelectionBase(object):
         scored_solvers = map(lambda x: x[0], list_conf_scores)
         unscored_solvers = solvers.difference(scored_solvers)
         for unscored in unscored_solvers:
-            list_conf_scores.append((unscored,99999999999999999999999999))
+            list_conf_scores.append((unscored, (99999999999999999999999999, 0)))
 
-        if selector_name in schedulers:
-            return list_conf_scores
-        # transform the score list into the now used (solver, (score, time)) format needed for scheduling
-        else:
-            enhanced_list = []
-            for solver, score in list_conf_scores:
-                enhanced_list.append((solver,(score, -1)))
-            return enhanced_list
+
+        # transform the score list into the now used {thread: [(solver, (score, time))]} format needed for scheduling
+
+        dic_thread_schedule = {}
+        thread = 1
+        for solver, score in list_conf_scores:
+            dic_thread_schedule[thread] = [(solver,(score, -1))]
+            thread += 1
+        return dic_thread_schedule
