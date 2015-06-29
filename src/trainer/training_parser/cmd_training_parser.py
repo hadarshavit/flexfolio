@@ -71,7 +71,7 @@ class TainerParser(object):
         TRA_GROUP.add_argument('--classifier', dest='classifier', action='store', default="RANDOMFOREST", choices=["SVM", "GRADIENTBOOSTING", "RANDOMFOREST"], help='classifier used for approach \"CLASSVOTER\"')
         TRA_GROUP.add_argument('--classifiermulti', dest='classifiermulti', action='store', default="RANDOMFOREST", choices=["SVM", "RANDOMFOREST", "GRADIENTBOOSTING"], help='classifier used for approach \"CLASSVOTER\"')
         TRA_GROUP.add_argument('--regressor', dest='regressor', action='store', default="RANDOMFOREST", choices=["SVR", "RIDGE", "LASSO", "RANDOMFOREST"], help='regressor used for approach \"REGRESSION\" and \"SNNAP\"')
-        TRA_GROUP.add_argument('--clusteralgo', dest='cluster_algo', action='store', default="KMEANS", choices=["KMEANS","GMEANS","GM", "SPECTRAL"], help='clustering algorithm')
+        TRA_GROUP.add_argument('--clusteralgo', dest='cluster_algo', action='store', default="KMEANS", choices=["KMEANS","GMEANS","GM", "SPECTRAL", "CSHC"], help='clustering algorithm')
         TRA_GROUP.add_argument('--update-support', dest='update_sup', action='store_true', default=False, help="Remembers original training files and adds empty update files for new learnt information")
         TRA_GROUP.add_argument('--max-feature-time', dest='feat_time', action='store', default=-1, type=int, help="Maximal runtime of feature extractor (default: cutoff/10)")
         

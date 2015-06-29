@@ -26,7 +26,7 @@ class KMeansTrainer(ClusteringTrainer):
     def __repr__(self):
         return "KMEANS"
         
-    def _train(self,X, n_clusters):
+    def _train(self,X, Y, n_clusters):
         '''
             @overrides(ClusteringTrainer)
             returns fitted model

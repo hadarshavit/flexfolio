@@ -54,6 +54,7 @@ from trainer.selection.clustering.KMeans import KMeansTrainer
 from trainer.selection.clustering.GMeans import GMeansTrainer
 from trainer.selection.clustering.GM import GMTrainer
 from trainer.selection.clustering.Spectral import SpectralTrainer
+from trainer.selection.clustering.CSHC import CSHCTrainer
 
 from trainer.selection.NN import NearestNeighbourTrainer
 from trainer.selection.kNN import KNNTrainer
@@ -109,7 +110,8 @@ class Trainer(object):
                                   "CLUSTERING": {"KMEANS" : KMeansTrainer,           
                                                  "GMEANS" : GMeansTrainer,  
                                                  "GM" : GMTrainer,
-                                                 "SPECTRAL": SpectralTrainer
+                                                 "SPECTRAL": SpectralTrainer,
+                                                 "CSHC": CSHCTrainer
                                                 },
                                   "SBS": SBSTrainer(),
                                   "ENSEMBLE": Ensemble
@@ -419,6 +421,11 @@ class Trainer(object):
             if args_.cluster_algo == "SPECTRAL":
                 trainer_obj = self.selection_methods[args_.approach][args_.cluster_algo](max_clusters=args_.clu_max_cluster, 
                                                                                          plot_cluster=args_.clu_plot_cluster)
+                
+            if args_.cluster_algo == "CSHC":
+                trainer_obj = self.selection_methods[args_.approach][args_.cluster_algo](max_clusters=args_.clu_max_cluster, 
+                                                                                         plot_cluster=args_.clu_plot_cluster)
+                                
             Printer.print_c("Train with %s" %(str(trainer_obj)))
             selection_dic = trainer_obj.train(instance_dic, solver_list, config_dic,
                                                            meta_info.algorithm_cutoff_time, args_.model_dir, 
