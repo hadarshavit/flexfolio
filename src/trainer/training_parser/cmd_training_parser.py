@@ -146,6 +146,7 @@ class TainerParser(object):
         PARALLEL_GROUP.add_argument('--correlation', dest='correlation', action='store', default=0.0, type=float, help="consider correlation with <factor> between algorithms in selection of parallel portfolio", metavar="factor")
 
         TES_GROUP = self._arg_parser.add_argument_group("Test Options")
+        TES_GROUP.add_argument('--train', dest='train', action='store_true', default=False, help='ignore all testing and simply train flexfolio')
         TES_GROUP.add_argument('--test-mode', dest='test_mode', action='store', default="normal", choices=["normal","satzilla"], help='normal: 1. features, 2. schedule\n satzilla: 1. schedule, 2. features')
         TES_GROUP.add_argument('--crossfold', dest='crossfold', action='store', default=10, type=int, help='use a x-fold cross validation for evaluation')
         TES_GROUP.add_argument('--cv-repetition', dest='cv_repetition', action='store', default=1, type=int, help='Repetition of CV as specified in cv.arff')

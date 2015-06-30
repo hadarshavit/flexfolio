@@ -15,6 +15,7 @@ import os
 import inspect
 import json
 import copy
+import pickle
 
 # http://stackoverflow.com/questions/279237/python-import-a-module-from-a-folder
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
@@ -140,8 +141,11 @@ class Trainer(object):
         reader = CosealReader()
         instance_dic, meta_info, config_dic = reader.parse_coseal(args_.coseal, args_)
         
-        
-        if meta_info.cv_given and meta_info.options.test_set:
+        if meta_info.options.train: # simply train
+            selection_dic = self.train(meta_info, instance_dic, config_dic)
+            self.__write_config(selection_dic, meta_info)
+            Printer.print_verbose(json.dumps(selection_dic, indent=2))
+        elif meta_info.cv_given and meta_info.options.test_set:
             evaluator = TrainTestValidator(args_.update_sup, args_.print_time)
             evaluator.evaluate(self, meta_info, instance_dic, config_dic)
         elif meta_info.cv_given:
@@ -519,8 +523,15 @@ class Trainer(object):
         #     config_dic["update"] = update_dic
         #=======================================================================
         
+        if config_dic['selector']["normalization"].get("impute"):
+            impute_file = open(os.path.join(args_.model_dir,"impute.pickle"),"w")
+            pickle.dump(config_dic['selector']["normalization"]["impute"], impute_file)
+            config_dic['selector']["normalization"]["impute"] = impute_file.name
+            impute_file.close()
+            
         config_file = open(os.path.join(args_.model_dir,"config.json"),"w")
         json.dump(config_dic,config_file,indent=2)
+        config_file.close()
 
     def __add_schedule_2_selection_dict(self, sel_dict, core_solver_time_dict):
         '''

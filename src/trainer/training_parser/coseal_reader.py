@@ -347,7 +347,9 @@ class CosealReader(object):
             repetition = data[1]
             feature_cost = data[2:]
 
-            inst_ = self.instances.get(inst_name)
+            # hacked for AS Challenge - should be removed in the future since the check of the aslib scenario is weaker now.
+            inst_ = self.instances.get(inst_name, Instance(inst_name))
+            self.instances[inst_name] = inst_
             if not inst_:
                 Printer.print_w("Instance \"%s\" has feature cost but was not found in algorithm_runs.arff" %(inst_name))
                 continue
