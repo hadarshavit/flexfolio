@@ -111,6 +111,6 @@ class CSHCTrainer(ClusteringTrainer):
         return labels
     
     def _get_loss(self, Y):
-        return numpy.min(numpy.mean(Y, axis=0)) - numpy.mean(numpy.min(Y, axis=1))
+        return numpy.min(numpy.sum(Y, axis=0)) - numpy.sum(numpy.min(Y, axis=1))
         
         
