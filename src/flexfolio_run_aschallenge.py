@@ -20,7 +20,7 @@ if cmd_folder not in sys.path:
 
 from input_parser.cmd_parser_aschallenge import Parser
 from misc.printer import Printer
-from trainer.training_parser.coseal_reader import CosealReader 
+from trainer.training_parser.coseal_reader_aschallenge_test import CosealReader 
 
 from selector.selectionApp import SelectionBase
 
@@ -54,9 +54,9 @@ class Flexfolio(object):
         reader = CosealReader()
         aslib_data, metainfo, algo_dict = reader.parse_coseal(args_.aslib_dir, args_)
         
-        self.normal_mode(aslib_data, ex_dic, se_dic, al_dic, pwd)
+        self.normal_mode(aslib_data, ex_dic, se_dic, al_dic, pwd, args_.output)
 
-    def normal_mode(self, aslib_data, ex_dic, se_dic, al_dic, pwd):
+    def normal_mode(self, aslib_data, ex_dic, se_dic, al_dic, pwd, output_fn):
         '''
             normal mode:
                 1. feature prediction
@@ -72,13 +72,15 @@ class Flexfolio(object):
         #pwd = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
         #pwd = os.path.realpath(os.path.join(pwd, ".."))
         
-        print("InstanceID, runID, solver, timeLimit")
-           
-        for inst_ in aslib_data.itervalues():
-            features = inst_._features 
-            selector_name = se_dic["approach"]["approach"].upper()
-            list_conf_scores = SelectionBase.select(selector_name, se_dic, features, pwd)
-            print("%s, 1, %s, 999999999999999" %(inst_._name, list_conf_scores[0][0]))
+        with open(output_fn, "w") as fp:
+            fp.write("InstanceID, runID, solver, timeLimit")
+            for inst_ in aslib_data.itervalues():
+                features = inst_._features 
+                selector_name = se_dic["approach"]["approach"].upper()
+                list_conf_scores = SelectionBase.select(selector_name, se_dic, features, pwd)
+                fp.write("%s, 1, %s, 999999999999999\n" %(inst_._name, list_conf_scores[0][0]))
+                fp.flush()
+        
               
 if __name__ == '__main__':
     Printer.print_c("flexfolio")

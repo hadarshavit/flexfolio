@@ -46,6 +46,8 @@ class Parser(object):
         self._arg_parser.add_argument('-C','--configfile', dest='config', action='store', required=True, help='path to config file (contains pathes to models, normalization constants, etc. pp.); json format expected')
         self._arg_parser.add_argument('-A','--aslib_dir', dest='aslib_dir', action='store', required=True, help='path to aslib test scenario')
         self._arg_parser.add_argument('--feature-steps', dest='feature_steps', action='store', nargs='+', help="use only feature steps (groups) given in this list")
+        self._arg_parser.add_argument('-o','--output', dest='output', action='store', required=True, help='path to output csv file')
+        
         
         # hidden options for AS Challenge which should be set during training and not here!
         self._arg_parser.add_argument('--features', dest='features', action='store', nargs='+', help=argparse.SUPPRESS)

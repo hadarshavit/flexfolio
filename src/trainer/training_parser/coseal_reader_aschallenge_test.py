@@ -99,8 +99,8 @@ class CosealReader(object):
             find all expected files in self.dir_
             fills self.found_files
         '''
-        expected = ["description.txt", "algorithm_runs.arff", "feature_values.arff", "feature_runstatus.arff"]
-        optional = ["ground_truth.arff", "feature_costs.arff", "citation.bib", "cv.arff"]
+        expected = ["description.txt", "feature_values.arff", "feature_runstatus.arff"]
+        optional = ["ground_truth.arff", "feature_costs.arff", "citation.bib", "cv.arff", "algorithm_runs.arff"] #TODO: move algorithm_runs.arff back to expected files; only moved for AS Challenge
         
         for expected_file in expected:
             full_path = os.path.join(self.dir_,expected_file)
@@ -348,7 +348,7 @@ class CosealReader(object):
             feature_cost = data[2:]
 
             inst_ = self.instances.get(inst_name)
-
+            
             if not inst_:
                 Printer.print_w("Instance \"%s\" has feature cost but was not found in algorithm_runs.arff" %(inst_name))
                 continue
@@ -406,6 +406,10 @@ class CosealReader(object):
             
             if len(features) != len(self.metainfo.features):
                 Printer.print_e("Number of features in attributes does not match number of found features; instance: %s" %(inst_name))
+                
+            #TODO: hacked for AS Challenge - should be removed in the future since the check of the aslib scenario is weaker now.
+            inst_ = self.instances.get(inst_name, Instance(inst_name))
+            self.instances[inst_name] = inst_
                 
             if not self.instances.get(inst_name):
                 Printer.print_w("Instance \"%s\" has features but was not found in performance file" %(inst_name))
@@ -597,14 +601,6 @@ class CosealReader(object):
         
         for inst_ in self.instances.values():
             valid = True
-            unsolvable =  "OK" not in list(inst_._status.values())
-            if unsolvable:
-                n_unsolvable += 1
-                valid = False
-            if not inst_._cost:
-                Printer.print_e("Missing algorithm cost for instance \"%s\"" %(inst_._name))
-                valid = False
-            inst_.finished_input(self.metainfo.algorithms)
             if not inst_._features:
                 Printer.print_verbose("Missing features values for instance \"%s\"" %(inst_._name))
                 n_no_feats += 1
@@ -613,15 +609,8 @@ class CosealReader(object):
                 n_presolved += 1
             if valid: 
                 n_valid += 1
-            times = filter(lambda x: x < self.metainfo.algorithm_cutoff_time, inst_._cost_vec)
-            if not times:
-                n_unsolvable2 += 1
             feature_costs += inst_._feature_cost_total
                 
-            if not times and not unsolvable:
-                print(inst_._name)
-                print(inst_._cost_vec)
-                print(inst_._status.values())
             #===================================================================
             # if not unsolvable and not times: 
             #     print(inst_)
