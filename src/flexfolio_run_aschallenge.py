@@ -78,7 +78,8 @@ class Flexfolio(object):
                 features = inst_._features 
                 selector_name = se_dic["approach"]["approach"].upper()
                 list_conf_scores = SelectionBase.select(selector_name, se_dic, features, pwd)
-                fp.write("%s, 1, %s, 999999999999999\n" %(inst_._name, list_conf_scores[0][0]))
+                for id, (solver, _) in enumerate(list_conf_scores): 
+                    fp.write("%s, %d, %s, 999999999999999\n" %(inst_._name, id+1, solver))
                 fp.flush()
         
               
