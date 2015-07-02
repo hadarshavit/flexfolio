@@ -71,9 +71,10 @@ class Flexfolio(object):
 
         #pwd = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
         #pwd = os.path.realpath(os.path.join(pwd, ".."))
+        pwd = "."
         
         with open(output_fn, "w") as fp:
-            fp.write("InstanceID, runID, solver, timeLimit")
+            fp.write("InstanceID, runID, solver, timeLimit\n")
             for inst_ in aslib_data.itervalues():
                 features = inst_._features 
                 selector_name = se_dic["approach"]["approach"].upper()
