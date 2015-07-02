@@ -77,11 +77,23 @@ class Flexfolio(object):
             for inst_ in aslib_data.itervalues():
                 features = inst_._features 
                 selector_name = se_dic["approach"]["approach"].upper()
-                list_conf_scores = SelectionBase.select(selector_name, se_dic, features, pwd)
-                for id, (solver, _) in enumerate(list_conf_scores): 
-                    fp.write("%s, %d, %s, 999999999999999\n" %(inst_._name, id+1, solver))
+                #predict
+                list_algo_scores = SelectionBase.select(selector_name, se_dic, features, pwd)
+                selected_solver = list_algo_scores[0][0]
+                # read and write "pre"-solving schedule 
+                ps_schedule = []
+                for algo_name, algo_dict in se_dic["configurations"].iteritems():
+                    ps_schedule.append((algo_name, algo_dict.get("presolving_time",{"1":0})["1"]))
+                ps_schedule.sort(key=lambda x: x[1])
+                n_presolvers = 0
+                for algo_name, pre_time in ps_schedule:
+                    if pre_time > 0 and algo_name!=selected_solver: # skip presolver that was selected in prediction phase
+                        fp.write("%s, %d, %s, %d\n" %(inst_._name, n_presolvers+1, algo_name, pre_time))
+                        n_presolvers += 1
+                # write selected algorithms
+                for id_, (algo_name, _) in enumerate(list_algo_scores): 
+                    fp.write("%s, %d, %s, 999999999999999\n" %(inst_._name, id_+1+n_presolvers, algo_name))
                 fp.flush()
-        
               
 if __name__ == '__main__':
     Printer.print_c("flexfolio")

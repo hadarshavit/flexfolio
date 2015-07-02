@@ -58,7 +58,7 @@ class Stats(object):
         Printer.print_c("Presolved: %s" %(str(self.presolved)))
         Printer.print_c(">>>With Unsolvable Instances")
         Printer.print_c("Timeouts (with unsolved): %d" %(self.thread_timeout_dic[1]))
-        Printer.print_c("Solved (perc) (with unsolved): %.2f" %(solved[1]))
+        Printer.print_c("Solved (perc) (with unsolved): %.4f" %(solved[1]))
         Printer.print_c("PAR1 (with unsolved): %.2f" %(self.thread_avg_dic[1]))
         Printer.print_c("PAR10 (with unsolved): %.2f" %(self.thread_par10_dic[1]))
         
@@ -66,7 +66,7 @@ class Stats(object):
         thread_timeout_dic_wo = dict([thread, to - self.unsolved] for thread, to in self.thread_timeout_dic.iteritems())
         Printer.print_c("Timeouts (without unsolved): %d" %(thread_timeout_dic_wo[1]))
         solved_wo_unsolveable = dict([thread, (solved_y * self._test_n) / (self._test_n - self.unsolved) ] for thread, solved_y in solved.iteritems())
-        Printer.print_c("Solved (perc) (without unsolved): %.2f" %(solved_wo_unsolveable[1]))
+        Printer.print_c("Solved (perc) (without unsolved): %.4f" %(solved_wo_unsolveable[1]))
         par1_wo_unsolveable = dict([thread, ((avg * self._test_n) - (cutoff * self.unsolved)) / (self._test_n - self.unsolved)] for thread, avg in self.thread_avg_dic.iteritems())
         Printer.print_c("PAR1 (without unsolved): %.2f" %(par1_wo_unsolveable[1]))
         par10_wo_unsolveable = dict([thread, ((par10 * self._test_n) - (10* cutoff * self.unsolved)) / (self._test_n - self.unsolved)] for thread, par10 in self.thread_par10_dic.iteritems())

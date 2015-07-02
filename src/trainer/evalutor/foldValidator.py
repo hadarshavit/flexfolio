@@ -181,11 +181,11 @@ class FoldValidator(Validator):
         
         if args_.smac:
             if args_.metric == "PAR10":
-                print("%f" % (global_thread_par10_dic[1]))
+                print("Result for SMAC: %f" % (global_thread_par10_dic[1]))
             elif args_.metric == "RMSE":
-                print("%f" % (global_thread_rmse_dic[1]))
+                print("Result for SMAC: %f" % (global_thread_rmse_dic[1]))
             elif args_.metric == "PAR1":
-                print("%f" % (global_thread_avg_dic[1]))
+                print("Result for SMAC: %f" % (global_thread_avg_dic[1]))
         
         return global_thread_par10_dic[1], inst_par10_dict
 
