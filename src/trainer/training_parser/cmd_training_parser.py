@@ -74,7 +74,6 @@ class TainerParser(object):
         TRA_GROUP.add_argument('--clusteralgo', dest='cluster_algo', action='store', default="KMEANS", choices=["KMEANS","GM", "SPECTRAL"], help='clustering algorithm')
         TRA_GROUP.add_argument('--update-support', dest='update_sup', action='store_true', default=False, help="Remembers original training files and adds empty update files for new learnt information")
         TRA_GROUP.add_argument('--max-feature-time', dest='feat_time', action='store', default=-1, type=int, help="Maximal runtime of feature extractor (default: cutoff/10)")
-        TRA_GROUP.add_argument('--max-threads', dest='max_threads', action='store', default=32, type=int, help="Maximal number of threads to be used (default: 32)")
 
         PER_GROUP = self._arg_parser.add_argument_group("Performance Preprocessing")
         PER_GROUP.add_argument('--approx-weights', dest='approx_weights', action='store', default="None", choices=["None","max","rmsd","nrmsd"], help="Approximate instance weights by the maximal penalty (max), the root mean squared distance to the minimal runtime (rmsd), normalized nrmsd (nrmsd)")
@@ -124,6 +123,9 @@ class TainerParser(object):
 
         SUNNY_GROUP = self._arg_parser.add_argument_group("SUNNY Options (requires --approach SUNNY)")
         SUNNY_GROUP.add_argument('--sunny-max-solver', dest='sunny_max_solver', action='store', default=0, type=int, help="maximal size of schedule (0 means no maximum)")
+
+        ISA_GROUP = self._arg_parser.add_argument_group("Instance Specific Aspeed Options (requires --approach ISA)")
+        ISA_GROUP.add_argument('--train-k', dest='train_k', action='store_true', default=False, help="determine the k of kNN using training (overwrites -kNN)")
 
         ASPEED_GROUP = self._arg_parser.add_argument_group("ASPEED Options (requires --aspeed-opt or --approach ISA)")
         ASPEED_GROUP.add_argument('--aspeed-opt', dest='aspeed_opt', action='store_true', default=False, help="Combine flexfolio with an algorithm schedule computed with aspeed")
@@ -387,12 +389,10 @@ class TainerParser(object):
         if args_.pre_conf == "sunny":
             args_.approach = "SUNNY"
             args_.knn = -1
-            args_.max_threads = 1
 
         if args_.pre_conf == "isa":
             args_.approach = "ISA"
             args_.knn = -1
-            args_.max_threads = 1
 
         return args_
     

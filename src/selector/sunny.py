@@ -121,7 +121,7 @@ class Sunny(Selector):
 
         max_solvers = se_dic["approach"]["max_solvers"]
         # if specified, limit the list of solvers that get time slots
-        if max_solvers > 0:
+        if max_solvers > 0 and max_solvers < n_perfs:
             # get the minimal number of slots needed to stay in the schedule
             slot_threshold = sorted(slots, reverse=True)[max_solvers - 1]
             used_solvers = 0

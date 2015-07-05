@@ -115,12 +115,17 @@ class InstanceSpecificAspeed(Selector):
                               threads = se_dic["approach"]["threads"]
                               )
 
+        printer_disabled = Printer.disable_printing
+        if not printer_disabled:
+            Printer.disable_printing = True
         schedule = scheduler.optimize_schedule_online(instance_dic,
                                                       solver_list,
                                                       cutoff,
                                                       se_dic["approach"]["feat_time"],
                                                       se_dic["approach"]["model_dir"])
 
+        if not printer_disabled:
+            Printer.disable_printing = False
 
         dic_thread_schedule = self.transform_schedule(schedule, dic_solver_scores, cutoff)
 

@@ -51,7 +51,8 @@ class SunnyTrainer(SelectorTrainer):
         self._cutoff = cutoff
 
         if self.k == -1:
-            self.k = int(round(math.sqrt(len(instance_dic)*0.9)))
+            folds =  meta_info.options.crossfold
+            self.k = int(round(math.sqrt(len(instance_dic)*(float(folds-1)/folds))))
         
         Printer.print_nearly_verbose("Chosen k: %d" %(self.k))
         

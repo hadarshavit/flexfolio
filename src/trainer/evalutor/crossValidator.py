@@ -18,11 +18,11 @@ class CrossValidator(Validator):
         perform cross validation evaluation
     '''
 
-    def __init__(self, update_sup, print_file, max_threads):
+    def __init__(self, update_sup, print_file):
         '''
         Constructor
         '''
-        Validator.__init__(self, update_sup, print_file, max_threads)
+        Validator.__init__(self, update_sup, print_file)
         self._instance_parts = []
         self._n_folds = 10
 
@@ -41,6 +41,8 @@ class CrossValidator(Validator):
         seed = meta_info.options.seed
         folds = meta_info.options.crossfold
         solver_list = meta_info.algorithms
+        args_ = meta_info.options
+
         
         random.seed(seed)
         
@@ -51,6 +53,10 @@ class CrossValidator(Validator):
         self._aspeed_opt = meta_info.options.aspeed_opt
         
         self._MAX_THREADS = min(self._MAX_THREADS, len(meta_info.algorithms))
+        if args_.approach == "ISA":
+            self._MAX_THREADS = args_.threads_aspeed
+        if args_.approach == "SUNNY":
+            self._MAX_THREADS = 1
         stats = Stats(self._MAX_THREADS, meta_info.algorithms)
         
         for iteration in range(0, self._n_folds):
@@ -81,7 +87,6 @@ class CrossValidator(Validator):
         if self._print_file:
             self._write_csv_runtimes(self._print_file, instance_train_dic, stats.inst_par10_dict[threads], solver_list)
         
-        args_ = meta_info.options
         if args_.table_format:
             name = args_.approach
             if args_.approach == "REGRESSION":

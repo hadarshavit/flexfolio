@@ -142,10 +142,10 @@ class Trainer(object):
         
         
         if meta_info.cv_given and meta_info.options.test_set:
-            evaluator = TrainTestValidator(args_.update_sup, args_.print_time, args_.max_threads)
+            evaluator = TrainTestValidator(args_.update_sup, args_.print_time)
             evaluator.evaluate(self, meta_info, instance_dic, config_dic)
         elif meta_info.cv_given:
-            evaluator = CrossValidatorGiven(args_.update_sup, args_.print_time, args_.max_threads)
+            evaluator = CrossValidatorGiven(args_.update_sup, args_.print_time)
             evaluator.evaluate(self, meta_info, instance_dic, config_dic, threads=args_.threads_aspeed)
             
         #=======================================================================
@@ -155,12 +155,12 @@ class Trainer(object):
         #=======================================================================
         
         elif args_.crossfold >= 0: # cross fold validation 
-            evaluator = CrossValidator(args_.update_sup, args_.print_time, args_.max_threads)
+            evaluator = CrossValidator(args_.update_sup, args_.print_time)
 #            evalutor.evaluate_invalids(invalid_f_runtime, ranks.index(0), meta_info.algorithm_cutoff_time)
             evaluator.evaluate(self, meta_info, instance_dic, config_dic, threads=args_.threads_aspeed)
         
         elif args_.class_evaluation: #TODO: probably broken!
-            evaluator = ClassValidator(args_.update_sup, args_.print_time, args_.max_threads)
+            evaluator = ClassValidator(args_.update_sup, args_.print_time)
             evaluator.evaluate(self, meta_info, instance_dic, config_dic)
         
 #==============================================================================
@@ -458,7 +458,8 @@ class Trainer(object):
                                                            args_.aspeed_max_solver,
                                                            args_.aspeed_opt_mode,
                                                            args_.aspeed_pre_slice,
-                                                           args_.threads_aspeed)
+                                                           args_.threads_aspeed,
+                                                           args_.train_k)
 
         selection_dic = trainer_obj.set_backup_solver(selection_dic, ranks)
 

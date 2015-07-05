@@ -108,7 +108,7 @@ class Validator(object):
     '''
 
 
-    def __init__(self, update_sup, print_file, max_threads):
+    def __init__(self, update_sup, print_file):
         '''
         Constructor
         '''
@@ -117,7 +117,7 @@ class Validator(object):
         self._update = update_sup
         self._print_file = print_file
 
-        self._MAX_THREADS = max_threads
+        self._MAX_THREADS = 32
         self.__RMSE_NORM = 2
 
         self._selection_stats = dict((x, 0) for x in range(1, self._MAX_THREADS + 1))
@@ -369,7 +369,7 @@ class Validator(object):
         for core, core_schedule in solver_schedule.items():
             sorted_schedules[core] = sorted(core_schedule.iteritems(), key=operator.itemgetter(1))  #
 
-        max_threads = min(self._MAX_THREADS, len(dic_thread_schedule))
+        max_threads = min(self._MAX_THREADS, len(dic_thread_schedule.keys()))
 
         thread_time_dic = {}  #dict((x+1,used_time) for x in range(0,max_threads))
         thread_rmse_dic = {}  #dict((x+1,rmse) for x in range(0,max_threads))

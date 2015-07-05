@@ -29,14 +29,14 @@ class ISATrainer(SelectorTrainer):
         self.k = k
         
         self._UNKNOWN_CODE = -512
-        self._MAX_K = 32
+        self._MAX_K = 64
    
     def __repr__(self):
         return "Instance Specific Aspeed"
    
     def train(self, instance_dic, solver_list, config_dic, cutoff, model_dir, f_indicator, n_feats, 
                 feat_time, meta_info, trainer, clasp, gringo, runsolver, enc, mem_limit,
-                max_solver, opt_mode, pre_sclice, threads):
+                max_solver, opt_mode, pre_sclice, threads, train_k):
         '''
             train model
             Args:
@@ -51,9 +51,13 @@ class ISATrainer(SelectorTrainer):
         
         self._cutoff = cutoff
 
-        if self.k == -1:
-            self.k = int(round(math.sqrt(len(instance_dic)*0.9)))
-        
+        if train_k:
+            self.k = self.__guessK(meta_info, instance_dic, trainer, config_dic)
+
+        elif self.k == -1:
+            folds = meta_info.options.crossfold
+            self.k = int(round(math.sqrt(len(instance_dic)*float((folds-1)/folds))))
+
         Printer.print_nearly_verbose("Chosen k: %d" %(self.k))
         
         if self._save_models:
@@ -94,6 +98,28 @@ class ISATrainer(SelectorTrainer):
                    "configurations":conf_dic
                    }
         return sel_dic
+
+    def __guessK(self, meta_info, instance_dic, trainer, config_dic):
+        '''
+            guess k on PAR10 by cross validation
+        '''
+        evaluator = CrossValidator(meta_info.options.update_sup, None)
+
+        k = 1
+        best_par10 = sys.maxint
+        best_k = 1
+        while k <= self._MAX_K and k < len(instance_dic):
+            meta_info.options.knn = k
+            meta_info.options.train_k = False
+            Printer.disable_printing = True
+            par10, _ = evaluator.evaluate(trainer, meta_info, instance_dic, config_dic)
+            Printer.disable_printing = False
+            Printer.print_nearly_verbose("k: %d \t par10: %f" %(k, par10))
+            if best_par10 > par10:
+                best_par10 = par10
+                best_k = k
+            k *= 2
+        return best_k
         
     def __write_arff(self, instance_dic, solver_list, model_dir, n_feats):
         '''
