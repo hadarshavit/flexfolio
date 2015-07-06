@@ -47,7 +47,7 @@ class Parser(object):
         self._arg_parser.add_argument('-A','--aslib_dir', dest='aslib_dir', action='store', required=True, help='path to aslib test scenario')
         self._arg_parser.add_argument('--feature-steps', dest='feature_steps', action='store', nargs='+', help="use only feature steps (groups) given in this list")
         self._arg_parser.add_argument('-o','--output', dest='output', action='store', required=True, help='path to output csv file')
-        
+        self._arg_parser.add_argument('--pre-solver-schedule', dest='pre_schedule', action='store', nargs='+', help=argparse.SUPPRESS) # format: pre-solver,time
         
         # hidden options for AS Challenge which should be set during training and not here!
         self._arg_parser.add_argument('--features', dest='features', action='store', nargs='+', help=argparse.SUPPRESS)

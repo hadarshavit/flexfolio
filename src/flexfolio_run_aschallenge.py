@@ -54,9 +54,16 @@ class Flexfolio(object):
         reader = CosealReader()
         aslib_data, metainfo, algo_dict = reader.parse_coseal(args_.aslib_dir, args_)
         
-        self.normal_mode(aslib_data, ex_dic, se_dic, al_dic, pwd, args_.output)
+        # parse presolver
+        pre_schedule = {}
+        if args_.pre_schedule:
+            for pre_solver in args_.pre_schedule:
+                pre_solver, time_ = pre_solver.split(",")
+                pre_schedule[pre_solver] = time_
+        
+        self.normal_mode(aslib_data, ex_dic, se_dic, al_dic, pwd, args_.output, pre_schedule)
 
-    def normal_mode(self, aslib_data, ex_dic, se_dic, al_dic, pwd, output_fn):
+    def normal_mode(self, aslib_data, ex_dic, se_dic, al_dic, pwd, output_fn, pre_schedule):
         '''
             normal mode:
                 1. feature prediction
@@ -67,11 +74,13 @@ class Flexfolio(object):
                 ex_dic: extractor dictionary
                 se_dic: selection dictionary
                 al_dic: algorithm dictionary 
+                pre_schedule: pre-solving schedule that has *not* to written to output csv file
         '''
 
         #pwd = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
         #pwd = os.path.realpath(os.path.join(pwd, ".."))
         pwd = "."
+        
         
         with open(output_fn, "w") as fp:
             fp.write("InstanceID, runID, solver, timeLimit\n")
@@ -88,6 +97,7 @@ class Flexfolio(object):
                 ps_schedule.sort(key=lambda x: x[1])
                 n_presolvers = 0
                 for algo_name, pre_time in ps_schedule:
+                    pre_time -= float(pre_schedule.get(algo_name,0)) # remove pre-solving time that was submitted in README.md in AS Challenge
                     if pre_time > 0 and algo_name!=selected_solver: # skip presolver that was selected in prediction phase
                         fp.write("%s, %d, %s, %d\n" %(inst_._name, n_presolvers+1, algo_name, pre_time))
                         n_presolvers += 1

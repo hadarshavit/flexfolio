@@ -133,6 +133,8 @@ class TainerParser(object):
         ASPEED_GROUP.add_argument('--gringo-path', dest='aspeed_gringo', action='store', default=None, help="path to gringo (3.x) binary")
         ASPEED_GROUP.add_argument('--runsolver-path', dest='aspeed_runsolver', action='store', default=None, help="path to runsolver binary")
         ASPEED_GROUP.add_argument('--enc-path', dest='aspeed_enc', action='store', default=None, help="path to aspeed encoding file")
+        ASPEED_GROUP.add_argument('--pre-solver-schedule', dest='pre_schedule', action='store', nargs='+', help=argparse.SUPPRESS) # format: pre-solver,time
+        
         
         ENSEMBLE_GROUP = self._arg_parser.add_argument_group("ENSEMBLE Options (requires --approach ENSEMBLE)")
         ENSEMBLE_GROUP.add_argument('--sub-size', dest='ensemble_sub_size', action='store', default=0.7, type=float, help="percentage of subsampled training sets (0<x<1)")

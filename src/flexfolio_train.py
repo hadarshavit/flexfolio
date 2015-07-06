@@ -234,6 +234,7 @@ class Trainer(object):
             #correlation_dict = tester.correlation_test(instance_dic, solver_list, args_.correlation)
 
         # pre-solver schedule via aspeed
+        pre_solver_dict = None
         if args_.aspeed_opt:
             if args_.aspeed_pre_slice == -10:
                 args_.aspeed_pre_slice = int(meta_info.algorithm_cutoff_time / 10)
@@ -449,8 +450,8 @@ class Trainer(object):
 
         selection_dic = trainer_obj.set_backup_solver(selection_dic, ranks)
 
-        if args_.aspeed_opt: 
-            self.__add_schedule_2_selection_dict(selection_dic, pre_solver_dict)
+        if args_.aspeed_opt or args_.pre_schedule: 
+            self.__add_schedule_2_selection_dict(selection_dic, pre_solver_dict, args_.pre_schedule)
 
         # add feature normalization to selection_dic
         selection_dic["normalization"]["approach"] = { "pca_dims": args_.pca_dims, 
@@ -533,13 +534,21 @@ class Trainer(object):
         json.dump(config_dic,config_file,indent=2)
         config_file.close()
 
-    def __add_schedule_2_selection_dict(self, sel_dict, core_solver_time_dict):
+    def __add_schedule_2_selection_dict(self, sel_dict, core_solver_time_dict, external_pre_schedule):
         '''
             adds meta information for presolving schedule in meta dictionary sel_dict
             Args:
                 sel_dict: dictionary with meta information about learned models
                 solver_time_dict: mapping solver to pre-solver time
+                external_pre_schedule: external pre-solver schedule (minimal time per pre-solver)
         '''
+        if core_solver_time_dict is None:
+            core_solver_time_dict = {1:{}}
+        for pre_entry in external_pre_schedule:
+            solver, time_ = pre_entry.split(",")
+            core_solver_time_dict[1][solver] = max(core_solver_time_dict[1].get(solver,0), float(time_))
+            
+        Printer.print_c("Pre-Solving schedule: %s" %(core_solver_time_dict))
         for core, solver_time_dict in core_solver_time_dict.items():
             for solver, time_ in solver_time_dict.items():
                 if solver == "claspfolio":

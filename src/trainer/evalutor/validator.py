@@ -120,7 +120,7 @@ class Validator(object):
         meta_info.options.aspeed_opt = self._aspeed_opt # restore setting in command line arguments (aspeed scheduler changes it to prevent infinite loops)
         solver_schedule = {1: {"claspfolio": meta_info.algorithm_cutoff_time}}
         
-        if self._aspeed_opt:
+        if self._aspeed_opt or meta_info.options.pre_schedule:
             configs_dict = selection_dic["configurations"]
             for conf_name, conf_dict in configs_dict.items():
                 if conf_dict.get("presolving_time"):
