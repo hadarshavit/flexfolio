@@ -37,8 +37,8 @@ class InstanceSpecificAspeed(Selector):
 
         model_file = se_dic["approach"]["model"]
 
-        if isinstance(model_file, str):
-            data_list = self.__create_data_list(model_file, pwd, len(features))
+        if isinstance(model_file, unicode):
+            data_list = self.__create_data_list(model_file, pwd, se_dic["approach"]["n_feats"])
         else:
             data_list = model_file
 

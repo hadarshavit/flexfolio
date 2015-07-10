@@ -60,6 +60,7 @@ class Stats(object):
         Printer.print_c("\n >>> Cross Fold Evaluation <<<\n")
         Printer.print_c("Presolved: %s" % (str(self.presolved)))
         Printer.print_c(">>>With Unsolvable Instances")
+
         Printer.print_c("Timeouts per #Thread: %s" % (str(self.thread_timeout_dic)))
         Printer.print_c("Solved (perc) per #Thread: %s" % (str(solved)))
         Printer.print_c("AVG per #Thread: %s" % (str(self.thread_avg_dic)))
@@ -185,7 +186,7 @@ class Validator(object):
                 feature_time = instance._feature_cost_total
             else:
                 feature_time = 0
-            if instance._pre_solved and meta_info.options.approach != "SBS":  #SBS and aspeed does not presolve anything
+            if instance._pre_solved and meta_info.options.approach != "SBS":  #SBS and aspeed do not presolve anything
                 thread_time_dic = dict((thread, feature_time) for thread in range(1, self._MAX_THREADS + 1))
                 thread_rmse_dic = dict((thread, 0) for thread in range(1, self._MAX_THREADS + 1))
                 thread_timeout_dic = dict((thread, 0) for thread in range(1, self._MAX_THREADS + 1))
@@ -485,9 +486,17 @@ class Validator(object):
             backup_score_dict[algo_name] = backup_score
         sorted_scores = sorted(backup_score_dict.iteritems(), key=operator.itemgetter(1))
 
+        max_threads = sys.maxint
+        if selection_dict["approach"]["approach"] == "SUNNY":
+            max_threads = 1
+        elif selection_dict["approach"]["approach"] == "ISA":
+            max_threads = selection_dict["approach"]["threads"]
+
         dic_thread_schedule = {}
         thread = 1
         for solver, score in sorted_scores:
+            if thread > max_threads:
+                break
             dic_thread_schedule[thread] = [(solver, (score, -1))]
             thread += 1
 

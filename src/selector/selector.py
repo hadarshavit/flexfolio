@@ -5,6 +5,8 @@ Created on Nov 5, 2012
 '''
 
 import numpy as np
+from types import UnicodeType
+import pickle
 
 from misc.printer import Printer
 #normalizations
@@ -53,6 +55,11 @@ class Selector(object):
             if self._normalization["impute"] == -512:
                 features = np.where(features == np.array(None), -512, features)
             else:
+                if type(self._normalization["impute"]) is UnicodeType:
+                    impute_file = open(self._normalization["impute"], "r")
+                    self._normalization["impute"] = pickle.load(impute_file)
+                    impute_file.close()
+
                 features = self._normalization["impute"].transform(features)[0].tolist() #TODO: if features = None, this could crash?
        
         # 1. normalization of features

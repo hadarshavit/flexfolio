@@ -55,8 +55,9 @@ class CrossValidator(Validator):
         self._MAX_THREADS = min(self._MAX_THREADS, len(meta_info.algorithms))
         if args_.approach == "ISA":
             self._MAX_THREADS = args_.threads_aspeed
-        if args_.approach == "SUNNY":
+        if args_.approach == "SUNNY" or args_.approach == "SCHEDULERS":
             self._MAX_THREADS = 1
+        self._MAX_THREADS = min(self._MAX_THREADS, len(meta_info.algorithms))
         stats = Stats(self._MAX_THREADS, meta_info.algorithms)
         
         for iteration in range(0, self._n_folds):

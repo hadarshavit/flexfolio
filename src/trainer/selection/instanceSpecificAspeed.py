@@ -56,7 +56,7 @@ class ISATrainer(SelectorTrainer):
 
         elif self.k == -1:
             folds = meta_info.options.crossfold
-            self.k = int(round(math.sqrt(len(instance_dic)*float((folds-1)/folds))))
+            self.k = int(round(math.sqrt(len(instance_dic)*(float(folds-1)/folds))))
 
         Printer.print_nearly_verbose("Chosen k: %d" %(self.k))
         
@@ -64,6 +64,8 @@ class ISATrainer(SelectorTrainer):
             model_name = self.__write_arff(instance_dic, solver_list, model_dir, n_feats)
         else:
             model_name = self.__create_save(instance_dic)
+
+        n_normed_feats = len(instance_dic.values()[0]._normed_features)
         
         # build selection_dic
         
@@ -90,7 +92,9 @@ class ISATrainer(SelectorTrainer):
                                 "max_solver": max_solver,
                                 "opt_mode": opt_mode,
                                 "pre_slice": pre_sclice,
-                                "threads": threads
+                                "threads": threads,
+                                "n_feats": n_normed_feats
+
                                 },
                    "normalization" : {
                                       "filter"  : f_indicator                           
@@ -112,7 +116,7 @@ class ISATrainer(SelectorTrainer):
             meta_info.options.knn = k
             meta_info.options.train_k = False
             Printer.disable_printing = True
-            par10, _ = evaluator.evaluate(trainer, meta_info, instance_dic, config_dic)
+            par10, _ = evaluator.evaluate(trainer, meta_info, instance_dic, config_dic, folds)
             Printer.disable_printing = False
             Printer.print_nearly_verbose("k: %d \t par10: %f" %(k, par10))
             if best_par10 > par10:
@@ -125,10 +129,10 @@ class ISATrainer(SelectorTrainer):
         '''
             write nn models as arff files
         '''
-        model_name = os.path.join(model_dir,"model_knn.arff")
+        model_name = os.path.join(model_dir,"model_isa.arff")
         fp = open(model_name,"w")
         
-        fp.write("@relation knn set\n\n")
+        fp.write("@relation isa set\n\n")
         
         for i in range(0,n_feats):
             fp.write("@attribute feature_%d numeric\n" % (i))

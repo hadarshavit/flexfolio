@@ -210,7 +210,7 @@ class Flexfolio(object):
     
               
 if __name__ == '__main__':
-    Printer.print_c("xfolio")
+    Printer.print_c("flexfolio")
     Printer.print_c("published under GPLv2")
     Printer.print_c("https://bitbucket.org/mlindauer/xfolio")
     xfolio = Flexfolio()

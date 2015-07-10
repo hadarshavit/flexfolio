@@ -37,8 +37,8 @@ class Sunny(Selector):
 
         model_file = se_dic["approach"]["model"]
 
-        if isinstance(model_file, str):
-            data_list = self.__create_data_list(model_file, pwd, len(features))
+        if isinstance(model_file, unicode):
+            data_list = self.__create_data_list(model_file, pwd, se_dic["approach"]["n_feats"])
         else:
             data_list = model_file
 
@@ -168,10 +168,9 @@ class Sunny(Selector):
             time = best_score[1][1] + cutoff - tot_time
             sorted_times[0] = (solver, (score, time))
 
-        Printer.print_verbose(str(sorted_times))
+        sorted_times = [element for element in sorted_times if element[1][1] > 0]
 
-        for (solver,tuple) in sorted_times:
-            Printer.print_verbose("[%s]: %f, %f" %(solver, tuple[0], tuple[1]))
+        Printer.print_verbose(str(sorted_times))
 
         return {1: sorted_times}
 

@@ -78,22 +78,26 @@ class ClusteringTrainer(SelectorTrainer):
         
         feats = []
         instances = []
+        performances = []
         inst_keys = sorted(instance_dic.keys())
         for name in inst_keys:
             inst = instance_dic[name]
             if inst._pre_solved:
                 continue
             f = inst._normed_features
+            p = inst._transformed_cost_vec
             feats.append(f)
+            performances.append(p)
             instances.append(name)
             
-        clusters = self._train(feats,maximal_clusters) # list of clusters in the same order as input data
+        clusters = self._train(feats, performances, maximal_clusters) # list of clusters in the same order as input data
         
         #clusters = kMeanClusterer.doCluster(seed = self.__SEED, feature_dic = feature_dic, weight_dic = weight_dic,
         #                                    reps=self.__REPETITIONS, clus = maximal_clusters, 
         #                                    crossfolds=self.__CROSSFOLD)
         
         # map instance name to cluster
+        maximal_clusters = max(maximal_clusters, max(clusters)+1)
         instance_cluster_list = []
         for _ in range(0,maximal_clusters):  instance_cluster_list.append([])
         for name, cluster in zip(instances, clusters):

@@ -67,11 +67,11 @@ class TainerParser(object):
         TRA_GROUP = self._arg_parser.add_argument_group("Training Options")
         TRA_GROUP.add_argument('--feature-class', dest='feat_class', action='store', default="claspre2", choices=["claspre", "claspre2", "satzilla"], help='Class to extract features')
         TRA_GROUP.add_argument('--feature-extractor', dest='feature_path', action='store', help='Path to feature extractor binary')
-        TRA_GROUP.add_argument('--approach', dest='approach', action='store', default="CLASSVOTER", choices=["REGRESSION", "CLASSVOTER", "CLASSMULTI", "NN", "kNN", "CLUSTERING", "SNNAP", "SBS", "ENSEMBLE", "ASPEED", "SUNNY", "ISA"], help='selection approach')
+        TRA_GROUP.add_argument('--approach', dest='approach', action='store', default="CLASSVOTER", choices=["REGRESSION", "CLASSVOTER", "CLASSMULTI", "NN", "kNN", "CLUSTERING", "SNNAP", "SBS", "ENSEMBLE", "ASPEED", "SUNNY", "ISA", "SCHEDULERS"], help='selection approach')
         TRA_GROUP.add_argument('--classifier', dest='classifier', action='store', default="RANDOMFOREST", choices=["SVM", "GRADIENTBOOSTING", "RANDOMFOREST"], help='classifier used for approach \"CLASSVOTER\"')
         TRA_GROUP.add_argument('--classifiermulti', dest='classifiermulti', action='store', default="RANDOMFOREST", choices=["SVM", "RANDOMFOREST", "GRADIENTBOOSTING"], help='classifier used for approach \"CLASSVOTER\"')
         TRA_GROUP.add_argument('--regressor', dest='regressor', action='store', default="RANDOMFOREST", choices=["SVR", "RIDGE", "LASSO", "RANDOMFOREST"], help='regressor used for approach \"REGRESSION\" and \"SNNAP\"')
-        TRA_GROUP.add_argument('--clusteralgo', dest='cluster_algo', action='store', default="KMEANS", choices=["KMEANS","GM", "SPECTRAL"], help='clustering algorithm')
+        TRA_GROUP.add_argument('--clusteralgo', dest='cluster_algo', action='store', default="KMEANS", choices=["KMEANS","GMEANS","GM", "SPECTRAL", "CSHC"], help='clustering algorithm')
         TRA_GROUP.add_argument('--update-support', dest='update_sup', action='store_true', default=False, help="Remembers original training files and adds empty update files for new learnt information")
         TRA_GROUP.add_argument('--max-feature-time', dest='feat_time', action='store', default=-1, type=int, help="Maximal runtime of feature extractor (default: cutoff/10)")
 
@@ -127,7 +127,7 @@ class TainerParser(object):
         ISA_GROUP = self._arg_parser.add_argument_group("Instance Specific Aspeed Options (requires --approach ISA)")
         ISA_GROUP.add_argument('--train-k', dest='train_k', action='store_true', default=False, help="determine the k of kNN using training (overwrites -kNN)")
 
-        ASPEED_GROUP = self._arg_parser.add_argument_group("ASPEED Options (requires --aspeed-opt or --approach ISA)")
+        ASPEED_GROUP = self._arg_parser.add_argument_group("ASPEED Options (requires --aspeed-opt or --approach ISA|SCHEDULERS)")
         ASPEED_GROUP.add_argument('--aspeed-opt', dest='aspeed_opt', action='store_true', default=False, help="Combine flexfolio with an algorithm schedule computed with aspeed")
         ASPEED_GROUP.add_argument('--concentrate', dest='aspeed_concentrate', action='store_true', default=False, help="concentrate on unsolved instances for selector training (filter solved instances before training)")
         ASPEED_GROUP.add_argument('--max-solver', dest='aspeed_max_solver', action='store', default=3, type=int, help="maximal size of aspeed schedule (excl. flexfolio)")
@@ -155,6 +155,7 @@ class TainerParser(object):
         PARALLEL_GROUP.add_argument('--correlation', dest='correlation', action='store', default=0.0, type=float, help="consider correlation with <factor> between algorithms in selection of parallel portfolio", metavar="factor")
 
         TES_GROUP = self._arg_parser.add_argument_group("Test Options")
+        TES_GROUP.add_argument('--train', dest='train', action='store_true', default=False, help='ignore all testing and simply train flexfolio')
         TES_GROUP.add_argument('--test-mode', dest='test_mode', action='store', default="normal", choices=["normal","satzilla"], help='normal: 1. features, 2. schedule\n satzilla: 1. schedule, 2. features')
         TES_GROUP.add_argument('--crossfold', dest='crossfold', action='store', default=10, type=int, help='use a x-fold cross validation for evaluation')
         TES_GROUP.add_argument('--cv-repetition', dest='cv_repetition', action='store', default=1, type=int, help='Repetition of CV as specified in cv.arff')
@@ -282,7 +283,7 @@ class TainerParser(object):
         #=======================================================================
         
         #aspeed paths
-        if args_.aspeed_opt or args_.approach == "ISA":
+        if args_.aspeed_opt or args_.approach == "ISA" or args_.approach == "SCHEDULERS":
             # try to apply default look ups
             main_path = os.path.dirname(sys.argv[0]) # a bit ugly but better than nothing ... really useful comment ....
             if not args_.aspeed_clasp:

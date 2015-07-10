@@ -72,7 +72,7 @@ class TrainTestValidator(Validator):
             par10 = stats.thread_par10_dic[1]
             cut = meta_info.algorithm_cutoff_time
             par10_wo_unsolvable = (par10*len(instance_test) - cut*10*oracle_tos) # without average normalization
-            print("%f" %(par10_wo_unsolvable))
+            print("Result for SMAC: %f" %(par10_wo_unsolvable))
         
         if args_.table_format:
             name = args_.approach

@@ -55,14 +55,16 @@ class SunnyTrainer(SelectorTrainer):
             self.k = int(round(math.sqrt(len(instance_dic)*(float(folds-1)/folds))))
         
         Printer.print_nearly_verbose("Chosen k: %d" %(self.k))
-        
+
+
         if self._save_models:
             model_name = self.__write_arff(instance_dic, solver_list, model_dir, n_feats)
         else:
             model_name = self.__create_save(instance_dic)
+
+        n_normed_feats = len(instance_dic.values()[0]._normed_features)
         
         # build selection_dic
-        
         conf_dic = {}
         for solver,cmd in config_dic.items():
                     solver_dic = {
@@ -76,10 +78,11 @@ class SunnyTrainer(SelectorTrainer):
                                 "k" : self.k,
                                 "max_solvers" : self.max_solvers,
                                 "model" : model_name,
-                                "cutoff": self._cutoff
+                                "cutoff": self._cutoff,
+                                "n_feats" : n_normed_feats
                                 },
                    "normalization" : {
-                                      "filter"  : f_indicator                           
+                                      "filter"  : f_indicator
                                  },
                    "configurations":conf_dic                        
                    }
@@ -89,10 +92,10 @@ class SunnyTrainer(SelectorTrainer):
         '''
             write nn models as arff files
         '''
-        model_name = os.path.join(model_dir,"model_knn.arff")
+        model_name = os.path.join(model_dir,"model_sunny.arff")
         fp = open(model_name,"w")
         
-        fp.write("@relation knn set\n\n")
+        fp.write("@relation sunny set\n\n")
         
         for i in range(0,n_feats):
             fp.write("@attribute feature_%d numeric\n" % (i))

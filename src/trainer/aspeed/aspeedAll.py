@@ -69,12 +69,12 @@ class AspeedAll(object):
         
         Printer.print_c("\n>>> Algorithm Scheduler: Aspeed <<<\n")
         
-        evaluator = CrossValidator(False,None,self.__THREADS)
+        evaluator = CrossValidator(False,None)
         
         folds_back = meta_info.options.crossfold 
         meta_info.options.aspeed_opt = False #prevent infinite loop
         meta_info.options.crossfold = 10
-        
+
         if args_.approach != "SBS":
             _, cf_inst_par10_dict = \
                     evaluator.evaluate(trainer, meta_info, instance_dict, config_dict, threads=self.__THREADS)
@@ -84,7 +84,8 @@ class AspeedAll(object):
         fact_file = self.__write_facts(cf_inst_par10_dict, instance_dict, meta_info.algorithm_cutoff_time)
         
         core_solver_time_dict = self.__call_solver(fact_file, solver_list)
-        
+
+
         try:
             fact_file.close()
         except OSError:

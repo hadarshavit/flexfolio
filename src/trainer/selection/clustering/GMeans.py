@@ -4,15 +4,15 @@ Created on Jun 28, 2013
 @author: manju
 '''
 import numpy
-from sklearn.cluster import KMeans
+from trainer.selection.clustering.gmeans_base import GMeans
 
 from trainer.selection.Clustering import ClusteringTrainer
 from misc.printer import Printer
 
 
-class KMeansTrainer(ClusteringTrainer):
+class GMeansTrainer(ClusteringTrainer):
     '''
-        see http://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html#sklearn.cluster.KMeans.fit_predict
+        gmeans implementation by Matthias Feurer
     '''
     
     def __init__(self, max_clusters='log', plot_cluster=False, save_models=True):
@@ -24,7 +24,7 @@ class KMeansTrainer(ClusteringTrainer):
         self.__SEED = 12345
         
     def __repr__(self):
-        return "KMEANS"
+        return "GMEANS"
         
     def _train(self,X, Y, n_clusters):
         '''
@@ -34,9 +34,9 @@ class KMeansTrainer(ClusteringTrainer):
         
         X = numpy.array(X)
         
-        Printer.print_verbose("Train Clustering with KMEANS")  
+        Printer.print_verbose("Train Clustering with GMEANS")  
         
-        trainer = KMeans(n_clusters=n_clusters,n_init=self._REPETITIONS,random_state=self.__SEED)
+        trainer = GMeans(n_init=self._REPETITIONS,random_state=self.__SEED, restarts=1, minimum_samples_per_cluster=10)
         
         labels = trainer.fit_predict(X)
         
