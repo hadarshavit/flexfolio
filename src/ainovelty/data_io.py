@@ -1,6 +1,7 @@
 '''
     IO and data processing operations compatible with
     ASlib data format (for now)
+         
 '''
 
 import numpy as np
@@ -10,10 +11,13 @@ import pprint
 import itertools
 import sys
 import csv
+import copy
+import warnings
 
 from scipy.stats import rankdata
 from sklearn.preprocessing import normalize
 from ml_util import *
+from __builtin__ import int
 
 run_file = "algorithm_runs.arff"
 inst_feature_cost_file = "feature_costs.arff"
@@ -66,19 +70,63 @@ def get_data_file_lists(bench_folder_list):
     return bench_runtime_files, bench_feature_cost_files, bench_features_files, bench_desc_files, bench_cv_files
 
 
-def gen_rank_matrix(perf_matrix):
+def get_csv_data_file_lists(bench_folder):
+    '''
+        TODO
+        Get list of benchmark files in the form of .csv files 
+        where rows refer to datasets / instances, columns are for algorithms
+        
+        :param bench_folder: string - folder where all the benchmark files reside
+    '''
+    pass
+
+    
+def gen_rank_matrix(perf_matrix, alg_cutoff_time):
     '''
         Generate a rank matrix from a given performance matrix
 
-        :param perf_matrix:
+        :param perf_matrix: numpy 2d array - performance matrix
+        :param alg_cutoff_time: double - algorithm cutoff time
         :return:
     '''
-    rank_matrix = np.empty(perf_matrix.shape, dtype=int)
+    num_algs = len(perf_matrix[0])
+    
+    rank_matrix = np.empty(perf_matrix.shape, dtype=float)
     for k, row in enumerate(perf_matrix):
-        rank_matrix[k] = rankdata(row, method='dense')
+#         rank_matrix[k] = rankdata(row, method='dense')
+        rank_matrix[k] = rankdata(row) # to handle tie cases properly
+        
+        for alg_inx in range(num_algs):
+            if perf_matrix[k][alg_inx] >= alg_cutoff_time:
+                rank_matrix[k][alg_inx] = num_algs
 
     return rank_matrix
 
+
+## TODO
+def gen_issolved_matrix(perf_matrix, alg_cutoff_time):
+    '''
+        Generate is solved matrix from a given performance matrix
+
+        :param perf_matrix: numpy 2d array - performance matrix
+        :param alg_cutoff_time: double - algorithm cutoff time
+        :return:
+    '''   
+    issolved_matrix = np.zeros(perf_matrix.shape, dtype=int)
+    
+    num_insts, num_algs = perf_matrix.shape
+
+    for inst_inx in range(num_insts):
+        for alg_inx in range(num_algs):
+            if perf_matrix[inst_inx][alg_inx] < alg_cutoff_time:
+                issolved_matrix[inst_inx][alg_inx] = 1
+
+    return issolved_matrix
+
+
+## TODO: remove unsolved instances from the given dataset before processing ??
+def remove_unsolved_instances():
+    print "TODO"
 
 
 def svd(ia_matrix):
@@ -282,7 +330,7 @@ def extract_latent_matrices(ia_matrix, svd_type, svd_dim, svd_outlier_threshold=
         print("TODO")
         sys.exit(0)
 
-#     print("sr: ", sr, " - svd_k: ", svd_dim)
+    print("sr: ", sr, " - svd_k: ", svd_dim)
 
     return i_latent_matrix, i_latent_matrix_for_ft, a_latent_matrix, sr_full, svd_dim
 
@@ -314,9 +362,65 @@ def percentile_based_outlier(data, threshold=95):
     return outlier_arr, outlier_inx_arr
 
 
+def percentile_based_min_outlier(data, threshold=95):
+    '''
+        Determine the top outliers in a given array
+
+        :param data: numpy array -
+        :param threshold:
+        :return:
+    '''
+    diff = (100 - threshold) / 2.0
+    minval, maxval = np.percentile(data, [diff, 100 - diff])
+    # is_outlier_bool_arr = (data < minval) | (data > maxval)
+    is_outlier_bool_arr = (data < minval)
+
+    num_outliers = np.sum(is_outlier_bool_arr)
+
+    inx = 0
+    outlier_inx_arr = np.zeros(shape=(num_outliers), dtype=np.int)
+    outlier_arr = np.zeros(shape=(num_outliers))
+    for i in range(len(is_outlier_bool_arr)):
+        if is_outlier_bool_arr[i] == True:
+            outlier_arr[inx] = data[i]
+            outlier_inx_arr[inx] = i
+            inx += 1
+
+    return outlier_arr, outlier_inx_arr
+
+
+
+def percentile_based_except_min_outlier(data, threshold=95):
+    '''
+        Determine the top outliers in a given array
+
+        :param data: numpy array -
+        :param threshold:
+        :return:
+    '''
+    diff = (100 - threshold) / 2.0
+    minval, maxval = np.percentile(data, [diff, 100 - diff])
+    # is_outlier_bool_arr = (data < minval) | (data > maxval)
+    is_outlier_bool_arr = (data < minval)
+
+    num_outliers = len(data) - np.sum(is_outlier_bool_arr)
+
+    inx = 0
+    nonmin_outlier_inx_arr = np.zeros(shape=(num_outliers), dtype=np.int)
+    nonmin_outlier_arr = np.zeros(shape=(num_outliers))
+    for i in range(len(is_outlier_bool_arr)):
+        if is_outlier_bool_arr[i] == False:
+            nonmin_outlier_arr[inx] = data[i]
+            nonmin_outlier_inx_arr[inx] = i
+            inx += 1
+
+    return nonmin_outlier_arr, nonmin_outlier_inx_arr
+
+
+
 ## TODO: handle cases where only ia_perf_matrix is given besides pred_matrix
 ## TODO: ignore_unsolved_insts = True -> calculate ignoring unsolved instances 
-def evaluate_pred_matrix(ia_perf_matrix, ia_issolved_matrix, ia_rank_matrix, pred_matrix):
+def evaluate_pred_matrix(ia_perf_matrix, ia_issolved_matrix, ia_rank_matrix, pred_matrix, unsolved_inst_list):
     '''
         Evaluate a given prediction matrix
         - number of solved instances
@@ -331,25 +435,237 @@ def evaluate_pred_matrix(ia_perf_matrix, ia_issolved_matrix, ia_rank_matrix, pre
     '''
     num_solved = 0
     avg_rank = 0
+    par1 = 0
     par10 = 0
 
     num_insts = len(pred_matrix)
 
     for inst_inx in range(num_insts):
-        pi_pred_best_alg_inx = np.argmin(pred_matrix[inst_inx])
+        
+        if inst_inx not in unsolved_inst_list:
+            pi_pred_best_alg_inx = np.argmin(pred_matrix[inst_inx])
+    
+            num_solved += ia_issolved_matrix[inst_inx][pi_pred_best_alg_inx]
+            avg_rank += ia_rank_matrix[inst_inx][pi_pred_best_alg_inx]
+            par1 += ia_perf_matrix[inst_inx][pi_pred_best_alg_inx]
+            
+            if ia_issolved_matrix[inst_inx][pi_pred_best_alg_inx] == 1:
+                par10 += ia_perf_matrix[inst_inx][pi_pred_best_alg_inx]
+            else:
+                par10 += (10 * ia_perf_matrix[inst_inx][pi_pred_best_alg_inx])
 
-        num_solved += ia_issolved_matrix[inst_inx][pi_pred_best_alg_inx]
-        avg_rank += ia_rank_matrix[inst_inx][pi_pred_best_alg_inx]
-        if ia_issolved_matrix[inst_inx][pi_pred_best_alg_inx] == 1:
-            par10 += ia_perf_matrix[inst_inx][pi_pred_best_alg_inx]
+    avg_rank /= float(num_insts - len(unsolved_inst_list))
+    par1 /= float(num_insts - len(unsolved_inst_list))
+    par10 /= float(num_insts - len(unsolved_inst_list))
+
+    return num_solved, par1, par10, avg_rank
+
+
+def write_overall_perf_summary(out_perf_file, perf_data):
+    '''
+        Write a summary performance (csv) file
+        including # solved insts, Par1, Par10 and Avg Rank for ASlibs
+    '''
+    file = open(out_perf_file, "w")
+    writer = csv.writer(file)
+    writer.writerow( ('Dataset', '#Solved Instances', 'Solved Inst Ratio', 'Optimality Gap SIR', 'Par1', 'Par10', 'AvgRank') )
+    for row in perf_data:
+        writer.writerow(row)
+    file.close()
+
+
+def extract_alg_confs(alg_list):
+    '''
+        Extract configuration details from a given algorithm list
+        
+        :param alg_list: string algorithm list
+        :return: list, list - list of original configurations, list of (converted) numerical configurations
+    '''
+    unique_param_val_list = []
+    non_numeric_list = []
+    
+    ## get algorithms' configurations
+    conf_list = []
+    for alg in alg_list: 
+        conf = alg.split('-')[1::]
+        conf_list.append(conf)
+        
+        if not unique_param_val_list:
+            num_params = len(conf)
+            for param_inx in range(num_params):
+                unique_param_val_list.append([])
+        
+        for param_inx in range(num_params):
+            ## print conf, " +++ ", param_inx
+            if conf[param_inx] not in unique_param_val_list[param_inx]:
+                unique_param_val_list[param_inx].append(conf[param_inx])
+
+                
+    ## determine non-numeric paramters
+    for param_inx in range(num_params):
+        if not is_number(conf_list[0][param_inx]):
+            non_numeric_list.append(param_inx)
+            
+    
+    ## convert non-numeric parameters
+    numeric_conf_list = copy.deepcopy(conf_list) ## change if possible - speed up ??
+    if non_numeric_list:
+        num_confs = len(numeric_conf_list)
+        for conf_inx in range(num_confs):
+            for param_inx in non_numeric_list:
+                numeric_conf_list[conf_inx][param_inx] = unique_param_val_list[param_inx].index(numeric_conf_list[conf_inx][param_inx])
+            
+    return conf_list, numeric_conf_list
+
+
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+    
+
+def calc_total_ft_cost(ft_cost_matrix, ft_step_membership_matrix, selected_fts, selected_fts_imp):
+    
+    ft_cost_imp_dict = {}
+
+    ft_step_list = []
+    ft_step_cost = []
+    ft_step_size = []
+    ft_step_imp = []
+
+    sel_ft_cost_matrix = ft_cost_matrix[selected_fts, :]
+    sel_ft_step_membership_matrix = ft_step_membership_matrix[selected_fts, :]
+    
+    active_ft_step_list = get_active_ft_steps(ft_step_membership_matrix, selected_fts)
+
+    print "AAAAAAAAA\t",active_ft_step_list
+    
+    if len(ft_cost_matrix.T) > 0: ## to prevent in case of feature cost file is missing
+        for ft_inx in range(len(ft_step_membership_matrix.T)):
+            
+            if ft_inx in active_ft_step_list:
+                ftst_cost = np.sum(ft_cost_matrix.T[ft_inx])
+                ft_step_cost.append(ftst_cost)
+
+                ft_step_list.append(ft_inx)
+
+                ftst_size = np.sum(sel_ft_step_membership_matrix.T[ft_inx])
+                ft_step_size.append(ftst_size)
+                
+                ftst_imp = np.sum(selected_fts_imp[ np.where(sel_ft_step_membership_matrix.T[ft_inx] == 1)[0] ])
+                ft_step_imp.append(ftst_imp)
+
+            
+                ##ft_cost = np.sum(ft_cost_matrix.T[ft_inx]) if ft_inx in active_ft_step_list else 0
+                ##" cost after ft selection: ", np.sum(sel_ft_cost_matrix.T[ft_inx]) , \
+                print "ft step ", ft_inx, \
+                      " cost after ft selection: ", ftst_cost, \
+                      " size: ", ftst_size, \
+                      " ft importance: ", ftst_imp
+                
+        
+    ft_total_imp = np.sum(selected_fts_imp)
+    print " total ft importance: ", ft_total_imp
+    
+    ft_cost_imp_dict['ft_step'] = ft_step_list
+    ft_cost_imp_dict['ft_step_cost'] = ft_step_cost
+    ft_cost_imp_dict['ft_step_size'] = ft_step_size
+    ft_cost_imp_dict['ft_step_imp'] = ft_step_imp
+    ft_cost_imp_dict['ft_total_cost'] = np.sum(ft_step_cost)
+    ft_cost_imp_dict['ft_total_imp'] = ft_total_imp
+     
+    return ft_cost_imp_dict
+
+
+
+def get_active_ft_steps(ft_step_membership_matrix, selected_fts):
+    
+    active_ft_step_list = []
+    num_ft_steps = len(ft_step_membership_matrix.T)
+    
+    for ft_inx in selected_fts: ## for each feature
+        for ft_step_inx in range(num_ft_steps):
+            if ft_step_membership_matrix[ft_inx][ft_step_inx] == 1:
+                if ft_step_inx not in active_ft_step_list:
+                    active_ft_step_list.append(ft_step_inx)
+                    
+                    if len(active_ft_step_list) == num_ft_steps:
+                        return active_ft_step_list
+    
+    return active_ft_step_list
+
+
+def evaluate_oracle(ia_perf_matrix, alg_cutoff_time):
+    
+    ##TODO
+    
+    num_inst_solved = 0 
+    par10 = 0
+    
+    for inst_perf_arr in ia_perf_matrix:
+        if len(np.where(inst_perf_arr < alg_cutoff_time)[0]) > 0:
+            num_inst_solved += 1
+            par10 += np.min(inst_perf_arr)
         else:
-            par10 += (10 * ia_perf_matrix[inst_inx][pi_pred_best_alg_inx])
+            par10 += 10 * alg_cutoff_time
+    
+    par10 /= len(ia_perf_matrix)
+    
+    return num_inst_solved, par10
 
-    avg_rank /= float(num_insts)
-    par10 /= float(num_insts)
+    
+    
+def evaluate_oracle_kthbest(ia_perf_matrix, alg_cutoff_time, k):
+    '''
+        Calculate best performance by applying the kth best algorithm for each instance
+        The idea is to evaluate the flexibility of a dataset, meaning that
+        how much it can suffer if the kth best algorithm is picked instead of actual best
+    '''
+    num_algs = len(ia_perf_matrix.T)
+    if k > num_algs:
+        return -1, -1
+        print "@data_io > evaluate_oracle_kthbest : k =", k, " must be <= number of algorithms = ", num_algs
+    
+    
+    kthbest_num_inst_solved = 0
+    kthbest_par10 = 0
+    
+    for inst_perf_arr in ia_perf_matrix:
+        
+        ##get kth best algorithm's runtime
+        alg_ranks_arr = rankdata(inst_perf_arr) # to handle tie cases properly
+        alg_sorted_inx_arr = np.argsort(alg_ranks_arr)
+        
+        kth_alg_inx = alg_sorted_inx_arr[k-1]
+        
+        if inst_perf_arr[kth_alg_inx] < alg_cutoff_time:
+            kthbest_num_inst_solved += 1
+            kthbest_par10 += inst_perf_arr[kth_alg_inx]
+        else:
+            kthbest_par10 += 10 * alg_cutoff_time
+    
+    kthbest_par10 /= len(ia_perf_matrix)
+    
+    return kthbest_num_inst_solved, kthbest_par10    
 
-    return num_solved, par10, avg_rank
 
+def evaluate_dataset_hardness(ia_perf_matrix, alg_cutoff_time):
+    
+    dataset_hardness_dict = {}
+    
+    num_algs = len(ia_perf_matrix.T)
+    for k in range(1, num_algs+1):
+        num_inst_solved, par10 = evaluate_oracle_kthbest(ia_perf_matrix, alg_cutoff_time, k)
+        dataset_hardness_dict[k] = np.array([num_inst_solved, par10])
+            
+    ## print 
+    print "evaluate_dataset_hardness: k\t num_solved\t par10" 
+    for key, value in dataset_hardness_dict.iteritems():
+            print key, "\t", value[0], "\t", value[1]      
+    
+    return dataset_hardness_dict
 
 
 class SVDType:
@@ -441,16 +757,25 @@ class DataIO(object):
         self.dataset_name = None
         self.inst_list = []
         self.alg_list = []
+        self.ft_list = []
         self.alg_cutoff_time = 0
         self.ft_cutoff_time = 0
         self.ia_perf_matrix = None
         self.ia_issolved_matrix = None
         self.ia_rank_matrix = None
         self.i_ft_matrix = None
+        self.i_ft_cost_matrix = None
         self.if_cv_matrix = None
+        
+        self.i_ft_step_list = []
+        self.i_ft_step_dict = {} ##
+        self.i_ft_step_membership_matrix = None
+        
+        self.unsolved_inst_list = []
 
         self.i_rank_div_std = None
         self.i_perf_div_std = None
+        self.i_orank_sim = None
         self.a_rank_div_std = None
         self.a_perf_div_std = None
         self.a_perf_avg = None
@@ -461,9 +786,10 @@ class DataIO(object):
         self.num_insts = -1
         self.num_algs = -1
         self.num_features = -1
+        self.num_ft_steps = -1
         self.perf = Performance()
 
-    def load_process(self, desc_file_path, features_file_path, runtime_file_path, cv_file_path):
+    def load_process(self, desc_file_path, features_file_path, ft_costs_file_path, runtime_file_path, cv_file_path):
         '''
             Load and perform initial data processing for a given dataset by
             specifying its separate dataset files (for ASlib)
@@ -478,14 +804,19 @@ class DataIO(object):
 
         self.read_desc_file(desc_file_path)
         self.read_ft_file(features_file_path)
-        self.read_perf_file(runtime_file_path)
+        self.read_ft_costs_file(ft_costs_file_path)
+        #self.read_perf_file(runtime_file_path)
+        self.read_perf_file_mixed(runtime_file_path)
         self.read_cv_file(cv_file_path)
+        
+        self.det_unsolved_instances() # deterine unsolved instances
 
         self.gen_rank_matrix()
         self.gen_issolved_matrix()
 
         self.gen_inst_rank_div_arr()
         self.gen_inst_perf_div_arr()
+        self.gen_inst_sim_arr_wrt_overall_alg_rank()
 
         self.gen_alg_rank_div_arr()
         self.gen_alg_perf_div_arr()
@@ -494,6 +825,32 @@ class DataIO(object):
         self.gen_alg_rank_avg()
 
         self.gen_alg_solved_total()
+        
+
+    ## TODO : extend function with features and time files    
+    def load_process_csv(self, perf_file_path, higher_better, ft_file_path):
+        '''
+            Load and perform initial data processing for a given csv dataset
+            
+            :param perf_file_path: string - performance file
+        '''
+        self.dataset_name = os.path.basename(perf_file_path)[:-4]
+        
+        self.read_csv_perf_file_with_alginst_names(perf_file_path, instalg_format = True)
+        self.read_ft_file_with_ft_names(ft_file_path)
+        #self.gen_rank_matrix_v2(revert = True)
+        self.gen_rank_matrix_v2(revert = higher_better)
+        
+        self.gen_inst_rank_div_arr()
+        self.gen_inst_perf_div_arr()
+        self.gen_inst_sim_arr_wrt_overall_alg_rank()
+
+        self.gen_alg_rank_div_arr()
+        self.gen_alg_perf_div_arr()
+
+        self.gen_alg_perf_avg()
+        self.gen_alg_rank_avg()
+                    
 
 
     def add_to_list(self, str_to_add, list):
@@ -547,6 +904,45 @@ class DataIO(object):
         return self.ia_perf_matrix
 
 
+
+    def read_perf_file_mixed(self, perf_file_path):
+        '''
+            Read a given algorithm selection data performance file
+
+            :param perf_file_path: string - algorithm selection data performance file path
+            :return: numpy 2D array - instance-algorithm performance matrix
+        '''
+
+        if self.alg_cutoff_time <= 0:
+            print("Algorithm cutoff time is inapplicable: ", self.alg_cutoff_time, "\nExiting...")
+            sys.exit()
+
+        runtime_data = arff.load(open(perf_file_path, 'rb'))
+
+        self.num_algs = len(runtime_data["data"]) / self.num_insts
+
+        self.ia_perf_matrix = np.zeros(shape=(self.num_insts, self.num_algs))
+
+        inst_inx = 0
+        alg_inx = 0
+        for run in runtime_data["data"]:
+            #print(run[3])
+            #print(inst_inx, " ", alg_inx)
+            ##self.add_to_list(run[0], self.inst_list) # moved to read_ft
+            self.add_to_list(run[2], self.alg_list)
+            
+            inst_inx = self.inst_list.index(run[0])
+            alg_inx = self.alg_list.index(run[2])
+
+            if run[4] == "ok":
+                self.ia_perf_matrix[inst_inx][alg_inx] = run[3]
+            else:
+                self.ia_perf_matrix[inst_inx][alg_inx] = self.alg_cutoff_time
+
+
+        return self.ia_perf_matrix
+    
+    
     def read_cv_file(self, cv_file_path):
         '''
             Read a given cross validation file
@@ -568,6 +964,19 @@ class DataIO(object):
 
         return self.if_cv_matrix
 
+    
+    def det_unsolved_instances(self):
+        '''
+            Determine unsolved instances
+            
+            :return:
+        '''
+        for inst_inx in range(self.num_insts):
+            if np.min(self.ia_perf_matrix[inst_inx]) >= self.alg_cutoff_time:
+                self.unsolved_inst_list.append(inst_inx)
+    
+        return self.unsolved_inst_list
+    
 
     def gen_issolved_matrix(self):
         '''
@@ -588,8 +997,8 @@ class DataIO(object):
         if self.num_algs <= 0:
             self.num_algs = len(self.ia_perf_matrix[0])
 
-        self.ia_issolved_matrix = np.zeros(shape=(self.num_insts, self.num_algs))
-        self.perf.num_inst_solved_per_alg = np.zeros(shape=(self.num_algs))
+        self.ia_issolved_matrix = np.zeros(shape=(self.num_insts, self.num_algs), dtype=int)
+        self.perf.num_inst_solved_per_alg = np.zeros(shape=(self.num_algs), dtype=int)
         self.perf.par10_per_alg = np.zeros(shape=(self.num_algs))
         self.perf.avg_rank_per_alg = np.zeros(shape=(self.num_algs))
 
@@ -648,7 +1057,7 @@ class DataIO(object):
         '''
         algct_found = False
         ftct_found = False
-
+        
         #with open(desc_file_path) as f:
             #str_line = f.readlines()
         f = open(desc_file_path,'r')
@@ -660,14 +1069,25 @@ class DataIO(object):
                 if val_str != '?':
                     self.alg_cutoff_time = float(val_str)
                 algct_found = True
+                
             elif "features_cutoff_time" in str_line:
                 val_str = str_line[str_line.index(':')+1:len(str_line)].strip()
                 # print("2", val_str)
                 if val_str != '?':
                     self.ft_cutoff_time = float(val_str)
                 ftct_found = True
+                
+            elif "number_of_feature_steps" in str_line:
+                val_str = str_line[str_line.index(':')+1:len(str_line)].strip()
+                self.num_ft_steps = int(val_str) ### TODO : no need to set this twice
+                
+            elif "feature_step" in str_line:
+                key_str = str_line[str_line.index(' ')+1:str_line.index(':')].strip()
+                val_str = str_line[str_line.index(':')+1:len(str_line)].strip()
+                self.i_ft_step_list.append(key_str)
+                self.i_ft_step_dict[key_str] = val_str.split(",")
 
-            if algct_found & ftct_found:
+            if algct_found and ftct_found and self.num_ft_steps == len(self.i_ft_step_dict):
                 f.close()
                 break
 
@@ -689,18 +1109,86 @@ class DataIO(object):
 
         self.i_ft_matrix = np.zeros(shape=(self.num_insts, self.num_features))
 
-        inst_inx = 0
+        ##inst_inx = 0
         for run in inst_features_data["data"]:
-            ft_list = run[2:self.num_features+2]
+            ft_val_list = run[2:self.num_features+2]
             #print(ft_list)
             #svda.set_missing_features(ft_list, '0')
             #ft_list = [x for x in ft_list if x is not None]
-            ft_list = [0 if v is None else v for v in ft_list]
+            ft_val_list = [0 if v is None else v for v in ft_val_list]
             #print(ft_list)
-            self.i_ft_matrix[inst_inx] = ft_list
-            inst_inx += 1
+            
+            self.add_to_list(run[0], self.inst_list)
+            
+            inst_inx = self.inst_list.index(run[0])
+            self.i_ft_matrix[inst_inx] = ft_val_list
+            ##inst_inx += 1
+            
+            
+        ## set list of feature names
+        num_attr = len(inst_features_data["attributes"])
+        for ft_name in inst_features_data["attributes"]:
+            
+            if num_attr > self.num_features:
+                num_attr -= 1
+                continue
+            
+            self.ft_list.append(ft_name[0])    
+            
+        ## generate feature - feature step membership matrix 
+        ## self.i_ft_step_dict should be set before
+        self.i_ft_step_membership_matrix = np.zeros((self.num_features, self.num_ft_steps), dtype=int)
+        for ft_name in self.ft_list:
+            ft_inx = self.ft_list.index(ft_name)
+            
+            for ft_step_name, step_ft_list in self.i_ft_step_dict.iteritems():
+                ft_step_inx = self.i_ft_step_list.index(ft_step_name)
+                ## print ft_step_inx
+                if  ft_name in step_ft_list: 
+                    self.i_ft_step_membership_matrix[ft_inx][ft_step_inx] = 1 
+        
+                    
+        ## check whether a step should be kept for sure
+        for step_inx in range(self.num_ft_steps):
+            print np.sum(self.i_ft_step_membership_matrix.T[step_inx]), " -- ", self.num_features
+
+        
 
         return self.i_ft_matrix
+    
+    
+    def read_ft_costs_file(self, ft_costs_file_path):
+        '''
+            Read a given instance features' costs file
+            
+            :param ft_costs_file_path: string - instance features' costs file path
+            :return: numpy 2d array - feature cost calculation times
+        '''
+        try:        
+            inst_ft_costs_data = arff.load(open(ft_costs_file_path, 'rb'))
+            self.num_ft_steps = len(inst_ft_costs_data["attributes"])-2
+            
+            self.i_ft_cost_matrix = np.zeros(shape=(self.num_insts, self.num_ft_steps))
+            
+            for ft_run in inst_ft_costs_data["data"]:
+                ft_cost_list = ft_run[2:self.num_features]
+    
+                ## set missing feature costs to zero
+                ft_cost_list = [0 if x is None else x for x in ft_cost_list]
+                
+                inst_inx = self.inst_list.index(ft_run[0])
+                self.i_ft_cost_matrix[inst_inx] = ft_cost_list
+                
+            for ft_inx in range(self.num_ft_steps):
+                print "ft step ", ft_inx, " cost : ", np.sum(self.i_ft_cost_matrix[ft_inx])
+        except:
+            self.num_ft_steps = 0
+            self.i_ft_cost_matrix = np.zeros(shape=(self.num_insts, self.num_ft_steps))
+            print "No feature cost file !!"
+        
+            
+        return self.i_ft_cost_matrix
+            
 
 
     ## TODO: chnage for the tie-cases
@@ -712,13 +1200,78 @@ class DataIO(object):
             :return: numpy 2D array - instance algorithm rank matrix indicating
                                        algorithms' per instance ranks
         '''
+        
+#         self.ia_rank_matrix = np.empty(self.ia_perf_matrix.shape, dtype=int)
+#         for k, row in enumerate(self.ia_perf_matrix):
+#             self.ia_rank_matrix[k] = rankdata(row, method='dense')
+# 
+#         return self.ia_rank_matrix
 
         self.ia_rank_matrix = np.empty(self.ia_perf_matrix.shape, dtype=int)
         for k, row in enumerate(self.ia_perf_matrix):
-            self.ia_rank_matrix[k] = rankdata(row, method='dense')
-
+    #         rank_matrix[k] = rankdata(row, method='dense')
+            self.ia_rank_matrix[k] = rankdata(row) # to handle tie cases properly
+            
+            for alg_inx in range(self.num_algs):
+                if self.ia_perf_matrix[k][alg_inx] >= self.alg_cutoff_time:
+                    self.ia_rank_matrix[k][alg_inx] = self.num_algs      
+    
         return self.ia_rank_matrix
 
+
+    def gen_rank_matrix_v2(self, revert = False):
+        '''
+            Generate a rank matrix from a given performance matrix
+
+            :return: numpy 2D array - instance algorithm rank matrix indicating
+                                       algorithms' per instance ranks
+        '''
+        
+#         self.ia_rank_matrix = np.empty(self.ia_perf_matrix.shape, dtype=int)
+#         for k, row in enumerate(self.ia_perf_matrix):
+#             self.ia_rank_matrix[k] = rankdata(row, method='dense')
+# 
+#         return self.ia_rank_matrix
+        
+        if revert:
+            ###ia_perf_matrix = 1.0 / self.ia_perf_matrix.astype(float)
+            ia_perf_matrix = 1.0 / self.ia_perf_matrix
+        else:
+            ia_perf_matrix = self.ia_perf_matrix
+
+        self.ia_rank_matrix = np.empty(self.ia_perf_matrix.shape, dtype=int)
+        for k, row in enumerate(ia_perf_matrix):
+    #         rank_matrix[k] = rankdata(row, method='dense')
+            self.ia_rank_matrix[k] = rankdata(row) # to handle tie cases properly
+            
+#             for alg_inx in range(self.num_algs):
+#                 if ia_perf_matrix[k][alg_inx] >= self.alg_cutoff_time:
+#                     self.ia_rank_matrix[k][alg_inx] = self.num_algs
+    
+        return self.ia_rank_matrix
+    
+    
+
+    def gen_inst_sim_arr_wrt_overall_alg_rank(self):
+        '''
+            Euclidean distance similarity (1/euclidean dist) of algorithms' per instance ranks
+            wrt overall algorithm ranks
+        '''
+        #num_algs = len(self.ia_rank_matrix[0])
+        overall_alg_ranks = np.zeros(self.num_algs)
+        
+        for alg_inx in range(self.num_algs): ## for each algorithm
+            overall_alg_ranks[alg_inx] = np.sum(self.ia_rank_matrix.T[alg_inx])
+        
+        ## rank overall rank array
+        overall_alg_ranks = rankdata(overall_alg_ranks) # rank considering tie cases (1,3 -> 2,2)
+    
+        self.i_orank_sim = np.zeros(shape=(self.num_insts))
+        for inst_inx in range(self.num_insts):
+            self.i_orank_sim[inst_inx] = 1.0 / np.linalg.norm(overall_alg_ranks - self.ia_rank_matrix[inst_inx])
+    
+        return self.i_orank_sim
+    
 
     def gen_inst_rank_div_arr(self):
         '''
@@ -862,6 +1415,7 @@ class DataIO(object):
     def read_csv_perf_file(self, csv_file, ignore_first_row = False, ignore_first_col = False):
         '''
             Read a given csv performance file
+            
             :param csv_file: 
         '''
         perf_data_list = []
@@ -874,13 +1428,79 @@ class DataIO(object):
             for row in reader:
                 if row: # skip if row (list) is empty
                     perf_data_list.append(row[1:len(row)])
-                    print row
+                    #print row
             
 #       self.ia_perf_matrix = np.loadtxt(csv_file, delimiter=',', skiprows=1, usecols=range(1,...))
-        self.ia_perf_matrix = np.array(perf_data_list)
+        self.ia_perf_matrix = np.array(perf_data_list).astype(float)
         self.num_insts, self.num_algs = self.ia_perf_matrix.shape
         
+
+
+    def read_csv_perf_file_with_alginst_names(self, csv_file, instalg_format = True):
+        '''
+            Read a given csv performance file
+            together with dataset/instance names and algorithm names
             
+            :param csv_file: string - data file name in csv format
+            :param instalg_format: boolean - whether the data format is instance-algorithm or algorithm-instance
+        '''        
+        self.inst_list = []
+        self.alg_list = []
+        
+        perf_data_list = []
+        with open(csv_file, 'rb') as f:
+            reader = csv.reader(f)
+             
+            for row in reader:
+                if row: # skip if row (list) is empty
+                    
+                    if instalg_format: # add instance names (if instalg_format)
+                        if not self.alg_list: # add algorithm names (if not instalg_format)
+                            self.alg_list = row[1:len(row)]
+                            continue
+                        else:
+                            self.inst_list.append(row[0])
+                    else:
+                        if not self.inst_list:
+                            self.inst_list = row[1:len(row)]
+                            continue
+                        else:
+                            self.alg_list.append(row[0])
+                       
+                    
+                    perf_data_list.append(row[1:len(row)])
+                    #print row
+            
+#       self.ia_perf_matrix = np.loadtxt(csv_file, delimiter=',', skiprows=1, usecols=range(1,...))
+        self.ia_perf_matrix = np.array(perf_data_list).astype(float)
+        self.num_insts, self.num_algs = self.ia_perf_matrix.shape
+                    
+    
+    def read_ft_file_with_ft_names(self, ft_file, ft_delimiter = '\t'):
+        '''
+            Read a given feature file in a .txt form
+            (different format than ASlib)
+        '''
+        ft_data_list = []
+        with open(ft_file, 'rb') as f:
+            reader = csv.reader(f, skipinitialspace = True, delimiter=ft_delimiter)
+            
+            for row in reader:
+                if row: # skip if row (list) is empty
+                    
+                    if not self.ft_list: # add feature names
+                        self.ft_list = row[1:len(row)]
+                        continue
+                    
+                    if row[len(row)-1] is '':                  
+                        ft_data_list.append(row[1:(len(row)-1)])
+                    else:
+                        ft_data_list.append(row[1:len(row)])
+                        
+                    #print row
+        
+        self.i_ft_matrix = np.array(ft_data_list).astype(float)
+        self.num_features = self.i_ft_matrix.shape[1]
         
         
     def extract_perf_ft_data_for_selected(self, inst_list, alg_list):
@@ -993,11 +1613,28 @@ class DataIO(object):
         test_i_ft_matrix = self.i_ft_matrix[test_inst_inx_arr, :]
         train_i_ft_matrix = self.i_ft_matrix[train_inst_inx_arr, :]
 
-        return train_ia_perf_matrix, train_i_ft_matrix, test_ia_perf_matrix, test_i_ft_matrix, train_inst_inx_arr, test_inst_inx_arr
+        # determine unsolved instances in the training set
+        train_unsolved_inst_list = []
+        train_inst_inx = 0
+        for inst_inx in train_inst_inx_arr:
+            if inst_inx in self.unsolved_inst_list:
+                train_unsolved_inst_list.append(train_inst_inx)
+            train_inst_inx += 1
+        
+        
+        # determine unsolved instances in the test set
+        test_unsolved_inst_list = []
+        test_inst_inx = 0
+        for inst_inx in test_inst_inx_arr:
+            if inst_inx in self.unsolved_inst_list:
+                test_unsolved_inst_list.append(test_inst_inx)
+            test_inst_inx += 1
+
+        return train_ia_perf_matrix, train_i_ft_matrix, test_ia_perf_matrix, test_i_ft_matrix, train_inst_inx_arr, test_inst_inx_arr, train_unsolved_inst_list, test_unsolved_inst_list 
 
 
     ## TODO : add other performance metrics
-    def evaluate_pred_matrix(self, pred_matrix):
+    def evaluate_pred_matrix(self, pred_matrix, unsolved_inst_list):
         '''
             Evaluate a given prediction matrix
             - number of solved instances
@@ -1026,7 +1663,7 @@ class DataIO(object):
         #
         # return num_solved, par10, avg_rank
 
-        return evaluate_pred_matrix(self.ia_perf_matrix, self.ia_issolved_matrix, self.ia_rank_matrix, pred_matrix)
+        return evaluate_pred_matrix(self.ia_perf_matrix, self.ia_issolved_matrix, self.ia_rank_matrix, pred_matrix, unsolved_inst_list)
 
 
     def report_eval(self, out_perf_file, alg_subset = None, inst_subset = None, ft_subset = None, svd_s = None, svd_k = 0, baselines = True):

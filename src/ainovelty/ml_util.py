@@ -12,7 +12,7 @@ from sklearn import cross_validation
 from sklearn.linear_model import BayesianRidge
 from sklearn.cluster import AffinityPropagation
 from sklearn.cluster import KMeans
-from sklearn.cluster import AgglomerativeClustering
+#from sklearn.cluster import AgglomerativeClustering
 from sklearn.cluster import MeanShift, estimate_bandwidth
 from sklearn.cluster import DBSCAN
 from sklearn import metrics
@@ -102,8 +102,9 @@ def gen_norm(matrix, type, min_arr = None, max_arr = None):
         # norm_matrix, min_arr, max_arr = normalize_minmax(matrix, min_arr, max_arr)
         return normalize_minmax(matrix, min_arr, max_arr)
     elif type == NormalizationMethods.ScikitDef:
+        ## TODO: return min_arr, max_arr as well as in MinMax
         # norm_matrix = normalize(matrix)
-        return normalize(matrix)
+        return normalize(matrix, axis = 0)
 
     # return norm_matrix, min_arr, max_arr
 
@@ -221,7 +222,7 @@ def calc_clst_rank_score(avg_clst_rank_matrix):
     return score
 
 
-def kmeans_adaptive(row_matrix, k_max, init_k_max = 10, clst_eval_metric = ClusteringEvaluationMetrics.SLH):
+def kmeans_adaptive(row_matrix, k_max, init_k_max = 10, clst_eval_metric = ClusteringEvaluationMetrics.SLH, sensitivity = 0.01):
     '''
         kmeans clustering with automatically determining right k (number of clusters)
 
@@ -264,8 +265,15 @@ def kmeans_adaptive(row_matrix, k_max, init_k_max = 10, clst_eval_metric = Clust
             best_score = score
             best_clst = clst
             best_k = k_val
-#             print("INIT -> Best k = ", best_k, " - best_score = ", best_score)
+            print("INIT -> Best k = ", best_k, " - best_score = ", best_score)
+            
+            ## not to cluster further if clustering is almost perfect
+            if best_score >= 1.0 - sensitivity:
+                init_k_max = k_max ## just to skip the further clustering 
+                break
 
+
+    print("AFTER INIT -> Best k = ", best_k, "k_left = ", k_left, " - score_left = ", score_left, "k_right = ", k_right, " - score_right = ", score_right)
 
     if init_k_max < k_max: # adaptive
 
@@ -281,7 +289,11 @@ def kmeans_adaptive(row_matrix, k_max, init_k_max = 10, clst_eval_metric = Clust
             best_k = k_right
 
         while True:
-#             print("Best k = ", best_k, "k_left = ", k_left, " - score = ", score_left, "k_right = ", k_right, " - score = ", score_right)
+            
+            ## not to cluster further if clustering is almost perfect
+            if best_score >= 1.0 - sensitivity:
+                break
+
 
             diff = (k_right - k_left) / 2
             if score_left > score_right:
@@ -298,19 +310,28 @@ def kmeans_adaptive(row_matrix, k_max, init_k_max = 10, clst_eval_metric = Clust
 
                 clst_left = KMeans(n_clusters=k_left, random_state=__seed__).fit(row_matrix)
                 score_left = eval_clustering(row_matrix, clst_left, clst_eval_metric)
-                if score_left > score:
+                if score_left > best_score:
                     best_score = score_left
                     best_clst = clst_left
                     best_k = k_left
+                    
+                    
+            print("Best k = ", best_k, "k_left = ", k_left, " - score_left = ", score_left, "k_right = ", k_right, " - score_right = ", score_right)
+            
 
             if k_left >= k_right-1: ## no more to check
                 break
 
+            # added to complete clustering earlier (can be removed??)
+            if best_score > 0.5 and abs(score_left - score_right) <= sensitivity:
+                break
+            
 
-    if best_k == k_max-1: ## TODO: for now
+    #if best_k == k_max-1: ## TODO: for now
+    if best_k == len(row_matrix)-1: ## TODO: for now
         clst = None
         centroids = row_matrix
-        labels = range(0,len(row_matrix))
+        labels = range(0, len(row_matrix))
         num_clusters = len(centroids)
     else:
         clst = best_clst
@@ -359,8 +380,8 @@ def gen_class_arr(row_matrix, type, k_for_kmeans=300, num_consc_wrs_steps = 0, k
     elif type == ClusteringMethods.XMeans:
         # clst = XMeans(2).fit(row_matrix) ##TODO
         print("TODO")
-    elif type == ClusteringMethods.AgglomerativeClustering:
-        clst = AgglomerativeClustering().fit(row_matrix)
+#    elif type == ClusteringMethods.AgglomerativeClustering:
+#        clst = AgglomerativeClustering().fit(row_matrix)
     elif type == ClusteringMethods.MeanShift:
         bandwidth = estimate_bandwidth(row_matrix, quantile=0.2, n_samples=max_k)
         clst = MeanShift(bandwidth=bandwidth).fit(row_matrix)
@@ -384,7 +405,7 @@ def gen_class_arr(row_matrix, type, k_for_kmeans=300, num_consc_wrs_steps = 0, k
                 return centroids, labels, num_clusters
 
 
-#             print("k = ", (k+2), " - slh_score = ", slh_score)
+            print("k = ", (k+2), " - slh_score = ", slh_score)
             if k == 0:
                 best_slh_score = slh_score
                 best_clst = clst
@@ -435,12 +456,12 @@ def gen_multivar_regr_model(ft_matrix, output_matrix, type, ft_selected = None):
     '''
     regr = None
     if type == RegressionMethods.RF:
-        regr = RandomForestRegressor()
+        regr = RandomForestRegressor(random_state=__seed__)
     elif type == RegressionMethods.SVR:
         regr = SVR()
     elif type == RegressionMethods.GBR: ## cannot do multivariate regression
         regr = GradientBoostingRegressor(n_estimators=3000, max_depth=6, learning_rate=0.04,
-                                         loss='huber', random_state=0)
+                                         loss='huber', random_state=__seed__)
     elif type == RegressionMethods.BayesRidge:
         regr = BayesianRidge()
 
@@ -467,7 +488,7 @@ def gen_clsf_model(ft_matrix, cls_arr, type):
     '''
     clsf = None
     if type == ClassificationMethods.RFC:
-        clsf = RandomForestClassifier(n_estimators=10)
+        clsf = RandomForestClassifier(n_estimators=10, random_state=__seed__)
         clsf = clsf.fit(ft_matrix, cls_arr)
 
     return clsf

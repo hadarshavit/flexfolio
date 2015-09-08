@@ -1,0 +1,433 @@
+Started solving  /home/misir/Desktop/aslib_data-aslib-v1.1/SAT11-HAND
+% Command line arguments:
+% --aslib-dir /home/misir/Desktop/aslib_data-aslib-v1.1/SAT11-HAND --model-dir MODEL_DIR --print-times /home/misir/Desktop/liclipse/Workspace/flexfolio-data_filtering-v3/output/res-18062015152837651684-SAT11-HAND.csv
+% Read /home/misir/Desktop/aslib_data-aslib-v1.1/SAT11-HAND/description.txt
+% Read /home/misir/Desktop/aslib_data-aslib-v1.1/SAT11-HAND/algorithm_runs.arff
+% Read /home/misir/Desktop/aslib_data-aslib-v1.1/SAT11-HAND/feature_values.arff
+% Read /home/misir/Desktop/aslib_data-aslib-v1.1/SAT11-HAND/feature_runstatus.arff
+% Read /home/misir/Desktop/aslib_data-aslib-v1.1/SAT11-HAND/ground_truth.arff
+% Read /home/misir/Desktop/aslib_data-aslib-v1.1/SAT11-HAND/feature_costs.arff
+% Read /home/misir/Desktop/aslib_data-aslib-v1.1/SAT11-HAND/cv.arff
+% 1-th repetition: 30,29,30,29,30,30,30,30,29,29 distribution
+% Used Feature Steps: Pre,Basic,KLB,CG
+% Used features: CG_mean,BINARYp,reducedVars,VG_mean,VCG_VAR_mean,VG_min,VCG_VAR_coeff_variation,nvarsOrig,CG_coeff_variation,VG_max,CG_max,POSNEG_RATIO_CLAUSE_max,horn_clauses_fraction,nclauses,vars_clauses_ratio,CG_entropy,UNARY,cluster_coeff_mean,VCG_CLAUSE_coeff_variation,POSNEG_RATIO_VAR_max,VCG_VAR_max,POSNEG_RATIO_VAR_entropy,TRINARYp,POSNEG_RATIO_VAR_min,HORNY_VAR_max,VCG_CLAUSE_mean,VCG_CLAUSE_min,cluster_coeff_entropy,POSNEG_RATIO_CLAUSE_min,HORNY_VAR_coeff_variation,VCG_VAR_min,nvars,nclausesOrig,POSNEG_RATIO_CLAUSE_mean,CG_min,VG_coeff_variation,POSNEG_RATIO_VAR_mean,cluster_coeff_coeff_variation,POSNEG_RATIO_CLAUSE_coeff_variation,VCG_CLAUSE_entropy,VCG_VAR_entropy,cluster_coeff_min,POSNEG_RATIO_VAR_stdev,HORNY_VAR_entropy,cluster_coeff_max,HORNY_VAR_mean,VCG_CLAUSE_max,HORNY_VAR_min,POSNEG_RATIO_CLAUSE_entropy,reducedClauses
+% 
+% Check Consistency and Completeness of input data
+% Instances: 		 296
+% Algorithms: 		 15
+% Incomplete Feature Vector: 	 0 (maybe imputed)
+% Unsolvable Instances (status): 	 77
+% Unsolvable Instances (runtime): 	 77
+% Valid Instances: 	 219
+% Presolved: 		 0
+% Average Feature Costs: 	 41.2297
+% Use given CV of 1-th repetition
+% >>> 1-th iteration<<<
+('sr: ', array([ 752.78007446,  141.71290518,  100.67829331,   89.97360645,
+         70.99734171,   66.38205319]), ' - svd_k: ', 6)
+
+opt_portfolio:  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+opt_portfolio v2:  set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+('top_ft_inx_arr: ', array([ 1,  2,  5,  6,  8,  9, 11, 12, 13, 15, 16, 18, 23, 25, 27, 28, 29,
+       31, 32, 35, 37, 38, 45, 46, 47]))
+ft_imp_total =  1.0
+top_ft_inx_arr:  [ 1  2  5  6  8  9 11 12 13 15 16 18 23 25 27 28 29 31 32 35 37 38 45 46 47]
+(25 out of 50) Features to keep are determined: 1, 2, 5, 6, 8, 9, 11, 12, 13, 15, 16, 18, 23, 25, 27, 28, 29, 31, 32, 35, 37, 38, 45, 46, 47
+('No algorithm subset selection, just get the optimal portfolio: ', '0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14')
+(15 out of 15) Algorithms/solvers to keep are determined: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+('INIT -> Best k = ', 2, ' - best_score = ', 0.24203569209223125)
+('INIT -> Best k = ', 3, ' - best_score = ', 0.27430889187068663)
+('INIT -> Best k = ', 4, ' - best_score = ', 0.31016700041224687)
+('INIT -> Best k = ', 5, ' - best_score = ', 0.34143786751441157)
+('INIT -> Best k = ', 6, ' - best_score = ', 0.3802964049114792)
+('INIT -> Best k = ', 7, ' - best_score = ', 0.41569786582057444)
+('INIT -> Best k = ', 8, ' - best_score = ', 0.42964168147374948)
+('INIT -> Best k = ', 9, ' - best_score = ', 0.44163914224426731)
+('INIT -> Best k = ', 10, ' - best_score = ', 0.45495033427601522)
+('AFTER INIT -> Best k = ', 10, 'k_left = ', 2, ' - score_left = ', -1, 'k_right = ', 87, ' - score_right = ', -1)
+('Best k = ', 87, 'k_left = ', 48, ' - score_left = ', 0.59703303850245715, 'k_right = ', 87, ' - score_right = ', 0.60627787854527948)
+(@choose_rep_subset_insts_as_reduction) num_clusters=  87
+('inst_per_cls : ', array([ 80, 165,  20,  17, 116, 155, 120, 107,  48, 240,  13,  88, 111,
+       248,  99, 156, 167,  89,  54,  59,   5,  87, 101,  60, 241, 123,
+       131, 154, 130, 230,  22, 169, 127, 216,  28, 105, 214,  23, 119,
+       162,  43, 226, 233,  64, 142,  94, 161,  14,  71,  16, 149,  42,
+       140,   0, 192, 237, 250,  79, 196, 258, 180, 181, 209, 109,   6,
+        98,  90, 189,  15,  49, 232, 133,  96, 153,  51, 188,  24,  95,
+       220,  84, 122, 259,  83,  41, 215,  29, 262, 187]))
+(88 out of 266) Instances to keep are determined: 0, 5, 6, 13, 14, 15, 16, 17, 20, 22, 23, 24, 28, 29, 41, 42, 43, 48, 49, 51, 54, 59, 60, 64, 71, 79, 80, 83, 84, 87, 88, 89, 90, 94, 95, 96, 98, 99, 101, 105, 107, 109, 111, 116, 119, 120, 122, 123, 127, 130, 131, 133, 140, 142, 149, 153, 154, 155, 156, 161, 162, 165, 167, 169, 180, 181, 187, 188, 189, 192, 196, 209, 214, 215, 216, 220, 226, 230, 232, 233, 237, 240, 241, 248, 250, 258, 259, 262
+% Backup Solver: SAT09referencesolverclasp_1.2.0-SAT09-32
+% Input Instances for Training: 88 (-unsolvable)
+% Used Instances for Training: 88 (-unsolvable)
+% Train with RANDOMFOREST-CLASSVOTER
+% PAR10 on current test set: 15620.12 (30 instances)
+% >>> 2-th iteration<<<
+('sr: ', array([ 752.07888969,  142.95424373,  101.52283013,   88.84228869,
+         71.37802031,   68.69425806]), ' - svd_k: ', 6)
+
+opt_portfolio:  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+opt_portfolio v2:  set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+('top_ft_inx_arr: ', array([ 0,  3,  4,  5,  6,  7,  8,  9, 11, 12, 13, 15, 16, 18, 23, 25, 27,
+       28, 29, 30, 32, 35, 38, 39, 45]))
+ft_imp_total =  1.0
+top_ft_inx_arr:  [ 0  3  4  5  6  7  8  9 11 12 13 15 16 18 23 25 27 28 29 30 32 35 38 39 45]
+(25 out of 50) Features to keep are determined: 0, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 15, 16, 18, 23, 25, 27, 28, 29, 30, 32, 35, 38, 39, 45
+('No algorithm subset selection, just get the optimal portfolio: ', '0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14')
+(15 out of 15) Algorithms/solvers to keep are determined: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+('INIT -> Best k = ', 2, ' - best_score = ', 0.2382545073124466)
+('INIT -> Best k = ', 3, ' - best_score = ', 0.26932169482681595)
+('INIT -> Best k = ', 4, ' - best_score = ', 0.31153607999619432)
+('INIT -> Best k = ', 5, ' - best_score = ', 0.34817166582301012)
+('INIT -> Best k = ', 6, ' - best_score = ', 0.37545035924954279)
+('INIT -> Best k = ', 7, ' - best_score = ', 0.40464507123217047)
+('INIT -> Best k = ', 8, ' - best_score = ', 0.41654955922885345)
+('INIT -> Best k = ', 9, ' - best_score = ', 0.4344010454844055)
+('INIT -> Best k = ', 10, ' - best_score = ', 0.43451175629041811)
+('AFTER INIT -> Best k = ', 10, 'k_left = ', 2, ' - score_left = ', -1, 'k_right = ', 88, ' - score_right = ', -1)
+('Best k = ', 49, 'k_left = ', 49, ' - score_left = ', 0.58458807462958218, 'k_right = ', 88, ' - score_right = ', 0.57671404107555946)
+(@choose_rep_subset_insts_as_reduction) num_clusters=  49
+('inst_per_cls : ', array([ 36, 185, 169, 119, 216, 250,  22, 263, 189, 197,  23, 174, 159,
+         5, 153, 122,  50,  53, 149, 260,  79, 155, 147, 191,  55, 227,
+        87,  47, 232,  67, 240, 101,  27,  89, 110,  99, 222, 134, 125,
+       259,  15,  71,  42, 226, 233,  46, 170,  14]))
+(48 out of 267) Instances to keep are determined: 5, 14, 15, 22, 23, 27, 36, 42, 46, 47, 50, 53, 55, 67, 71, 79, 87, 89, 99, 101, 110, 119, 122, 125, 134, 147, 149, 153, 155, 159, 169, 170, 174, 185, 189, 191, 197, 216, 222, 226, 227, 232, 233, 240, 250, 259, 260, 263
+% Backup Solver: Sol_2011-04-04
+% Input Instances for Training: 48 (-unsolvable)
+% Used Instances for Training: 48 (-unsolvable)
+% Train with RANDOMFOREST-CLASSVOTER
+% PAR10 on current test set: 21340.46 (29 instances)
+% >>> 3-th iteration<<<
+('sr: ', array([ 754.70496381,  141.67315878,   99.48811526,   89.75219519,
+         70.2373405 ,   67.2408835 ]), ' - svd_k: ', 6)
+
+opt_portfolio:  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+opt_portfolio v2:  set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+('top_ft_inx_arr: ', array([ 5,  7,  8, 11, 13, 15, 16, 18, 20, 21, 23, 27, 28, 29, 31, 33, 34,
+       35, 36, 37, 38, 45, 46, 47, 49]))
+ft_imp_total =  1.0
+top_ft_inx_arr:  [ 5  7  8 11 13 15 16 18 20 21 23 27 28 29 31 33 34 35 36 37 38 45 46 47 49]
+(25 out of 50) Features to keep are determined: 5, 7, 8, 11, 13, 15, 16, 18, 20, 21, 23, 27, 28, 29, 31, 33, 34, 35, 36, 37, 38, 45, 46, 47, 49
+('No algorithm subset selection, just get the optimal portfolio: ', '0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14')
+(15 out of 15) Algorithms/solvers to keep are determined: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+('INIT -> Best k = ', 2, ' - best_score = ', 0.24476070149095411)
+('INIT -> Best k = ', 3, ' - best_score = ', 0.27740390676771781)
+('INIT -> Best k = ', 4, ' - best_score = ', 0.31825536895667278)
+('INIT -> Best k = ', 5, ' - best_score = ', 0.34219593903023876)
+('INIT -> Best k = ', 6, ' - best_score = ', 0.38037301994854489)
+('INIT -> Best k = ', 7, ' - best_score = ', 0.41239780345594879)
+('INIT -> Best k = ', 8, ' - best_score = ', 0.42622550628617134)
+('INIT -> Best k = ', 9, ' - best_score = ', 0.43215006414346196)
+('INIT -> Best k = ', 10, ' - best_score = ', 0.44428494929613482)
+('AFTER INIT -> Best k = ', 10, 'k_left = ', 2, ' - score_left = ', -1, 'k_right = ', 87, ' - score_right = ', -1)
+('Best k = ', 87, 'k_left = ', 48, ' - score_left = ', 0.58211016751517597, 'k_right = ', 87, ' - score_right = ', 0.61181786262526228)
+('Best k = ', 87, 'k_left = ', 67, ' - score_left = ', 0.60924387140368741, 'k_right = ', 87, ' - score_right = ', 0.61181786262526228)
+(@choose_rep_subset_insts_as_reduction) num_clusters=  87
+('inst_per_cls : ', array([ 65, 217,  28, 103, 244,  23, 143, 247,  97, 109,  15,  47, 240,
+       189, 197,  52, 214,  56,   9, 155, 161, 231,  22,  58, 264, 140,
+       250,  16, 114, 251,  33, 129, 259, 183, 127, 255,   4, 105, 221,
+        44, 241, 190,  99,  93, 227, 234, 156, 169,  88,  94, 174,  14,
+        72, 202, 191, 160,  40,  54,  60, 179, 233, 184, 212, 260,  79,
+       150, 168, 107,  92, 117, 195, 238,  42, 230,  61, 187, 201,  89,
+       138,  30,  50,  12,  24]))
+(83 out of 266) Instances to keep are determined: 4, 9, 12, 14, 15, 16, 22, 23, 24, 28, 30, 33, 40, 42, 44, 47, 50, 52, 54, 56, 58, 60, 61, 65, 72, 79, 88, 89, 92, 93, 94, 97, 99, 103, 105, 107, 109, 114, 117, 127, 129, 138, 140, 143, 150, 155, 156, 160, 161, 168, 169, 174, 179, 183, 184, 187, 189, 190, 191, 195, 197, 201, 202, 212, 214, 217, 221, 227, 230, 231, 233, 234, 238, 240, 241, 244, 247, 250, 251, 255, 259, 260, 264
+% Backup Solver: clasp_2.0-R4092-crafted
+% Input Instances for Training: 83 (-unsolvable)
+% Used Instances for Training: 83 (-unsolvable)
+% Train with RANDOMFOREST-CLASSVOTER
+% PAR10 on current test set: 13673.34 (30 instances)
+% >>> 4-th iteration<<<
+('sr: ', array([ 752.47616531,  141.7288821 ,  100.53528778,   89.73061728,
+         70.45085741,   65.92127294]), ' - svd_k: ', 6)
+
+opt_portfolio:  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+opt_portfolio v2:  set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+('top_ft_inx_arr: ', array([ 4,  5,  7,  8, 11, 13, 15, 16, 18, 22, 23, 26, 27, 28, 29, 32, 35,
+       36, 38, 41, 43, 44, 45, 47, 49]))
+ft_imp_total =  1.0
+top_ft_inx_arr:  [ 4  5  7  8 11 13 15 16 18 22 23 26 27 28 29 32 35 36 38 41 43 44 45 47 49]
+(25 out of 50) Features to keep are determined: 4, 5, 7, 8, 11, 13, 15, 16, 18, 22, 23, 26, 27, 28, 29, 32, 35, 36, 38, 41, 43, 44, 45, 47, 49
+('No algorithm subset selection, just get the optimal portfolio: ', '0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14')
+(15 out of 15) Algorithms/solvers to keep are determined: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+('INIT -> Best k = ', 2, ' - best_score = ', 0.24227256889509696)
+('INIT -> Best k = ', 3, ' - best_score = ', 0.26417461486489463)
+('INIT -> Best k = ', 4, ' - best_score = ', 0.31273915707697747)
+('INIT -> Best k = ', 5, ' - best_score = ', 0.34625296882582096)
+('INIT -> Best k = ', 6, ' - best_score = ', 0.37050843313520304)
+('INIT -> Best k = ', 7, ' - best_score = ', 0.40628048495167812)
+('INIT -> Best k = ', 8, ' - best_score = ', 0.41949028048187798)
+('INIT -> Best k = ', 9, ' - best_score = ', 0.4290790779163603)
+('INIT -> Best k = ', 10, ' - best_score = ', 0.43733972230983437)
+('AFTER INIT -> Best k = ', 10, 'k_left = ', 2, ' - score_left = ', -1, 'k_right = ', 88, ' - score_right = ', -1)
+('Best k = ', 88, 'k_left = ', 49, ' - score_left = ', 0.59327561556030672, 'k_right = ', 88, ' - score_right = ', 0.59979731558313343)
+(@choose_rep_subset_insts_as_reduction) num_clusters=  88
+('inst_per_cls : ', array([ 99, 258, 171,  93, 177, 210, 238, 130, 220, 187, 218,  24, 147,
+       114,  47, 226,  86, 213,  50, 244, 203, 180, 159, 172, 158, 235,
+        23,  83, 215,  88, 121,  15,  75,  17,  82, 231, 237,  67,  62,
+       176, 163,  91, 105, 241,  44,  53, 133, 164,   2, 249, 103,  16,
+        56,  20,  18, 118,  43, 112,   6,  32, 200, 259, 186,   7, 122,
+       110, 143,  30,  13, 234,  77,  94, 260,  60, 265,   0, 190, 202,
+       263, 192, 219,  45, 224,  35, 254,  21,  51,  58, 206]))
+(89 out of 267) Instances to keep are determined: 0, 2, 6, 7, 13, 15, 16, 17, 18, 20, 21, 23, 24, 30, 32, 35, 43, 44, 45, 47, 50, 51, 53, 56, 58, 60, 62, 67, 75, 77, 82, 83, 86, 88, 91, 93, 94, 99, 103, 105, 110, 112, 114, 118, 121, 122, 130, 133, 143, 147, 158, 159, 163, 164, 171, 172, 176, 177, 180, 186, 187, 190, 192, 200, 202, 203, 206, 210, 213, 215, 218, 219, 220, 224, 226, 231, 234, 235, 237, 238, 241, 244, 249, 254, 258, 259, 260, 263, 265
+% Backup Solver: clasp_2.0-R4092-crafted
+% Input Instances for Training: 89 (-unsolvable)
+% Used Instances for Training: 89 (-unsolvable)
+% Train with RANDOMFOREST-CLASSVOTER
+% PAR10 on current test set: 19542.20 (29 instances)
+% >>> 5-th iteration<<<
+('sr: ', array([ 744.60598355,  143.98530435,  101.613028  ,   91.93588963,
+         70.66639824,   67.17568698]), ' - svd_k: ', 6)
+
+opt_portfolio:  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+opt_portfolio v2:  set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+('top_ft_inx_arr: ', array([ 4,  5, 11, 12, 13, 15, 16, 18, 20, 23, 25, 26, 27, 28, 29, 31, 32,
+       33, 35, 36, 38, 41, 45, 46, 47]))
+ft_imp_total =  1.0
+top_ft_inx_arr:  [ 4  5 11 12 13 15 16 18 20 23 25 26 27 28 29 31 32 33 35 36 38 41 45 46 47]
+(25 out of 50) Features to keep are determined: 4, 5, 11, 12, 13, 15, 16, 18, 20, 23, 25, 26, 27, 28, 29, 31, 32, 33, 35, 36, 38, 41, 45, 46, 47
+('No algorithm subset selection, just get the optimal portfolio: ', '0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14')
+(15 out of 15) Algorithms/solvers to keep are determined: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+('INIT -> Best k = ', 2, ' - best_score = ', 0.2225017642290015)
+('INIT -> Best k = ', 3, ' - best_score = ', 0.26471657235290075)
+('INIT -> Best k = ', 4, ' - best_score = ', 0.2984725530320142)
+('INIT -> Best k = ', 5, ' - best_score = ', 0.34011114965004635)
+('INIT -> Best k = ', 6, ' - best_score = ', 0.36298921577068866)
+('INIT -> Best k = ', 7, ' - best_score = ', 0.3960633291570067)
+('INIT -> Best k = ', 8, ' - best_score = ', 0.41435943752006443)
+('INIT -> Best k = ', 9, ' - best_score = ', 0.41776874916952295)
+('INIT -> Best k = ', 10, ' - best_score = ', 0.42957749630957548)
+('AFTER INIT -> Best k = ', 10, 'k_left = ', 2, ' - score_left = ', -1, 'k_right = ', 87, ' - score_right = ', -1)
+('Best k = ', 87, 'k_left = ', 48, ' - score_left = ', 0.56540305859088436, 'k_right = ', 87, ' - score_right = ', 0.57810605013308136)
+('Best k = ', 87, 'k_left = ', 67, ' - score_left = ', 0.57106939588468553, 'k_right = ', 87, ' - score_right = ', 0.57810605013308136)
+(@choose_rep_subset_insts_as_reduction) num_clusters=  87
+('inst_per_cls : ', array([199,  65,  72, 128, 216,  29, 108, 214,  25, 120, 194,  92, 142,
+        32, 228, 159, 131,  24, 262, 207, 196,  82, 211,  95,  49,  50,
+       197, 184, 221, 239,  60, 264,  10,  93,  58,  52, 132, 170, 148,
+       249,  21,  17, 116, 160,  62, 153,  30,  56,  61,  35, 250, 164,
+        14,  74,  16, 218, 226, 232,  66, 123,  44, 119, 146, 185, 209,
+        15, 246, 102, 195, 236,  45, 155, 231, 114, 245,  47, 240, 253,
+       191, 220, 215,  26,  98,  99, 180, 229, 259, 265]))
+(88 out of 266) Instances to keep are determined: 10, 14, 15, 16, 17, 21, 24, 25, 26, 29, 30, 32, 35, 44, 45, 47, 49, 50, 52, 56, 58, 60, 61, 62, 65, 66, 72, 74, 82, 92, 93, 95, 98, 99, 102, 108, 114, 116, 119, 120, 123, 128, 131, 132, 142, 146, 148, 153, 155, 159, 160, 164, 170, 180, 184, 185, 191, 194, 195, 196, 197, 199, 207, 209, 211, 214, 215, 216, 218, 220, 221, 226, 228, 229, 231, 232, 236, 239, 240, 245, 246, 249, 250, 253, 259, 262, 264, 265
+% Backup Solver: clasp_2.0-R4092-crafted
+% Input Instances for Training: 88 (-unsolvable)
+% Used Instances for Training: 88 (-unsolvable)
+% Train with RANDOMFOREST-CLASSVOTER
+% PAR10 on current test set: 23682.25 (30 instances)
+% >>> 6-th iteration<<<
+('sr: ', array([ 752.5417709 ,  140.88836917,  100.2911419 ,   92.57701932,
+         70.39346729,   67.85600432]), ' - svd_k: ', 6)
+
+opt_portfolio:  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+opt_portfolio v2:  set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+('top_ft_inx_arr: ', array([ 0,  1,  2,  4,  5,  7, 11, 13, 15, 16, 18, 23, 25, 27, 28, 29, 31,
+       32, 35, 38, 39, 44, 45, 47, 48]))
+ft_imp_total =  1.0
+top_ft_inx_arr:  [ 0  1  2  4  5  7 11 13 15 16 18 23 25 27 28 29 31 32 35 38 39 44 45 47 48]
+(25 out of 50) Features to keep are determined: 0, 1, 2, 4, 5, 7, 11, 13, 15, 16, 18, 23, 25, 27, 28, 29, 31, 32, 35, 38, 39, 44, 45, 47, 48
+('No algorithm subset selection, just get the optimal portfolio: ', '0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14')
+(15 out of 15) Algorithms/solvers to keep are determined: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+('INIT -> Best k = ', 2, ' - best_score = ', 0.22756387322552982)
+('INIT -> Best k = ', 3, ' - best_score = ', 0.26136525265649924)
+('INIT -> Best k = ', 4, ' - best_score = ', 0.30789765309172018)
+('INIT -> Best k = ', 5, ' - best_score = ', 0.34378117692134708)
+('INIT -> Best k = ', 6, ' - best_score = ', 0.37754372198799169)
+('INIT -> Best k = ', 7, ' - best_score = ', 0.40374002837643957)
+('INIT -> Best k = ', 8, ' - best_score = ', 0.40892819201416325)
+('INIT -> Best k = ', 9, ' - best_score = ', 0.43095129947291555)
+('INIT -> Best k = ', 10, ' - best_score = ', 0.43763009101531269)
+('AFTER INIT -> Best k = ', 10, 'k_left = ', 2, ' - score_left = ', -1, 'k_right = ', 87, ' - score_right = ', -1)
+('Best k = ', 87, 'k_left = ', 48, ' - score_left = ', 0.57266895399750095, 'k_right = ', 87, ' - score_right = ', 0.6002227070780114)
+('Best k = ', 67, 'k_left = ', 67, ' - score_left = ', 0.6033818247633268, 'k_right = ', 87, ' - score_right = ', 0.6002227070780114)
+(@choose_rep_subset_insts_as_reduction) num_clusters=  67
+('inst_per_cls : ', array([ 26, 198, 247,  95, 169, 124, 230,  24, 263, 187, 194, 265, 212,
+        85,  43,  92, 172,  34,  48, 240, 234, 121, 216,  30,  99, 133,
+        25, 125, 108, 231,  19,  42, 154,  76,  61,  46, 241,  35,  54,
+        60, 227,  65, 181, 246, 175, 250,  21,  18, 109, 153, 159,   2,
+       137,  16, 229, 193, 237, 196, 259,  96, 112, 101, 158, 111,   0,
+       218, 104,  13,  15,  17,   5,  90, 115,  91, 258, 235, 135, 202,
+       222, 264, 251,  22,  49,  51, 182, 210, 220, 100,  56,  44, 260,
+         4, 232,  72, 189,  31,  32]))
+(97 out of 266) Instances to keep are determined: 0, 2, 4, 5, 13, 15, 16, 17, 18, 19, 21, 22, 24, 25, 26, 30, 31, 32, 34, 35, 42, 43, 44, 46, 48, 49, 51, 54, 56, 60, 61, 65, 72, 76, 85, 90, 91, 92, 95, 96, 99, 100, 101, 104, 108, 109, 111, 112, 115, 121, 124, 125, 133, 135, 137, 153, 154, 158, 159, 169, 172, 175, 181, 182, 187, 189, 193, 194, 196, 198, 202, 210, 212, 216, 218, 220, 222, 227, 229, 230, 231, 232, 234, 235, 237, 240, 241, 246, 247, 250, 251, 258, 259, 260, 263, 264, 265
+% Backup Solver: clasp_2.0-R4092-crafted
+% Input Instances for Training: 97 (-unsolvable)
+% Used Instances for Training: 97 (-unsolvable)
+% Train with RANDOMFOREST-CLASSVOTER
+% PAR10 on current test set: 17296.62 (30 instances)
+% >>> 7-th iteration<<<
+('sr: ', array([ 750.41145097,  140.20114662,   95.71311675,   90.82387539,
+         67.91338585,   67.25632745]), ' - svd_k: ', 6)
+
+opt_portfolio:  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+opt_portfolio v2:  set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+('top_ft_inx_arr: ', array([ 4,  5,  6,  7,  8, 11, 12, 13, 15, 16, 18, 23, 25, 26, 27, 28, 29,
+       31, 35, 36, 38, 45, 46, 47, 48]))
+ft_imp_total =  1.0
+top_ft_inx_arr:  [ 4  5  6  7  8 11 12 13 15 16 18 23 25 26 27 28 29 31 35 36 38 45 46 47 48]
+(25 out of 50) Features to keep are determined: 4, 5, 6, 7, 8, 11, 12, 13, 15, 16, 18, 23, 25, 26, 27, 28, 29, 31, 35, 36, 38, 45, 46, 47, 48
+('No algorithm subset selection, just get the optimal portfolio: ', '0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14')
+(15 out of 15) Algorithms/solvers to keep are determined: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+('INIT -> Best k = ', 2, ' - best_score = ', 0.24003904782583071)
+('INIT -> Best k = ', 3, ' - best_score = ', 0.28166547576204909)
+('INIT -> Best k = ', 4, ' - best_score = ', 0.31733190127936783)
+('INIT -> Best k = ', 5, ' - best_score = ', 0.35674505893427338)
+('INIT -> Best k = ', 6, ' - best_score = ', 0.38916560828302366)
+('INIT -> Best k = ', 7, ' - best_score = ', 0.41307228759141784)
+('INIT -> Best k = ', 8, ' - best_score = ', 0.42689159849710062)
+('INIT -> Best k = ', 9, ' - best_score = ', 0.43756189066631457)
+('INIT -> Best k = ', 10, ' - best_score = ', 0.44163451345669402)
+('AFTER INIT -> Best k = ', 10, 'k_left = ', 2, ' - score_left = ', -1, 'k_right = ', 87, ' - score_right = ', -1)
+('Best k = ', 87, 'k_left = ', 48, ' - score_left = ', 0.59099198483130577, 'k_right = ', 87, ' - score_right = ', 0.60581582151603708)
+('Best k = ', 87, 'k_left = ', 67, ' - score_left = ', 0.60385944260984292, 'k_right = ', 87, ' - score_right = ', 0.60581582151603708)
+(@choose_rep_subset_insts_as_reduction) num_clusters=  87
+('inst_per_cls : ', array([ 51, 241,  14, 111, 260,  86, 235, 129,  30, 245,  26, 230, 249,
+        21,  17, 116, 159, 170, 200, 259, 185, 160, 147,  22, 143, 262,
+       191,  75,  16, 203,  64,  96, 123,  44,  98, 208, 158, 132, 231,
+        24, 167,  85, 186, 212,  15,  38, 164, 119, 146, 258,  59, 247,
+       103, 120, 107, 114,   6, 222, 106, 233,  53, 141,  82,   7, 218,
+        27,  68,  31,  57,  63,  92, 154, 101, 213,  33,  48, 242, 188,
+       202, 220, 196, 256,  83, 214,  87,  36, 254, 217]))
+(88 out of 266) Instances to keep are determined: 6, 7, 14, 15, 16, 17, 21, 22, 24, 26, 27, 30, 31, 33, 36, 38, 44, 48, 51, 53, 57, 59, 63, 64, 68, 75, 82, 83, 85, 86, 87, 92, 96, 98, 101, 103, 106, 107, 111, 114, 116, 119, 120, 123, 129, 132, 141, 143, 146, 147, 154, 158, 159, 160, 164, 167, 170, 185, 186, 188, 191, 196, 200, 202, 203, 208, 212, 213, 214, 217, 218, 220, 222, 230, 231, 233, 235, 241, 242, 245, 247, 249, 254, 256, 258, 259, 260, 262
+% Backup Solver: clasp_2.0-R4092-crafted
+% Input Instances for Training: 88 (-unsolvable)
+% Used Instances for Training: 88 (-unsolvable)
+% Train with RANDOMFOREST-CLASSVOTER
+% PAR10 on current test set: 18579.49 (30 instances)
+% >>> 8-th iteration<<<
+('sr: ', array([ 752.16067408,  139.68977997,  102.50245791,   88.57600398,
+         69.47336233,   68.97425761]), ' - svd_k: ', 6)
+
+opt_portfolio:  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+opt_portfolio v2:  set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+('top_ft_inx_arr: ', array([ 0,  5,  9, 11, 13, 15, 16, 18, 20, 23, 25, 27, 28, 29, 31, 32, 34,
+       35, 36, 38, 40, 42, 45, 46, 47]))
+ft_imp_total =  1.0
+top_ft_inx_arr:  [ 0  5  9 11 13 15 16 18 20 23 25 27 28 29 31 32 34 35 36 38 40 42 45 46 47]
+(25 out of 50) Features to keep are determined: 0, 5, 9, 11, 13, 15, 16, 18, 20, 23, 25, 27, 28, 29, 31, 32, 34, 35, 36, 38, 40, 42, 45, 46, 47
+('No algorithm subset selection, just get the optimal portfolio: ', '0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14')
+(15 out of 15) Algorithms/solvers to keep are determined: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+('INIT -> Best k = ', 2, ' - best_score = ', 0.22833550793689533)
+('INIT -> Best k = ', 3, ' - best_score = ', 0.27325089932001462)
+('INIT -> Best k = ', 4, ' - best_score = ', 0.30859273266311948)
+('INIT -> Best k = ', 5, ' - best_score = ', 0.34256043007650061)
+('INIT -> Best k = ', 6, ' - best_score = ', 0.37086132232018038)
+('INIT -> Best k = ', 7, ' - best_score = ', 0.40526432108324123)
+('INIT -> Best k = ', 8, ' - best_score = ', 0.41072592147589315)
+('INIT -> Best k = ', 9, ' - best_score = ', 0.42711595677137376)
+('INIT -> Best k = ', 10, ' - best_score = ', 0.43460734227562398)
+('AFTER INIT -> Best k = ', 10, 'k_left = ', 2, ' - score_left = ', -1, 'k_right = ', 87, ' - score_right = ', -1)
+('Best k = ', 48, 'k_left = ', 48, ' - score_left = ', 0.60023180929897846, 'k_right = ', 87, ' - score_right = ', 0.58593054712095183)
+('Best k = ', 48, 'k_left = ', 48, ' - score_left = ', 0.60023180929897846, 'k_right = ', 67, ' - score_right = ', 0.59510151937399813)
+(@choose_rep_subset_insts_as_reduction) num_clusters=  48
+('inst_per_cls : ', array([ 36, 228,  28,  85, 188, 262,  35,  53, 132,  91,  46,  86, 176,
+       190, 235, 129, 221, 162, 233,  71,  58, 199,  63,  48,  56,  62,
+       172,  23, 166, 192, 250, 202, 259,  24, 225, 147,  97,  16,  75,
+       195,  32, 227, 142, 240,  51, 160, 131, 109, 156]))
+(49 out of 266) Instances to keep are determined: 16, 23, 24, 28, 32, 35, 36, 46, 48, 51, 53, 56, 58, 62, 63, 71, 75, 85, 86, 91, 97, 109, 129, 131, 132, 142, 147, 156, 160, 162, 166, 172, 176, 188, 190, 192, 195, 199, 202, 221, 225, 227, 228, 233, 235, 240, 250, 259, 262
+% Backup Solver: clasp_2.0-R4092-crafted
+% Input Instances for Training: 49 (-unsolvable)
+% Used Instances for Training: 49 (-unsolvable)
+% Train with RANDOMFOREST-CLASSVOTER
+% PAR10 on current test set: 22242.25 (30 instances)
+% >>> 9-th iteration<<<
+('sr: ', array([ 748.89188289,  140.79995476,   98.83115338,   92.21512394,
+         69.23573061,   67.76048883]), ' - svd_k: ', 6)
+
+opt_portfolio:  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+opt_portfolio v2:  set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+('top_ft_inx_arr: ', array([ 2,  4,  5,  8, 11, 13, 15, 16, 18, 23, 25, 27, 28, 29, 31, 32, 33,
+       35, 36, 37, 38, 41, 45, 47, 49]))
+ft_imp_total =  1.0
+top_ft_inx_arr:  [ 2  4  5  8 11 13 15 16 18 23 25 27 28 29 31 32 33 35 36 37 38 41 45 47 49]
+(25 out of 50) Features to keep are determined: 2, 4, 5, 8, 11, 13, 15, 16, 18, 23, 25, 27, 28, 29, 31, 32, 33, 35, 36, 37, 38, 41, 45, 47, 49
+('No algorithm subset selection, just get the optimal portfolio: ', '0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14')
+(15 out of 15) Algorithms/solvers to keep are determined: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+('INIT -> Best k = ', 2, ' - best_score = ', 0.22561381700799982)
+('INIT -> Best k = ', 3, ' - best_score = ', 0.27146863946830563)
+('INIT -> Best k = ', 4, ' - best_score = ', 0.30318859665019221)
+('INIT -> Best k = ', 5, ' - best_score = ', 0.34108943644113926)
+('INIT -> Best k = ', 6, ' - best_score = ', 0.36980334200348797)
+('INIT -> Best k = ', 7, ' - best_score = ', 0.39863525530055322)
+('INIT -> Best k = ', 8, ' - best_score = ', 0.40455856173771743)
+('INIT -> Best k = ', 9, ' - best_score = ', 0.419180390299004)
+('INIT -> Best k = ', 10, ' - best_score = ', 0.42166828318743454)
+('AFTER INIT -> Best k = ', 10, 'k_left = ', 2, ' - score_left = ', -1, 'k_right = ', 88, ' - score_right = ', -1)
+('Best k = ', 88, 'k_left = ', 49, ' - score_left = ', 0.554017801192767, 'k_right = ', 88, ' - score_right = ', 0.58622101831177265)
+('Best k = ', 88, 'k_left = ', 68, ' - score_left = ', 0.57964049135646467, 'k_right = ', 88, ' - score_right = ', 0.58622101831177265)
+(@choose_rep_subset_insts_as_reduction) num_clusters=  88
+('inst_per_cls : ', array([ 93, 209,  19,  15, 111, 155,  21, 154, 126, 232, 106, 236, 218,
+        27, 102, 142,  50, 156, 169, 168, 197, 239,  82, 119, 160, 222,
+       103, 246, 178,  91, 118, 250,  87,  57, 265,  53,  59,  12,  71,
+        14,  45, 208, 140,  92, 188, 258, 259, 223, 114, 137, 164, 228,
+        24,  64,  22, 254, 193,  28, 217, 185, 213,  41, 115, 150, 247,
+        96, 256,  30,  60,  42, 234,  86, 172,  78, 220, 109,  55,  33,
+        13,  47, 135, 205, 263,  32]))
+(84 out of 267) Instances to keep are determined: 12, 13, 14, 15, 19, 21, 22, 24, 27, 28, 30, 32, 33, 41, 42, 45, 47, 50, 53, 55, 57, 59, 60, 64, 71, 78, 82, 86, 87, 91, 92, 93, 96, 102, 103, 106, 109, 111, 114, 115, 118, 119, 126, 135, 137, 140, 142, 150, 154, 155, 156, 160, 164, 168, 169, 172, 178, 185, 188, 193, 197, 205, 208, 209, 213, 217, 218, 220, 222, 223, 228, 232, 234, 236, 239, 246, 247, 250, 254, 256, 258, 259, 263, 265
+% Backup Solver: clasp_2.0-R4092-crafted
+% Input Instances for Training: 84 (-unsolvable)
+% Used Instances for Training: 84 (-unsolvable)
+% Train with RANDOMFOREST-CLASSVOTER
+% PAR10 on current test set: 22512.17 (29 instances)
+% >>> 10-th iteration<<<
+('sr: ', array([ 751.99361313,  142.99245262,  100.20708442,   91.80357543,
+         69.59827993,   68.72620047]), ' - svd_k: ', 6)
+
+opt_portfolio:  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+opt_portfolio v2:  set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+('top_ft_inx_arr: ', array([ 0,  4,  5,  7,  8, 11, 13, 15, 16, 18, 23, 25, 27, 28, 29, 30, 31,
+       32, 35, 36, 38, 42, 44, 45, 47]))
+ft_imp_total =  1.0
+top_ft_inx_arr:  [ 0  4  5  7  8 11 13 15 16 18 23 25 27 28 29 30 31 32 35 36 38 42 44 45 47]
+(25 out of 50) Features to keep are determined: 0, 4, 5, 7, 8, 11, 13, 15, 16, 18, 23, 25, 27, 28, 29, 30, 31, 32, 35, 36, 38, 42, 44, 45, 47
+('No algorithm subset selection, just get the optimal portfolio: ', '0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14')
+(15 out of 15) Algorithms/solvers to keep are determined: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+('INIT -> Best k = ', 2, ' - best_score = ', 0.22334819948925286)
+('INIT -> Best k = ', 3, ' - best_score = ', 0.25785590674999803)
+('INIT -> Best k = ', 4, ' - best_score = ', 0.29831984549146318)
+('INIT -> Best k = ', 5, ' - best_score = ', 0.33011303792028279)
+('INIT -> Best k = ', 6, ' - best_score = ', 0.36468604494635759)
+('INIT -> Best k = ', 7, ' - best_score = ', 0.39868002118957396)
+('INIT -> Best k = ', 8, ' - best_score = ', 0.41136764090299177)
+('INIT -> Best k = ', 9, ' - best_score = ', 0.42551527753759372)
+('INIT -> Best k = ', 10, ' - best_score = ', 0.43427272111572485)
+('AFTER INIT -> Best k = ', 10, 'k_left = ', 2, ' - score_left = ', -1, 'k_right = ', 88, ' - score_right = ', -1)
+('Best k = ', 88, 'k_left = ', 49, ' - score_left = ', 0.5815732150450974, 'k_right = ', 88, ' - score_right = ', 0.5935053203997982)
+('Best k = ', 68, 'k_left = ', 68, ' - score_left = ', 0.60703745518497987, 'k_right = ', 88, ' - score_right = ', 0.5935053203997982)
+('Best k = ', 68, 'k_left = ', 68, ' - score_left = ', 0.60703745518497987, 'k_right = ', 78, ' - score_right = ', 0.59814953552989503)
+(@choose_rep_subset_insts_as_reduction) num_clusters=  68
+('inst_per_cls : ', array([251,  22,  18, 118, 162,  28,  70, 264, 263, 194, 201,  84,  83,
+       155,  48, 159,  35, 116,   5, 106,  51, 243,  16,  55,  40, 200,
+       239,  99, 259, 236, 131, 221,  32, 108, 219, 248, 181,  47,   4,
+        15,  76,  17,  98, 125, 146, 117, 255,  59,  65, 166, 254,  86,
+       188, 214, 203, 260, 187, 169,  49,  54, 242,  63, 257, 161, 134,
+       233,  25, 220,  26,  46, 163, 249, 102, 196, 231, 177, 113, 144,
+       206, 252,   6,  38,  10,  61, 121,  93, 100, 210, 191, 204,  33,
+        13,  66,  37, 261,  87,  78, 122, 109,  23,  94]))
+(101 out of 267) Instances to keep are determined: 4, 5, 6, 10, 13, 15, 16, 17, 18, 22, 23, 25, 26, 28, 32, 33, 35, 37, 38, 40, 46, 47, 48, 49, 51, 54, 55, 59, 61, 63, 65, 66, 70, 76, 78, 83, 84, 86, 87, 93, 94, 98, 99, 100, 102, 106, 108, 109, 113, 116, 117, 118, 121, 122, 125, 131, 134, 144, 146, 155, 159, 161, 162, 163, 166, 169, 177, 181, 187, 188, 191, 194, 196, 200, 201, 203, 204, 206, 210, 214, 219, 220, 221, 231, 233, 236, 239, 242, 243, 248, 249, 251, 252, 254, 255, 257, 259, 260, 261, 263, 264
+% Backup Solver: clasp_2.0-R4092-crafted
+% Input Instances for Training: 101 (-unsolvable)
+% Used Instances for Training: 101 (-unsolvable)
+% Train with RANDOMFOREST-CLASSVOTER
+% PAR10 on current test set: 24371.63 (29 instances)
+% 
+%  >>> Instances: 296 <<<
+%  >>> Oracle Evaluation (w/o unsolved) <<<
+% 
+% Unsolved (not by any algorithm and not by feature computation): 77
+% PAR1 time: 1654.842993 (478.691899)
+% Par10 time: 13360.663939 (478.340301)
+% #TOs: 77 (0)
+% 
+%  >>> Cross Fold Evaluation <<<
+% 
+% Presolved: 0
+% >>>With Unsolvable Instances
+% Timeouts per #Thread: {1: 115, 2: 106, 3: 98, 4: 95, 5: 88, 6: 87, 7: 83, 8: 83, 9: 80, 10: 80, 11: 80, 12: 79, 13: 79, 14: 79, 15: 77}
+% Solved (perc) per #Thread: {1: 0.6114864864864865, 2: 0.6418918918918919, 3: 0.6689189189189189, 4: 0.6790540540540541, 5: 0.7027027027027026, 6: 0.7060810810810811, 7: 0.7195945945945945, 8: 0.7195945945945945, 9: 0.7297297297297297, 10: 0.7297297297297297, 11: 0.7297297297297297, 12: 0.7331081081081081, 13: 0.7331081081081081, 14: 0.7331081081081081, 15: 0.7398648648648649}
+% AVG per #Thread: {1: 2375.1680924020225, 2: 2192.793612070948, 3: 2056.4681007229797, 4: 2003.9500014864952, 5: 1892.3807163344652, 6: 1853.1135052027105, 7: 1786.1923216520242, 8: 1776.966698094592, 9: 1741.5179395033738, 10: 1734.3760243445915, 11: 1734.3751629898609, 12: 1718.3810298682388, 13: 1717.5577479729686, 14: 1716.6642375641827, 15: 1682.914377760128}
+% PAR10 per #Thread: {1: 19858.276200510132, 2: 18307.658476935812, 3: 16955.116749371628, 4: 16446.517569054064, 5: 15270.759094712843, 6: 15079.464856554061, 7: 14404.435564895268, 8: 14395.209941337835, 9: 13903.680101665535, 10: 13896.538186506754, 11: 13896.537325152023, 12: 13728.516165003373, 13: 13727.692883108104, 14: 13726.799372699317, 15: 13388.99545884121}
+% >>>Without Unsolved Instances (depends on pre-solved in feature groups)
+% Timeouts: {1: 38, 2: 29, 3: 21, 4: 18, 5: 11, 6: 10, 7: 6, 8: 6, 9: 3, 10: 3, 11: 3, 12: 2, 13: 2, 14: 2, 15: 0}
+% Solved (perc): {1: 0.8264840182648402, 2: 0.867579908675799, 3: 0.9041095890410957, 4: 0.9178082191780822, 5: 0.9497716894977167, 6: 0.9543378995433791, 7: 0.9726027397260273, 8: 0.9726027397260273, 9: 0.9863013698630136, 10: 0.9863013698630136, 11: 0.9863013698630136, 12: 0.9908675799086758, 13: 0.9908675799086758, 14: 0.9908675799086758, 15: 1.0}
+% PAR1: {1: 1452.2819879041033, 2: 1205.7849733926969, 3: 1021.5276612511509, 4: 950.5442942465872, 5: 799.7474522146197, 6: 746.6739613698736, 7: 656.2234119132382, 8: 643.7540759634669, 9: 595.8415985981675, 10: 586.1885991141511, 11: 586.1874349086705, 12: 564.5697937945147, 13: 563.4570474885787, 14: 562.249380452046, 15: 516.6331315844651}
+% PAR10: {1: 9260.5011659863, 2: 7164.689082981738, 3: 5336.5961544018355, 4: 4649.174431232888, 5: 3060.0214248173593, 6: 2801.4684819178187, 7: 1889.1001242420054, 8: 1876.630788292234, 9: 1212.279954762551, 10: 1202.6269552785345, 11: 1202.6257910730537, 12: 975.5286979041036, 13: 974.4159515981677, 14: 973.208284561635, 15: 516.6331315844651}
+% 
+% Time used by each solver: {'RestartSAT_B95': 5121.561619, 'Sol_2011-04-04': 30118.150923999998, 'clasp_2.0-R4092-crafted': 368897.9759590002, 'CryptoMiniSat_Strange-Night2-st_fixed_': 0, 'MPhaseSAT_2011-02-15': 45184.499312, 'jMiniSat_2011': 4939.51, 'QuteRSat_2011-05-12_fixed_': 0, 'glucose_2': 0, 'sathys_2011-04-01': 4938.770972, 'sattime+_2011-03-02': 54814.643272, 'sattime_2011-03-02': 94703.294042, 'SAT09referencesolverclasp_1.2.0-SAT09-32': 48338.259595999996, 'SAT07referencesolverminisat_SAT2007': 11800.156562, 'SApperloT2010_2011-05-15_fixed_': 10985.682099000001, 'PicoSAT_941': 11003.260994}
+% Optimal Time used by each solver: {'RestartSAT_B95': 5.46017, 'Sol_2011-04-04': 386222.6910439999, 'clasp_2.0-R4092-crafted': 31187.016032, 'CryptoMiniSat_Strange-Night2-st_fixed_': 462.69877099999997, 'MPhaseSAT_2011-02-15': 6329.150169999999, 'jMiniSat_2011': 0, 'QuteRSat_2011-05-12_fixed_': 6874.512899999999, 'glucose_2': 806.4449000000001, 'sathys_2011-04-01': 12.165192000000003, 'sattime+_2011-03-02': 2388.4237799999996, 'sattime_2011-03-02': 9533.683721, 'SAT09referencesolverclasp_1.2.0-SAT09-32': 37657.77352, 'SAT07referencesolverminisat_SAT2007': 1605.1305450000002, 'SApperloT2010_2011-05-15_fixed_': 96.45335200000001, 'PicoSAT_941': 6651.921719999999}

@@ -15,6 +15,8 @@ import os
 import inspect
 import json
 import copy
+from ainovelty.ain_flexfolio_v2 import pre_process, filter_data
+from ainovelty.ain_analyzer import apply_ain
 
 # http://stackoverflow.com/questions/279237/python-import-a-module-from-a-folder
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
@@ -74,17 +76,16 @@ from trainer.evalutor.crossValidatorGiven import CrossValidatorGiven
 from trainer.evalutor.ttValidator import TrainTestValidator
 from trainer.aspeed.aspeedAll import AspeedAll
 
-from ainovelty.ain_flexfolio import filter_data
-
 class Trainer(object):
     '''
         main class for training models for flexfolio
     '''
     
-    def __init__(self):
+    def __init__(self, ain_num_ft_to_remove = 0):
         '''
             Constructor
         '''
+        self.ain_num_ft_to_remove = ain_num_ft_to_remove
         self.selection_methods = {"CLASSVOTER": { "SVM": SVMVoting,
                                                   "RANDOMFOREST": RandomForestVoting,
                                                   "GRADIENTBOOSTING": GradientBoostingVoting
@@ -139,8 +140,9 @@ class Trainer(object):
         instance_dic, meta_info, config_dic = reader.parse_coseal(args_.coseal, args_)
         
         
-        ## data filtering - AIN - available in crossValidator
-#         filtered_instance_dic, filtered_meta_info = filter_data(instance_dic, meta_info)
+        ### APPLY AIN
+        ##instance_dic, meta_info, ft_arr = filter_data(instance_dic, meta_info)
+        
         
         
         if meta_info.cv_given and meta_info.options.test_set:
@@ -148,7 +150,7 @@ class Trainer(object):
             evaluator.evaluate(self, meta_info, instance_dic, config_dic)
         elif meta_info.cv_given:
             evaluator = CrossValidatorGiven(args_.update_sup, args_.print_time)
-            evaluator.evaluate(self, meta_info, instance_dic, config_dic, threads=args_.threads_aspeed)
+            evaluator.evaluate(self, meta_info, instance_dic, config_dic, threads=args_.threads_aspeed, ain_num_ft_to_remove = self.ain_num_ft_to_remove)
             
         #=======================================================================
         # elif args_.smac and args_.crossfold >= 0 and args_.fold > -1: # cross validation with only one evaluated fold (for SMAC)

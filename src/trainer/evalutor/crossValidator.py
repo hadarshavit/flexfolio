@@ -12,8 +12,8 @@ from misc.printer import Printer
 #from misc.updater import Updater
 from trainer.evalutor.validator import Validator, Stats
 from trainer.evalutor.plotter import Plotter
-
-from ainovelty.ain_flexfolio import filter_data, update_selection_dic, filter_instance_test
+from src.ainovelty.ain_flexfolio_v2 import filter_data, filter_instance_test
+from src.ainovelty import settings
 
 class CrossValidator(Validator):
     '''
@@ -28,7 +28,7 @@ class CrossValidator(Validator):
         self._instance_parts = []
         self._n_folds = 10
 
-    def evaluate(self, trainer, meta_info, instance_train_dic, config_dic, threads=1):
+    def evaluate(self, trainer, meta_info, instance_train_dic, config_dic, threads=1, ain_num_ft_to_remove = 0):
         '''
             cross fold evaluation
             Parameter:
@@ -65,20 +65,43 @@ class CrossValidator(Validator):
                 instance_train = instance_train_dic
                 instance_test =  instance_train_dic
                 
-            # Apply data filtering
-            filtered_instance_train, filtered_meta_info, selected_ft_arr = filter_data(instance_train, meta_info)
+            
+            
+#             ##### AIN #####
+#             instance_train, meta_info, selected_ft_arr = filter_data(instance_train, meta_info)
+#             
+#             
+#             #TRAINING
+#             selection_dic, solver_schedule = self.training(instance_train, meta_info, config_dic, trainer)
+#             
+#             ##### AIN #####
+#             instance_test = filter_instance_test(instance_test, selected_ft_arr)
+
+#             # TEST / EVALUATION
+#             self.testing(instance_test, meta_info, selection_dic, solver_schedule, stats)
+
+
+
+
+
+            settings.plot_uniq_inx = iteration
+
+          # Apply data filtering
+            filtered_instance_train, filtered_meta_info, filtered_config_dic, to_remove_alg_list, to_remove_alg_inx_list, selected_ft_arr = filter_data(instance_train, meta_info, config_dic, ain_num_ft_to_remove)
             
             #TRAINING
 #             selection_dic, solver_schedule = self.training(instance_train, meta_info, config_dic, trainer)
-            selection_dic, solver_schedule = self.training(filtered_instance_train, filtered_meta_info, config_dic, trainer)
+            selection_dic, solver_schedule = self.training(filtered_instance_train, filtered_meta_info, filtered_config_dic, trainer)
             
 #             update_selection_dic(instance_train, selection_dic, selected_ft_arr)
             
-            filtered_instance_test = filter_instance_test(instance_test, selected_ft_arr)
+            filtered_instance_test = filter_instance_test(instance_test, to_remove_alg_list, to_remove_alg_inx_list, selected_ft_arr)
             
             # TEST / EVALUATION
 #             self.testing(instance_test, meta_info, selection_dic, solver_schedule, stats)
             self.testing(filtered_instance_test, filtered_meta_info, selection_dic, solver_schedule, stats)
+
+            
 
             
             #oracle_avg_time, oracle_spend_time_dict, oracle_par10, oracle_dict, oracle_tos = \

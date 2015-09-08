@@ -8,6 +8,7 @@ from sklearn.metrics import euclidean_distances
 from sklearn.decomposition import PCA
 from sklearn.lda import LDA
 from ml_util import *
+from ainovelty.cmds import cmdscale
 
 
 __seed__ = 123456
@@ -17,7 +18,7 @@ __fig_dpi__ = 100
 
 
 class DimReductionType:
-    MDS, Isomap, SpectralEmbedding, PCA, LDA  = range(0, 5)
+    MDS, CMDS, Isomap, SpectralEmbedding, PCA, LDA  = range(0, 6)
 
 def plot_scatter(self, inst_matrix, alg_matrix, inst_rank_matrix, alg_rank_matrix, main_title, hide_axis_labels):
     plt.figure(1)
@@ -224,7 +225,9 @@ def plot_cluster_scatter(data, cluster_labels, hide_axis_labels = True):
     plt.gcf().clear()
 
 def plot_ft_importance_from_clsf(dataset_name, ft_importance_arr, top_ft_inx_arr, num_mapped_clusters, plot_title, output_folder=None, to_show = False):
-
+    '''
+        Plot a feature importance bar chart
+    '''
     y_pos = np.arange(len(ft_importance_arr))
     bar_list = plt.barh(y_pos, ft_importance_arr, color = 'red', alpha=0.4)
     # set different colors to some bars (high outliers) in the chart
@@ -235,9 +238,42 @@ def plot_ft_importance_from_clsf(dataset_name, ft_importance_arr, top_ft_inx_arr
 
     # _ = plt.xlabel('Relative importance')
     # plt.bar(range(len(ft_importance_arr)), ft_importance_arr[indices], align="center")
-    plt.title(`len(ft_importance_arr)`+" ("+`len(top_ft_inx_arr)`+") instance features to "+`num_mapped_clusters`+" clusters/classes")
+#     plt.title(`len(ft_importance_arr)`+" ("+`len(top_ft_inx_arr)`+") instance features to "+`num_mapped_clusters`+" clusters/classes")
+    plt.title(`len(ft_importance_arr)`+" ("+`len(top_ft_inx_arr)`+") instance features")
     plt.xlabel("Gini Importance")
     plt.ylabel("Features")
+
+    if output_folder is None:
+        output_folder = __output_folder__
+
+    main_title = plot_title+'-'+dataset_name
+    to_save_path = os.path.join(output_folder, main_title+'.pdf')
+    plt.savefig(to_save_path, format='pdf', dpi=__fig_dpi__, bbox_inches='tight')
+    if to_show == True:
+        plt.show()
+
+    plt.gcf().clear()
+    
+    
+def plot_conf_importance_from_clsf(dataset_name, ft_importance_arr, top_ft_inx_arr, num_mapped_clusters, plot_title, output_folder=None, to_show = False):
+    '''
+        Plot a parameter importance bar chart
+    '''
+    y_pos = np.arange(len(ft_importance_arr))
+    bar_list = plt.barh(y_pos, ft_importance_arr, color = 'red', alpha=0.4)
+    # set different colors to some bars (high outliers) in the chart
+    # for inx in range(len(top_ft_inx_arr)):
+    # bar_list[int(top_ft_inx_arr[inx])].set_color('b')
+    for top_ft_inx in top_ft_inx_arr:
+        bar_list[int(top_ft_inx)].set_color('b')
+
+    # _ = plt.xlabel('Relative importance')
+    # plt.bar(range(len(ft_importance_arr)), ft_importance_arr[indices], align="center")
+    plt.title(`len(ft_importance_arr)`+" ("+`len(top_ft_inx_arr)`+") configurations to "+`num_mapped_clusters`+" clusters/classes")
+    plt.xlabel("Gini Importance")
+    plt.ylabel("Parameters")
+
+    plt.yticks(range(0, len(ft_importance_arr)+1))
 
     if output_folder is None:
         output_folder = __output_folder__
@@ -299,7 +335,9 @@ def plot_2d_scatter_subset(dio, matrix, subset_list, plt_title, plt_annt_list = 
 
 
 def plot_2d_scatter_subset_with_cluster(dataset_name, matrix, subset_list, cluster_labels, plt_title, plt_annt_list = None, marker_size = 30, dim_reduction_type = DimReductionType.MDS, hide_axis_labels = True, output_folder=None, to_show = False):
-
+    '''
+        Generate and save a scatter plot with clustering info and annotations
+    '''
     if len(matrix[0]) > 2:
         dim_matrix = apply_dim_reduction(matrix, 2, dim_reduction_type)
     else:
@@ -333,7 +371,7 @@ def plot_2d_scatter_subset_with_cluster(dataset_name, matrix, subset_list, clust
             xy = (x, y),
             xytext = (-10, 10),
             textcoords = 'offset points', ha = 'right', va = 'bottom',
-            fontsize=7,
+            fontsize=2,
             bbox = dict(boxstyle = 'round,pad=0.5', fc = 'yellow', alpha = 0.4),
             arrowprops = dict(arrowstyle = '->', connectionstyle = 'arc3,rad=0'))
 
@@ -364,6 +402,9 @@ def apply_dim_reduction(norm_matrix, dim, type):
         dim_model = PCA(n_components=dim)
     elif type == DimReductionType.LDA: ##TODO: reconsider this
         dim_model = LDA(n_components=dim)
+    elif type == DimReductionType.CMDS: ## classical MDS - TO change for dim reduction
+        dist_matrix = euclidean_distances(norm_matrix)
+        return cmdscale(dist_matrix)
 
     dim_matrix = dim_model.fit_transform(norm_matrix)
     # dim_matrix = dim_model.fit(norm_matrix).embedding_

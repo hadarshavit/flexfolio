@@ -243,7 +243,7 @@ def apply_ain_cv(bench_root_folder, exp):
 
         # load and process ASlib data
         dio = DataIO()
-        dio.load_process(desc_file_path, features_file_path, runtime_file_path, cv_file_path)
+        dio.load_process(desc_file_path, features_file_path, feature_cost_file_path, runtime_file_path, cv_file_path)
         logger.debug("Started processing dataset %s (num_algs: %d, num_insts: %d, num_features: %d)" %(dio.dataset_name,
                                                                                                        dio.num_algs,
                                                                                                        dio.num_insts,
