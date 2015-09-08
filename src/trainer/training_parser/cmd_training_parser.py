@@ -190,9 +190,9 @@ class TainerParser(object):
 
         ## Parameters for data filtering ##
         AIN_GROUP = self._arg_parser.add_argument_group("AIN Data Filtering Options")
-        AIN_GROUP.add_argument('--algorithm-subset', dest='alg_subset', action='store', default=False, help='Choose an algorithm subset')
-        AIN_GROUP.add_argument('--instance-subset', dest='inst_subset', action='store', default=False, help='Choose an instance subset')
-        AIN_GROUP.add_argument('--feature-subset', dest='ft_subset', action='store', default=False, help='Choose an instance feature subset')
+        AIN_GROUP.add_argument('--algorithm-subset', dest='alg_subset', action='store_true', default=False, help='Choose an algorithm subset')
+        AIN_GROUP.add_argument('--instance-subset', dest='inst_subset', action='store_true', default=False, help='Choose an instance subset')
+        AIN_GROUP.add_argument('--feature-subset', dest='ft_subset', action='store_true', default=False, help='Choose an instance feature subset')
         
 
 

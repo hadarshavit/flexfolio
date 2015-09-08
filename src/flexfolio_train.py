@@ -17,7 +17,8 @@ import json
 import copy
 from ainovelty.ain_flexfolio_v2 import pre_process, filter_data
 from ainovelty.ain_analyzer import apply_ain
-from src.ainovelty.experiment import Experiment
+from ainovelty.experiment import Experiment
+from pygments.sphinxext import FILTERDOC
 
 # http://stackoverflow.com/questions/279237/python-import-a-module-from-a-folder
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
@@ -145,13 +146,6 @@ class Trainer(object):
         Experiment.inst_subset_selection = args_.inst_subset
         Experiment.ft_subset_selection = args_.ft_subset
          
-        
-        
-        ### APPLY AIN
-        ##instance_dic, meta_info, ft_arr = filter_data(instance_dic, meta_info)
-        
-        
-        
         if meta_info.cv_given and meta_info.options.test_set:
             evaluator = TrainTestValidator(args_.update_sup, args_.print_time)
             evaluator.evaluate(self, meta_info, instance_dic, config_dic)
@@ -188,7 +182,7 @@ class Trainer(object):
             self.__write_config(selection_dic, meta_info)
             Printer.print_verbose(json.dumps(selection_dic, indent=2))
         
-    def train(self, meta_info, instance_dic, config_dic, feature_indicator=None, save_models=True, recursive=False):
+    def train(self, meta_info, instance_dic, config_dic, feature_indicator=None, save_models=True, recursive=False, ain_num_ft_to_remove=0, aspeed_call=False):
         '''
             only train models (no evaluation)
             Parameter:
@@ -216,6 +210,26 @@ class Trainer(object):
         config_dic = copy.deepcopy(config_dic)
         args_ = meta_info.options
         n_feats = len(meta_info.features)
+        
+        
+        # Apply data filtering
+        if not aspeed_call and not recursive:
+            filtered_instance_dic, _filtered_meta_info, _filtered_config_dic, to_remove_alg_list, _to_remove_alg_inx_list, selected_ft_arr = filter_data(instance_dic, meta_info, config_dic, ain_num_ft_to_remove)
+            algos = set(meta_info.algorithms)
+            algos = algos.difference(to_remove_alg_list)
+            feature_indicator = [0]*n_feats
+            for f in selected_ft_arr:
+                feature_indicator[f] = 1
+            del_insts = set(instance_dic.keys()).difference(filtered_instance_dic.keys())
+            for inst_ in del_insts:
+                del instance_dic[inst_]
+        else:
+            algos = meta_info.algorithms
+        
+        if args_.algorithms:
+            args_.algorithms = list(set(args_.algorithms).difference(algos))
+        else:
+            args_.algorithms = list(algos)
         
         # remove algorithms that are not listed
         if args_.algorithms:

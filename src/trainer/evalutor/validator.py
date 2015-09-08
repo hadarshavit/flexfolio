@@ -109,13 +109,13 @@ class Validator(object):
         
         self._aspeed_opt = False
     
-    def training(self, instance_train, meta_info, config_dic, trainer):
+    def training(self, instance_train, meta_info, config_dic, trainer, aspeed_call=False):
         '''
             train model on training data
         '''
         
         # TRAINING
-        selection_dic = trainer.train(meta_info, instance_train, config_dic, save_models=False)
+        selection_dic = trainer.train(meta_info, instance_train, config_dic, save_models=False, aspeed_call=aspeed_call)
 
         meta_info.options.aspeed_opt = self._aspeed_opt # restore setting in command line arguments (aspeed scheduler changes it to prevent infinite loops)
         solver_schedule = {1: {"claspfolio": meta_info.algorithm_cutoff_time}}

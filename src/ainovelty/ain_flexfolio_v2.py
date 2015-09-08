@@ -17,14 +17,14 @@ from ia_analyzer import get_opt_alg_portfolio,\
     get_opt_alg_portfolio_via_aa_superior,\
     get_opt_alg_portfolio_for_num_solved_insts,\
     choose_rep_subset_insts_as_reduction
-from src.ainovelty.feature_analyzer import ft_selection_post_process
-from src.ainovelty.ia_analyzer import choose_alg_subset_via_hiearchical_clustering,\
+from ainovelty.feature_analyzer import ft_selection_post_process
+from ainovelty.ia_analyzer import choose_alg_subset_via_hiearchical_clustering,\
     choose_alg_subset_via_hiearchical_clustering_fcluster,\
     choose_alg_subset_via_hiearchical_clustering_fcluster_kthbest,\
     choose_inst_subset_via_hiearchical_clustering_fcluster_kthbest
-from src.ainovelty.plot_util import plot_ft_importance_from_clsf,\
+from ainovelty.plot_util import plot_ft_importance_from_clsf,\
     plot_2d_scatter_subset_with_cluster
-from src.ainovelty import settings
+from ainovelty import settings
 
 # change with the train matrix, not with full matrix ??
 # or set this from fold info
@@ -345,7 +345,7 @@ def apply_ain(dio, ain_num_ft_to_remove = 0):
                                                                                                                 dio.alg_cutoff_time, 
                                                                                                                 solved_inst_arr,
                                                                                                                 unique_name=dio.dataset_name,
-                                                                                                                title='Hierarchical-Algorithms-Fold-'+ str(settings.plot_uniq_inx+1),
+                                                                                                                title='Hierarchical-Algorithms-Fold-'+ str(1),
                                                                                                                 output_folder=settings.___output_folder___,
                                                                                                                 k = 3,
                                                                                                                 )

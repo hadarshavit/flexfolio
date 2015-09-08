@@ -10,7 +10,7 @@ from ml_util import *
 from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import fcluster, fclusterdata
 from scipy.stats.stats import itemfreq
-from src.ainovelty import settings
+from ainovelty import settings
 
 
 class AlgorithmSubsetSelectionDataType:

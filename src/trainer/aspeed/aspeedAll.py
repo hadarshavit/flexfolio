@@ -77,7 +77,7 @@ class AspeedAll(object):
         
         if args_.approach != "SBS":
             _, cf_inst_par10_dict = \
-                    evaluator.evaluate(trainer, meta_info, instance_dict, config_dict, threads=self.__THREADS)
+                    evaluator.evaluate(trainer, meta_info, instance_dict, config_dict, threads=self.__THREADS, aspeed_call=True)
         else:
             cf_inst_par10_dict = None
         
