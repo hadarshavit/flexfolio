@@ -64,6 +64,7 @@ class TainerParser(object):
         REQ_GROUP.add_argument('--model-dir', dest='model_dir', action='store', default="./models", required=True, help='Path to save trained models')
         #REQ_GROUP.add_argument('--nFeats', dest='n_feats', action='store', default=32, type=int, help="number of parsed features")
         
+        
         TRA_GROUP = self._arg_parser.add_argument_group("Training Options")
         TRA_GROUP.add_argument('--feature-class', dest='feat_class', action='store', default="claspre2", choices=["claspre", "claspre2", "satzilla"], help='Class to extract features')
         TRA_GROUP.add_argument('--feature-extractor', dest='feature_path', action='store', help='Path to feature extractor binary')
@@ -185,6 +186,15 @@ class TainerParser(object):
         HIDDEN_GROUP.add_argument('--metric', dest='metric', action='store', default="PAR10", choices=["PAR10","PAR1","RMSE"], help=argparse.SUPPRESS)
         HIDDEN_GROUP.add_argument('--fold', dest='fold', action='store', default=-1, type=int, help=argparse.SUPPRESS) # [1 : 10] 
         HIDDEN_GROUP.add_argument('--t-aspeed', dest='threads_aspeed', action='store', default=1, type=int, help=argparse.SUPPRESS) # number of threads for pre-solving schedule by aspeed 
+
+
+        ## Parameters for data filtering ##
+        AIN_GROUP = self._arg_parser.add_argument_group("AIN Data Filtering Options")
+        AIN_GROUP.add_argument('--algorithm-subset', dest='alg_subset', action='store', default=False, help='Choose an algorithm subset')
+        AIN_GROUP.add_argument('--instance-subset', dest='inst_subset', action='store', default=False, help='Choose an instance subset')
+        AIN_GROUP.add_argument('--feature-subset', dest='ft_subset', action='store', default=False, help='Choose an instance feature subset')
+        
+
 
     def parse_arguments(self,sys_argv):
         '''

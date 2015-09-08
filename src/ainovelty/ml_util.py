@@ -265,7 +265,7 @@ def kmeans_adaptive(row_matrix, k_max, init_k_max = 10, clst_eval_metric = Clust
             best_score = score
             best_clst = clst
             best_k = k_val
-            print("INIT -> Best k = ", best_k, " - best_score = ", best_score)
+            ##print("INIT -> Best k = ", best_k, " - best_score = ", best_score)
             
             ## not to cluster further if clustering is almost perfect
             if best_score >= 1.0 - sensitivity:
@@ -273,7 +273,7 @@ def kmeans_adaptive(row_matrix, k_max, init_k_max = 10, clst_eval_metric = Clust
                 break
 
 
-    print("AFTER INIT -> Best k = ", best_k, "k_left = ", k_left, " - score_left = ", score_left, "k_right = ", k_right, " - score_right = ", score_right)
+    ##print("AFTER INIT -> Best k = ", best_k, "k_left = ", k_left, " - score_left = ", score_left, "k_right = ", k_right, " - score_right = ", score_right)
 
     if init_k_max < k_max: # adaptive
 
@@ -316,7 +316,7 @@ def kmeans_adaptive(row_matrix, k_max, init_k_max = 10, clst_eval_metric = Clust
                     best_k = k_left
                     
                     
-            print("Best k = ", best_k, "k_left = ", k_left, " - score_left = ", score_left, "k_right = ", k_right, " - score_right = ", score_right)
+            ##print("Best k = ", best_k, "k_left = ", k_left, " - score_left = ", score_left, "k_right = ", k_right, " - score_right = ", score_right)
             
 
             if k_left >= k_right-1: ## no more to check

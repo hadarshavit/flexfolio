@@ -95,12 +95,12 @@ def choose_features(norm_ft_matrix, output_matrix, type, k_best_features=10, num
         
         scores, top_ft_inx_arr = percentile_based_outlier(ft_importance_arr, ft_outlier_threshold_g)
         sorted_top_ft_inx_arr = np.sort(top_ft_inx_arr)
-        print("top_ft_inx_arr: ", top_ft_inx_arr)
+        ##print("top_ft_inx_arr: ", top_ft_inx_arr)
         
-        print "ft_imp_total = ", np.sum(ft_importance_arr)
+        ##print "ft_imp_total = ", np.sum(ft_importance_arr)
         
-        cv_scrs = cross_validation.cross_val_score(RandomForestRegressor(random_state=__seed__), norm_ft_matrix, output_matrix, cv=num_folds)
-        print "ft cv scores: ", cv_scrs
+        ##cv_scrs = cross_validation.cross_val_score(RandomForestRegressor(random_state=__seed__), norm_ft_matrix, output_matrix, cv=num_folds)
+        ##print "ft cv scores: ", cv_scrs
         
 #         cv_scrs_after_fs = cross_validation.cross_val_score(RandomForestRegressor(random_state=__seed__), norm_ft_matrix[:, top_ft_inx_arr], output_matrix, cv=num_folds)
 #         print "ft cv scores after feature selection: ", cv_scrs
@@ -127,12 +127,12 @@ def choose_features(norm_ft_matrix, output_matrix, type, k_best_features=10, num
         
         scores, top_ft_inx_arr = percentile_based_outlier(ft_importance_arr, ft_outlier_threshold_g)
         sorted_top_ft_inx_arr = np.sort(top_ft_inx_arr)
-        print("top_ft_inx_arr: ", top_ft_inx_arr)
+        ##print("top_ft_inx_arr: ", top_ft_inx_arr)
         
-        print "ft_imp_total = ", np.sum(ft_importance_arr)
+        ##print "ft_imp_total = ", np.sum(ft_importance_arr)
         
-        cv_scrs = cross_validation.cross_val_score(RandomForestRegressor(random_state=__seed__), norm_ft_matrix, output_matrix, cv=num_folds)
-        print "ft cv scores: ", cv_scrs
+        ##cv_scrs = cross_validation.cross_val_score(RandomForestRegressor(random_state=__seed__), norm_ft_matrix, output_matrix, cv=num_folds)
+        ##print "ft cv scores: ", cv_scrs
         
 #         cv_scrs_after_fs = cross_validation.cross_val_score(RandomForestRegressor(random_state=__seed__), norm_ft_matrix[:, top_ft_inx_arr], output_matrix, cv=num_folds)
 #         print "ft cv scores after feature selection: ", cv_scrs
@@ -336,7 +336,7 @@ def ft_selection_post_process(ft_cost_matrix, ft_step_membership_matrix, selecte
     ## determine max outliers
     min_outlier_arr, min_outlier_inx_arr = percentile_based_min_outlier(ft_cost_imp_dict['ft_step_cost'], 0.0)
     
-    print "min_outlier_arr: ", min_outlier_arr, " -- min_outlier_inx_arr: ", min_outlier_inx_arr
+    ## print "min_outlier_arr: ", min_outlier_arr, " -- min_outlier_inx_arr: ", min_outlier_inx_arr
     min_outlier_arr
     
     new_selected_fts = curr_selected_fts = selected_fts
@@ -364,7 +364,7 @@ def ft_selection_post_process(ft_cost_matrix, ft_step_membership_matrix, selecte
         
         if ft_cost_imp_dict['ft_total_imp'] >= threshold_level: ## and ft_cost_imp_dict['ft_total_imp'] >= threshold_step_level*last_ft_total_imp:
             
-            print "ft_step_inx:",ft_step_inx," features removed: ", tobe_removed_fts, " - cost gain: ", (last_ft_total_cost - ft_cost_imp_dict['ft_total_cost']), " - new ft imp: ", ft_cost_imp_dict['ft_total_imp']
+            ##print "ft_step_inx:",ft_step_inx," features removed: ", tobe_removed_fts, " - cost gain: ", (last_ft_total_cost - ft_cost_imp_dict['ft_total_cost']), " - new ft imp: ", ft_cost_imp_dict['ft_total_imp']
 
             last_ft_total_cost = ft_cost_imp_dict['ft_total_cost']
             last_ft_total_imp = ft_cost_imp_dict['ft_total_imp']
@@ -372,7 +372,7 @@ def ft_selection_post_process(ft_cost_matrix, ft_step_membership_matrix, selecte
             curr_selected_fts_imp = new_selected_fts_imp
             
 
-    print "curr_selected_fts: ", curr_selected_fts
+    ##print "curr_selected_fts: ", curr_selected_fts
 
     return ft_cost_imp_dict, curr_selected_fts, curr_selected_fts_imp
 

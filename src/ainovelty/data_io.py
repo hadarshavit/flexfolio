@@ -327,10 +327,10 @@ def extract_latent_matrices(ia_matrix, svd_type, svd_dim, svd_outlier_threshold=
         sr_full = sr
         svd_dim = len(sr)
     elif svd_type == SVDType.autoWeightedSVD:
-        print("TODO")
-        sys.exit(0)
+        raise NotImplementedError
+    
 
-    print("sr: ", sr, " - svd_k: ", svd_dim)
+    ##print("sr: ", sr, " - svd_k: ", svd_dim)
 
     return i_latent_matrix, i_latent_matrix_for_ft, a_latent_matrix, sr_full, svd_dim
 

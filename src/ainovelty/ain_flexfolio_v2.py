@@ -225,11 +225,11 @@ def apply_ain(dio, ain_num_ft_to_remove = 0):
     
     
     # determine optimal portfolio
-    opt_portfolio = get_opt_alg_portfolio(dio.ia_rank_matrix, dio.unsolved_inst_list)
-    print "opt_portfolio: ", opt_portfolio
+#     opt_portfolio = get_opt_alg_portfolio(dio.ia_rank_matrix, dio.unsolved_inst_list)
+#     print "opt_portfolio: ", opt_portfolio
 #     gen_aa_superior_matrix(train_rank_matrix)
-    opt_portfolio_set = get_opt_alg_portfolio_via_aa_superior(dio.ia_rank_matrix)
-    print "opt_portfolio v2: ", opt_portfolio_set
+#     opt_portfolio_set = get_opt_alg_portfolio_via_aa_superior(dio.ia_rank_matrix)
+#     print "opt_portfolio v2: ", opt_portfolio_set
     
     
 #     train_issolved_matrix = gen_issolved_matrix(exp.data_to_run.train_ia_perf_matrix, dio.alg_cutoff_time)
@@ -240,9 +240,9 @@ def apply_ain(dio, ain_num_ft_to_remove = 0):
     inst_inx_arr = range(0, dio.num_insts)
     solved_inst_arr = np.delete(inst_inx_arr, np.array(dio.unsolved_inst_list), 0) 
     
-    
-    dataset_hardness_dict = evaluate_dataset_hardness(dio.ia_perf_matrix[solved_inst_arr, :], dio.alg_cutoff_time)
-    
+    ################## evaluate dataset wrt when kth best per instance algorithm is selected #####################
+    # dataset_hardness_dict = evaluate_dataset_hardness(dio.ia_perf_matrix[solved_inst_arr, :], dio.alg_cutoff_time)
+    ##############################################################################################################
 
     
     # choose a subset of representative instance features (via classification, TODO: Regression )
@@ -255,12 +255,13 @@ def apply_ain(dio, ain_num_ft_to_remove = 0):
                                                                                                            ft_outlier_threshold_g = exp.ft_outlier_threshold)
     
     
-        print "top_ft_inx_arr: ", top_ft_inx_arr
+        ## print "top_ft_inx_arr: ", top_ft_inx_arr
+        print "% Selected Instance Features (", len(top_ft_inx_arr)," / ",len(norm_ft_matrix[0]),"): ", top_ft_inx_arr
         
         if exp.ft_postprocessing:
             ft_cost_imp_dict, top_ft_inx_arr, top_ft_importance_arr = ft_selection_post_process(dio.i_ft_cost_matrix, dio.i_ft_step_membership_matrix, top_ft_inx_arr, top_ft_importance_arr)
             
-            print "AFTER POSTPROCESSING: top_ft_inx_arr: ", top_ft_inx_arr
+            ## print "AFTER POSTPROCESSING: top_ft_inx_arr: ", top_ft_inx_arr
         
         
     else:
@@ -294,17 +295,17 @@ def apply_ain(dio, ain_num_ft_to_remove = 0):
         ## http://stackoverflow.com/questions/3179106/python-select-subset-from-list-based-on-index-set
         sel_ft_name_list = [dio.ft_list[i] for i in top_ft_inx_arr]       
         
-        print "$$$$$$$$$$$\t", len(top_ft_importance_arr)
-        print "@@@@@@@@@@@\t", np.sum(top_ft_importance_arr)
-        print "ZZZZZZZZZZZ\t", ft_cost_imp_dict['ft_total_cost']
-        print "FFFFFFFFFFF\t", sel_ft_name_list
+#         print "$$$$$$$$$$$\t", len(top_ft_importance_arr)
+#         print "@@@@@@@@@@@\t", np.sum(top_ft_importance_arr)
+#         print "ZZZZZZZZZZZ\t", ft_cost_imp_dict['ft_total_cost']
+#         print "FFFFFFFFFFF\t", sel_ft_name_list
     
         
     
     sorted_top_ft_inx_arr = np.sort(top_ft_inx_arr)
-    print("(%d out of %d) Features to keep are determined: %s" % (len(sorted_top_ft_inx_arr),
-                                                                         dio.num_features,
-                                                                         str(sorted_top_ft_inx_arr.tolist()).replace("[","").replace("]","").strip()))
+#     print("(%d out of %d) Features to keep are determined: %s" % (len(sorted_top_ft_inx_arr),
+#                                                                          dio.num_features,
+#                                                                          str(sorted_top_ft_inx_arr.tolist()).replace("[","").replace("]","").strip()))
     
     
     if exp.to_plot:
@@ -335,10 +336,8 @@ def apply_ain(dio, ain_num_ft_to_remove = 0):
         
          
         num_inst_solved, par10 = evaluate_oracle( dio.ia_perf_matrix[solved_inst_arr, :], dio.alg_cutoff_time)
-        print "Oracle performance before algorithm subset selection: num_inst_solved = ", num_inst_solved, " - par10 = ", par10
+        ## print "Oracle performance before algorithm subset selection: num_inst_solved = ", num_inst_solved, " - par10 = ", par10
         
-        if num_inst_solved == 197:
-            pass
          
         ### choose_alg_subset_via_hiearchical_clustering
         alg_per_cls, centroids_alg, labels_alg, num_clusters_alg = choose_alg_subset_via_hiearchical_clustering_fcluster_kthbest(dio.ia_perf_matrix, 
@@ -354,7 +353,9 @@ def apply_ain(dio, ain_num_ft_to_remove = 0):
                  
         ## check the oracle performance of considering the new algorithm (sub)set
         num_inst_solved, par10 = evaluate_oracle( (dio.ia_perf_matrix[solved_inst_arr,:])[:, np.sort(alg_per_cls)], dio.alg_cutoff_time)
-        print "Oracle performance after algorithm subset selection: num_inst_solved = ", num_inst_solved, " - par10 = ", par10
+        ##print "Oracle performance after algorithm subset selection: num_inst_solved = ", num_inst_solved, " - par10 = ", par10
+        
+        print "% Selected Algorithms (",len(alg_per_cls)," / ", dio.num_algs,"): ", str(alg_per_cls.tolist()).replace("[","").replace("]","").strip()
         
         
     else:
@@ -368,17 +369,18 @@ def apply_ain(dio, ain_num_ft_to_remove = 0):
         for alg_inx in range(dio.num_algs):
             labels_alg[alg_inx] = alg_inx
             alg_per_cls.append(alg_inx)
-        print("No algorithm subset selection, just get the optimal portfolio: ",   
-                                                                         str(alg_per_cls).replace("[","").replace("]","").strip())
+#         print("No algorithm subset selection, just get the optimal portfolio: ",   
+#                                                                          str(alg_per_cls).replace("[","").replace("]","").strip())
      
 
 
 
     sorted_alg_per_cls = np.sort(alg_per_cls)
-    print("(%d out of %d) Algorithms/solvers to keep are determined: %s" % (len(sorted_alg_per_cls),
-                                                                                   dio.num_algs,
-                                                                                   str(sorted_alg_per_cls.tolist()).replace("[","").replace("]","").strip()))
-    
+#     print("(%d out of %d) Algorithms/solvers to keep are determined: %s" % (len(sorted_alg_per_cls),
+#                                                                                    dio.num_algs,
+#                                                                                    str(sorted_alg_per_cls.tolist()).replace("[","").replace("]","").strip()))
+
+
     
     if exp.to_plot:
         ## if hierarchical clustering
@@ -413,20 +415,20 @@ def apply_ain(dio, ain_num_ft_to_remove = 0):
             else:
                 inst_clst_ft_matrix = np.concatenate((norm_ft_matrix, i_latent_matrix), 1)
             
-#             inst_per_cls, centroids_inst, labels_inst, num_clusters_inst = choose_rep_subset_insts_as_reduction(inst_clst_ft_matrix,
-#                                                                                                                  dio.unsolved_inst_list, 
-#                                                                                                                  per_inst_perf_criterion_arr,
-#                                                                                                                  criterion_higher_better=True,
-#                                                                                                                  clustering_method = exp.clst_method,
-#                                                                                                                  k_max=dio.num_insts/3) ## dio.num_insts/3  
+            inst_per_cls, centroids_inst, labels_inst, num_clusters_inst = choose_rep_subset_insts_as_reduction(inst_clst_ft_matrix,
+                                                                                                                 dio.unsolved_inst_list, 
+                                                                                                                 per_inst_perf_criterion_arr,
+                                                                                                                 criterion_higher_better=True,
+                                                                                                                 clustering_method = exp.clst_method,
+                                                                                                                 k_max=dio.num_insts/3) ## dio.num_insts/3  
             
             
-            inst_per_cls, centroids_inst, labels_inst, num_clusters_inst = choose_inst_subset_via_hiearchical_clustering_fcluster_kthbest(dio.ia_perf_matrix, 
-                                                                                                                i_latent_matrix, 
-                                                                                                                dio.alg_cutoff_time, 
-                                                                                                                sorted_alg_per_cls, 
-                                                                                                                solved_inst_arr,
-                                                                                                                k = 3)
+#             inst_per_cls, centroids_inst, labels_inst, num_clusters_inst = choose_inst_subset_via_hiearchical_clustering_fcluster_kthbest(dio.ia_perf_matrix, 
+#                                                                                                                 i_latent_matrix, 
+#                                                                                                                 dio.alg_cutoff_time, 
+#                                                                                                                 sorted_alg_per_cls, 
+#                                                                                                                 solved_inst_arr,
+#                                                                                                                 k = 3)
                         
                         
             
@@ -437,6 +439,9 @@ def apply_ain(dio, ain_num_ft_to_remove = 0):
                     to_change = True
             else:
                 break
+            
+        print "% Selected Instances (", len(inst_per_cls)," / ", len(dio.ia_perf_matrix),") : ", str(inst_per_cls.tolist()).replace("[","").replace("]","").strip()  
+    
 
     else: # no instance subset selection
         
@@ -462,10 +467,10 @@ def apply_ain(dio, ain_num_ft_to_remove = 0):
 
 
     sorted_inst_per_cls = np.sort(inst_per_cls)
-    print("inst_per_cls : ", inst_per_cls)
-    print("(%d out of %d) Instances to keep are determined: %s" % (len(sorted_inst_per_cls),
-                                                                          len(dio.ia_perf_matrix),
-                                                                          str(sorted_inst_per_cls.tolist()).replace("[","").replace("]","").strip()))
+#     print("inst_per_cls : ", inst_per_cls)
+#     print("(%d out of %d) Instances to keep are determined: %s" % (len(sorted_inst_per_cls),
+#                                                                           len(dio.ia_perf_matrix),
+#                                                                           str(sorted_inst_per_cls.tolist()).replace("[","").replace("]","").strip()))
     
     
     

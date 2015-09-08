@@ -48,6 +48,13 @@ class DataToRun(object):
 
 
 class Experiment(object):
+    
+    
+    alg_subset_selection = True ## True 
+    inst_subset_selection = False  # # True 
+    ft_subset_selection = True ## True
+      
+    
 
     def __init__(self):
         '''
@@ -65,15 +72,15 @@ class Experiment(object):
         self.svd_dim = 10 ## 10
         self.svd_outlier_threshold = 20 ## default: 20
         self.ft_outlier_threshold = 0 ## default: 40 - 20
-        self.to_report = True
-        self.to_plot = True ### False 
+        self.to_report = False
+        self.to_plot = False ### False 
         ##TODO: add these options
         
  
         
-        self.alg_subset_selection = True ## True 
-        self.inst_subset_selection = False  # # True 
-        self.ft_subset_selection = True ## True
+        self.alg_subset_selection = Experiment.alg_subset_selection ## True 
+        self.inst_subset_selection = Experiment.inst_subset_selection  # # True 
+        self.ft_subset_selection = Experiment.ft_subset_selection ## True
         
         self.ft_postprocessing = False ## True
 
@@ -83,9 +90,15 @@ class Experiment(object):
 
         self.data_to_run = None
 
+    @staticmethod
+    def set_alg_subset_selection(alg_subset_selection):
+        self.alg_subset_selection = alg_subset_selection
 
+    @staticmethod
+    def set_inst_subset_selection(self, inst_subset_selection):
+        self.inst_subset_selection = inst_subset_selection
 
-
-
-
+    @staticmethod
+    def ft_subset_selection(self, ft_subset_selection):
+        self.ft_subset_selection = ft_subset_selection
 

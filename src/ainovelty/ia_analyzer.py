@@ -105,7 +105,7 @@ def choose_rep_subset_insts_as_reduction(ft_matrix,
     ##### cluster rows wrt latent features
     centroids, labels, num_clusters = gen_class_arr(ft_matrix, clustering_method, num_consc_wrs_steps=5, k_max=k_max)
     
-    print "(@choose_rep_subset_insts_as_reduction) num_clusters= ", num_clusters
+    ##print "(@choose_rep_subset_insts_as_reduction) num_clusters= ", num_clusters
     
     num_rows = len(ft_matrix)
     
@@ -133,7 +133,7 @@ def choose_rep_subset_insts_as_reduction(ft_matrix,
     
     ## TODO: might be returned here if True
     if len(outlier_arr) == 0:  ## if there is no any outlier
-        print "(@choose_rep_subset_insts_as_reduction) outlier_arr = ", outlier_arr
+        ##print "(@choose_rep_subset_insts_as_reduction) outlier_arr = ", outlier_arr
         outlier_arr = np.zeros(num_rows, dtype=int)
         outlier_inx_arr = np.zeros(num_rows, dtype=int)
         for inst_inx in range(num_rows):
@@ -656,7 +656,8 @@ def choose_alg_subset_via_hiearchical_clustering_fcluster_kthbest(ia_perf_matrix
     p = sch.dendrogram(z)
     
     ### to plot hierarchical clustering dendrogram
-    plot_tree(p, unique_name, title, output_folder)
+    # plot_tree(p, unique_name, title, output_folder)
+    ####################################################
     
     
     oracle_num_inst_solved, oracle_par10 = evaluate_oracle(ia_perf_matrix[solved_inx_arr,:], alg_cutoff_time)
@@ -672,7 +673,7 @@ def choose_alg_subset_via_hiearchical_clustering_fcluster_kthbest(ia_perf_matrix
     ## match leaves with icoord
     icoord_sort_inx_arr = np.argsort(icoord[:,0])
     
-    print "leaves: ", leaves
+    ##print "leaves: ", leaves
     
     inx = 0
     num_leaves_processed = 0
@@ -717,7 +718,7 @@ def choose_alg_subset_via_hiearchical_clustering_fcluster_kthbest(ia_perf_matrix
 #                     if alg_inx == 5:
 #                         pass
                     
-                    print "alg_portfolio = ", alg_portfolio, " -- alg_inx = ", alg_inx
+                    ##print "alg_portfolio = ", alg_portfolio, " -- alg_inx = ", alg_inx
                     inx_to_remove = np.where(alg_portfolio == alg_inx)[0][0]
                     alg_portfolio = np.delete(alg_portfolio, inx_to_remove, 0)
                 
@@ -732,15 +733,17 @@ def choose_alg_subset_via_hiearchical_clustering_fcluster_kthbest(ia_perf_matrix
                     ##if par10 >= oracle_par10*1.1:
                     if kbest_num_inst_solved < kbest_oracle_num_inst_solved or num_inst_solved < oracle_num_inst_solved:    
                         alg_portfolio = np.insert(alg_portfolio, inx_to_remove, alg_inx)
-                    else:
-                        print alg_inx, " is removed from pair - new par10: ", kbest_par10
+                    ##else:
+                        ##print alg_inx, " is removed from pair - new par10: ", kbest_par10
                   
-                      
+                       
     return alg_portfolio, -1, alg_portfolio, len(alg_portfolio)
 
      
     
 def plot_tree( P, unique_name, title, output_folder, pos=None ):
+    '''
+    '''
     icoord = scipy.array( P['icoord'] )
     dcoord = scipy.array( P['dcoord'] )
     color_list = scipy.array( P['color_list'] )
@@ -751,7 +754,7 @@ def plot_tree( P, unique_name, title, output_folder, pos=None ):
         dcoord = dcoord[pos]
         color_list = color_list[pos]
     for xs, ys, color in zip(icoord, dcoord, color_list):
-        print "plt.plot(xs, ys,  color) = ", xs,", ", ys, ", ", color
+        ##print "plt.plot(xs, ys,  color) = ", xs,", ", ys, ", ", color
         plt.plot(xs, ys,  color)
         ##plt.show()
     plt.xlim( xmin-10, xmax + 0.1*abs(xmax) )

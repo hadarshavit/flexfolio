@@ -17,6 +17,7 @@ import json
 import copy
 from ainovelty.ain_flexfolio_v2 import pre_process, filter_data
 from ainovelty.ain_analyzer import apply_ain
+from src.ainovelty.experiment import Experiment
 
 # http://stackoverflow.com/questions/279237/python-import-a-module-from-a-folder
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
@@ -138,6 +139,12 @@ class Trainer(object):
         #=======================================================================
         reader = CosealReader()
         instance_dic, meta_info, config_dic = reader.parse_coseal(args_.coseal, args_)
+        
+        ## Set AIN data filtering parameters
+        Experiment.alg_subset_selection = args_.alg_subset
+        Experiment.inst_subset_selection = args_.inst_subset
+        Experiment.ft_subset_selection = args_.ft_subset
+         
         
         
         ### APPLY AIN
