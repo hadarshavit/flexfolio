@@ -193,7 +193,7 @@ class TainerParser(object):
         AIN_GROUP.add_argument('--algorithm-subset', dest='alg_subset', action='store_true', default=False, help='Choose an algorithm subset')
         AIN_GROUP.add_argument('--instance-subset', dest='inst_subset', action='store_true', default=False, help='Choose an instance subset')
         AIN_GROUP.add_argument('--feature-subset', dest='ft_subset', action='store_true', default=False, help='Choose an instance feature subset')
-        
+        AIN_GROUP.add_argument('--algorithm-subset-criterion', dest='alg_subset_cr', action='store', required=False, default="AthresholdPAR10", choices=["AthresholdPAR10","thresholdPAR10","thresholdNSolved", "NSolved", "kthBestNSolved","kthBestBothNSolved"], help='algorithm subset selection criteron')
 
 
     def parse_arguments(self,sys_argv):

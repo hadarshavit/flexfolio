@@ -18,7 +18,7 @@ import copy
 from ainovelty.ain_flexfolio_v2 import pre_process, filter_data
 from ainovelty.ain_analyzer import apply_ain
 from ainovelty.experiment import Experiment
-from pygments.sphinxext import FILTERDOC
+##from pygments.sphinxext import FILTERDOC
 
 # http://stackoverflow.com/questions/279237/python-import-a-module-from-a-folder
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
@@ -145,6 +145,8 @@ class Trainer(object):
         Experiment.alg_subset_selection = args_.alg_subset
         Experiment.inst_subset_selection = args_.inst_subset
         Experiment.ft_subset_selection = args_.ft_subset
+        Experiment.alg_subset_criterion = args_.alg_subset_cr
+        
          
         if meta_info.cv_given and meta_info.options.test_set:
             evaluator = TrainTestValidator(args_.update_sup, args_.print_time)

@@ -53,9 +53,9 @@ class Experiment(object):
     alg_subset_selection = True ## True 
     inst_subset_selection = False  # # True 
     ft_subset_selection = True ## True
-      
+    alg_subset_criterion = "threholdPAR10"
     
-
+    
     def __init__(self):
         '''
             data_to_run should be set for further use
@@ -77,6 +77,7 @@ class Experiment(object):
         ##TODO: add these options
         
  
+        self.alg_subset_criterion = Experiment.alg_subset_criterion
         
         self.alg_subset_selection = Experiment.alg_subset_selection ## True 
         self.inst_subset_selection = Experiment.inst_subset_selection  # # True 
@@ -90,15 +91,4 @@ class Experiment(object):
 
         self.data_to_run = None
 
-    @staticmethod
-    def set_alg_subset_selection(alg_subset_selection):
-        self.alg_subset_selection = alg_subset_selection
-
-    @staticmethod
-    def set_inst_subset_selection(self, inst_subset_selection):
-        self.inst_subset_selection = inst_subset_selection
-
-    @staticmethod
-    def ft_subset_selection(self, ft_subset_selection):
-        self.ft_subset_selection = ft_subset_selection
 

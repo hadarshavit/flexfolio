@@ -647,7 +647,8 @@ def choose_alg_subset_via_hiearchical_clustering_fcluster_kthbest(ia_perf_matrix
                                                                   unique_name=None,
                                                                   title=None,
                                                                   output_folder=None, 
-                                                                  k = 3):
+                                                                  k = 3,
+                                                                  alg_subset_criterion = "threholdPAR10"):
     
      
     dist_matrix = pdist(a_latent_matrix)
@@ -731,13 +732,61 @@ def choose_alg_subset_via_hiearchical_clustering_fcluster_kthbest(ia_perf_matrix
     #                 else:
                     ##if par10 != oracle_par10:
                     ##if par10 >= oracle_par10*1.1:
-                    if kbest_num_inst_solved < kbest_oracle_num_inst_solved or num_inst_solved < oracle_num_inst_solved:    
+                    ##if kbest_num_inst_solved < kbest_oracle_num_inst_solved or num_inst_solved < oracle_num_inst_solved:
+                    ##if kbest_num_inst_solved < kbest_oracle_num_inst_solved:
+                    if check_alg_not_removed(alg_subset_criterion, 
+                                          par10, 
+                                          num_inst_solved, 
+                                          kbest_num_inst_solved, 
+                                          kbest_par10, oracle_par10, 
+                                          oracle_num_inst_solved, 
+                                          kbest_oracle_par10, 
+                                          kbest_oracle_num_inst_solved):        
                         alg_portfolio = np.insert(alg_portfolio, inx_to_remove, alg_inx)
-                    ##else:
+                    else:
+                        if len(alg_portfolio) == 2: ## if the number of remaining algorithms degrade to 2, then stop removing    
+                            return alg_portfolio, -1, alg_portfolio, len(alg_portfolio)
                         ##print alg_inx, " is removed from pair - new par10: ", kbest_par10
                   
                        
     return alg_portfolio, -1, alg_portfolio, len(alg_portfolio)
+
+
+def check_alg_not_removed(alg_subset_criterion, 
+                       par10, 
+                       num_inst_solved, 
+                       kbest_num_inst_solved, 
+                       kbest_par10, 
+                       oracle_par10, 
+                       oracle_num_inst_solved,
+                       kbest_oracle_par10, 
+                       kbest_oracle_num_inst_solved):
+    '''
+        check whether an algorithm should not be removed
+    '''
+    if alg_subset_criterion == "AthresholdPAR10":
+        ##if par10 >= oracle_par10*2:
+        if par10 >= kbest_oracle_par10:
+            return True
+    elif alg_subset_criterion == "thresholdPAR10":
+        if par10 >= oracle_par10*1.1:
+            return True
+    elif alg_subset_criterion == "thresholdNSolved":
+        if num_inst_solved <= oracle_num_inst_solved*0.9:  
+            return True        
+    elif alg_subset_criterion == "NSolved":
+        if num_inst_solved < oracle_num_inst_solved:        
+            return True    
+    elif alg_subset_criterion == "kthBestNSolved":
+        if kbest_num_inst_solved < kbest_oracle_num_inst_solved:
+            return True
+    elif alg_subset_criterion == "kthBestBothNSolved":
+        if kbest_num_inst_solved < kbest_oracle_num_inst_solved or num_inst_solved < oracle_num_inst_solved:
+            return True
+       
+    return False 
+               
+
 
      
     

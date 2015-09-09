@@ -348,6 +348,7 @@ def apply_ain(dio, ain_num_ft_to_remove = 0):
                                                                                                                 title='Hierarchical-Algorithms-Fold-'+ str(1),
                                                                                                                 output_folder=settings.___output_folder___,
                                                                                                                 k = 3,
+                                                                                                                alg_subset_criterion = exp.alg_subset_criterion
                                                                                                                 )
                  
                  
