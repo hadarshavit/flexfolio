@@ -213,12 +213,12 @@ class Trainer(object):
         args_ = meta_info.options
         n_feats = len(meta_info.features)
         
-        
         # Apply data filtering
         if not aspeed_call and not recursive:
             filtered_instance_dic, _filtered_meta_info, _filtered_config_dic, to_remove_alg_list, _to_remove_alg_inx_list, selected_ft_arr = filter_data(instance_dic, meta_info, config_dic, ain_num_ft_to_remove)
             algos = set(meta_info.algorithms)
             algos = algos.difference(to_remove_alg_list)
+            Printer.print_c("Selected Algorithms: %s" %(",".join(algos)))
             feature_indicator = [0]*n_feats
             for f in selected_ft_arr:
                 feature_indicator[f] = 1
@@ -234,9 +234,10 @@ class Trainer(object):
             args_.algorithms = list(algos)
         
         # remove algorithms that are not listed
-        if args_.algorithms:
+        if args_.algorithms and not aspeed_call and not recursive:
             rem = AlgoRemover()
             instance_dic, solver_list, config_dic = rem.remove_algo(instance_dic, solver_list, config_dic, args_.algorithms)
+            meta_info.algorithms = args_.algorithms
             
         # find the best solver on the training set
         ranks = self.find_backup_solver(instance_dic, meta_info.algorithm_cutoff_time) # index of best par10 solver
@@ -247,6 +248,7 @@ class Trainer(object):
             Printer.print_verbose("Contribution filtering ...")
             filter_ = ContributorFilter(args_.contributor_filter)
             instance_dic, solver_list, config_dic = filter_.filter(instance_dic, solver_list, config_dic)
+            meta_info.algorithms = solver_list
 
         #correlation tests 
         correlation_dict = None

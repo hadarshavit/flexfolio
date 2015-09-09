@@ -12,7 +12,6 @@ from misc.printer import Printer
 #from misc.updater import Updater
 from trainer.evalutor.validator import Validator, Stats
 from trainer.evalutor.plotter import Plotter
-from ainovelty.ain_flexfolio_v2 import filter_data, filter_instance_test
 from ainovelty import settings
 
 class CrossValidator(Validator):

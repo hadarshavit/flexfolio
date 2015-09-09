@@ -59,10 +59,10 @@ class TrainTestValidator(Validator):
         self.testing(instance_test, meta_info, selection_dic, solver_schedule, stats)
             
         oracle_avg_time, oracle_spend_time_dict, oracle_par10, oracle_dict, oracle_tos = \
-            self._oracle_performance(instance_test, solver_list, meta_info.algorithm_cutoff_time)
-        
+            self._oracle_performance(instance_test, solver_list, meta_info.algorithm_cutoff_time, stats)
+            
         stats.print_stats(oracle_avg_time, oracle_spend_time_dict, oracle_par10, oracle_tos, meta_info.algorithm_cutoff_time)
-        
+
         if self._print_file:
             self._write_csv_runtimes(self._print_file, instance_test, stats.inst_par10_dict[1], solver_list)
         
@@ -70,9 +70,11 @@ class TrainTestValidator(Validator):
         
         if args_.smac:
             par10 = stats.thread_par10_dic[1]
+            n = stats._test_n
+            oracle_tos = stats.unsolved
             cut = meta_info.algorithm_cutoff_time
-            par10_wo_unsolvable = (par10*len(instance_test) - cut*10*oracle_tos) # without average normalization
-            print("%f" %(par10_wo_unsolvable))
+            par10_wo_unsolvable = (par10*n - cut*10*oracle_tos) / (n - oracle_tos)  # without average normalization
+            print("Result for SMAC: %f" %(par10_wo_unsolvable))
         
         if args_.table_format:
             name = args_.approach

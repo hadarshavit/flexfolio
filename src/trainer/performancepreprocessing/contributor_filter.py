@@ -29,7 +29,6 @@ class ContributorFilter(object):
                 config_dic: solver name -> solver call
         '''
         
-        
         #while True:
         while len(solver_list) > 2: # CVSH FIX: Don't remove all solvers... that will cause a crash. Leave at least 2 to decide between.
             contributions = self.__calc_contributions(instance_dic, len(solver_list))
@@ -84,7 +83,7 @@ class ContributorFilter(object):
         '''
         
         for inst in instance_dic.values():
-            #print("%s: %d (t) vs %d (m)" %(inst.get_name(),len(times), min_index))
+            #print("%s: %d (t) vs %d (m)" %(inst.get_name(),len(inst._cost_vec), min_index))
             inst._cost_vec.pop(min_index)
             inst._transformed_cost_vec.pop(min_index)
         
