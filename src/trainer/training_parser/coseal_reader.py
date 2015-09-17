@@ -10,6 +10,7 @@ Problems:
 import sys
 import argparse
 import os
+import yaml
 
 import arff
 from misc.printer import Printer
@@ -133,72 +134,115 @@ class CosealReader(object):
         ''' 
         Printer.print_c("Read %s" %(file_))
         
-        with open(file_,"r") as fp:
-            for line in fp:
-                line = line.replace("\n","").strip(" ")
-                if line.upper().startswith("SCENARIO_ID"):
-                    self.metainfo.scenario = line.split(":")[1].strip(" ")
-                elif line.upper().startswith("PERFORMANCE_MEASURES" ):
-                    self.metainfo.performance_measure = map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(","))
-                elif line.upper().startswith("MAXIMIZE"):
-                    try:
-                        self.metainfo.maximize = line.split(":")[1].strip(" ").split(",")
-                    except ValueError:
-                        Printer.print_w("Cannot read MAXIMIZE")
-                elif line.upper().startswith("PERFORMANCE_TYPE"):
-                    self.metainfo.performance_type = map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(","))
-                elif line.upper().startswith("ALGORITHM_CUTOFF_TIME"):
-                    try:
-                        self.metainfo.algorithm_cutoff_time= float(line.split(":")[1])
-                    except ValueError:
-                        Printer.print_w("Cannot read ALGORITHM_CUTOFF_TIME")
-                elif line.upper().startswith("ALGORITHM_CUTOFF_MEMORY"):
-                    try:
-                        self.metainfo.algorithm_cutoff_memory = float(line.split(":")[1])
-                    except ValueError:
-                        Printer.print_w("Cannot read ALGORITHM_CUTOFF_MEMORY")
-                elif line.upper().startswith("FEATURES_CUTOFF_TIME"):
-                    try:
-                        self.metainfo.features_cutoff_time = float(line.split(":")[1])
-                    except ValueError:
-                        Printer.print_w("Cannot read FEATURES_CUTOFF_TIME")
-                elif line.upper().startswith("FEATURES_CUTOFF_MEMORY"):
-                    try:
-                        self.metainfo.features_cutoff_memory = float(line.split(":")[1])
-                    except ValueError:
-                        Printer.print_w("Cannot read FEATURES_CUTOFF_MEMORY")
-                elif line.upper().startswith("FEATURES_DETERMINISTIC"):
-                    try:
-                        self.metainfo.features_deterministic = map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(","))
-                    except ValueError:
-                        Printer.print_w("Cannot read FEATURES_DETERMINISTIC")               
-                elif line.upper().startswith("FEATURES_STOCHASTIC"):
-                    try:
-                        self.metainfo.features_stochastic = map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(","))
-                    except ValueError:
-                        Printer.print_w("Cannot read FEATURES_STOCHASTIC")      
-                elif line.upper().startswith("ALGORITHMS_DETERMINISTIC"):
-                    try:
-                        self.metainfo.algortihms_deterministics = filter(lambda x: True if x else False, map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(",")))
-                    except ValueError:
-                        Printer.print_w("Cannot read ALGORTIHMS_DETERMINISTIC")               
-                elif line.upper().startswith("ALGORITHMS_STOCHASTIC"):
-                    try:
-                        self.metainfo.algorithms_stochastic = filter(lambda x: True if x else False, map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(",")))
-                    except ValueError:
-                        Printer.print_w("Cannot read ALGORITHMS_STOCHASTIC")     
-                elif line.upper().startswith("FEATURE_STEP"):
-                    try:
-                        group_name = line.split(":")[0][12:].strip(" ")
-                        features = map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(","))
-                        self.metainfo.feature_group_dict[group_name] = features
-                    except ValueError:
-                        Printer.print_w("Cannot read Feature_Step")     
-                elif line.startswith("default_step"):
-                    try:
-                        self.metainfo.feature_steps = filter(lambda x: True if x else False, map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(",")))
-                    except ValueError:
-                        Printer.print_w("Cannot read DEFAULT_STEPS")                                         
+        with open(file_, "r") as fh:
+            description = yaml.load(fh)
+            
+        self.metainfo.scenario = description.get('scenario_id')
+        self.metainfo.performance_measure = description.get('performance_measures')
+
+        self.metainfo.performance_measure = description.get('performance_measures') if isinstance(description.get('performance_measures'), list) else \
+                                                [description.get('performance_measures')] 
+
+        maximize = description.get('maximize')
+        self.metainfo.maximize = maximize if isinstance(maximize, list) else \
+            [maximize]
+
+        performance_type = description.get('performance_type')
+        self.metainfo.performance_type  = performance_type if isinstance(performance_type, list) else \
+            [performance_type]
+            
+        self.metainfo.algorithm_cutoff_time = description.get('algorithm_cutoff_time')
+        self.metainfo.features_cutoff_memory = description.get('algorithm_cutoff_memory')
+        self.metainfo.features_cutoff_time = description.get('features_cutoff_time')
+        self.metainfo.features_cutoff_memory = description.get('features_cutoff_memory')
+        self.metainfo.features_deterministic = description.get('features_deterministic')
+        if self.metainfo.features_deterministic is None:
+            self.metainfo.features_deterministic = set()
+        self.metainfo.features_stochastic = description.get('features_stochastic')
+        if self.metainfo.features_stochastic is None:
+            self.metainfo.features_stochastic = set()
+        self.metainfo.algortihms_deterministics = description.get('algorithms_deterministic')
+        if self.metainfo.algortihms_deterministics is None:
+            self.metainfo.algortihms_deterministics = set()
+        self.metainfo.algorithms_stochastic = description.get('algorithms_stochastic')
+        if self.metainfo.algorithms_stochastic is None:
+            self.metainfo.algorithms_stochastic = set()
+        self.metainfo.feature_group_dict = description.get('feature_steps')
+        self.metainfo.feature_steps = description.get('default_steps')
+
+        self.metainfo.algorithms = list(
+            set(self.metainfo.algorithms_stochastic).union(
+                self.metainfo.algortihms_deterministics))
+        
+        
+        #=======================================================================
+        # with open(file_,"r") as fp:
+        #     for line in fp:
+        #         line = line.replace("\n","").strip(" ")
+        #         if line.upper().startswith("SCENARIO_ID"):
+        #             self.metainfo.scenario = line.split(":")[1].strip(" ")
+        #         elif line.upper().startswith("PERFORMANCE_MEASURES" ):
+        #             self.metainfo.performance_measure = map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(","))
+        #         elif line.upper().startswith("MAXIMIZE"):
+        #             try:
+        #                 self.metainfo.maximize = line.split(":")[1].strip(" ").split(",")
+        #             except ValueError:
+        #                 Printer.print_w("Cannot read MAXIMIZE")
+        #         elif line.upper().startswith("PERFORMANCE_TYPE"):
+        #             self.metainfo.performance_type = map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(","))
+        #         elif line.upper().startswith("ALGORITHM_CUTOFF_TIME"):
+        #             try:
+        #                 self.metainfo.algorithm_cutoff_time= float(line.split(":")[1])
+        #             except ValueError:
+        #                 Printer.print_w("Cannot read ALGORITHM_CUTOFF_TIME")
+        #         elif line.upper().startswith("ALGORITHM_CUTOFF_MEMORY"):
+        #             try:
+        #                 self.metainfo.algorithm_cutoff_memory = float(line.split(":")[1])
+        #             except ValueError:
+        #                 Printer.print_w("Cannot read ALGORITHM_CUTOFF_MEMORY")
+        #         elif line.upper().startswith("FEATURES_CUTOFF_TIME"):
+        #             try:
+        #                 self.metainfo.features_cutoff_time = float(line.split(":")[1])
+        #             except ValueError:
+        #                 Printer.print_w("Cannot read FEATURES_CUTOFF_TIME")
+        #         elif line.upper().startswith("FEATURES_CUTOFF_MEMORY"):
+        #             try:
+        #                 self.metainfo.features_cutoff_memory = float(line.split(":")[1])
+        #             except ValueError:
+        #                 Printer.print_w("Cannot read FEATURES_CUTOFF_MEMORY")
+        #         elif line.upper().startswith("FEATURES_DETERMINISTIC"):
+        #             try:
+        #                 self.metainfo.features_deterministic = map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(","))
+        #             except ValueError:
+        #                 Printer.print_w("Cannot read FEATURES_DETERMINISTIC")               
+        #         elif line.upper().startswith("FEATURES_STOCHASTIC"):
+        #             try:
+        #                 self.metainfo.features_stochastic = map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(","))
+        #             except ValueError:
+        #                 Printer.print_w("Cannot read FEATURES_STOCHASTIC")      
+        #         elif line.upper().startswith("ALGORITHMS_DETERMINISTIC"):
+        #             try:
+        #                 self.metainfo.algortihms_deterministics = filter(lambda x: True if x else False, map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(",")))
+        #             except ValueError:
+        #                 Printer.print_w("Cannot read ALGORTIHMS_DETERMINISTIC")               
+        #         elif line.upper().startswith("ALGORITHMS_STOCHASTIC"):
+        #             try:
+        #                 self.metainfo.algorithms_stochastic = filter(lambda x: True if x else False, map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(",")))
+        #             except ValueError:
+        #                 Printer.print_w("Cannot read ALGORITHMS_STOCHASTIC")     
+        #         elif line.upper().startswith("FEATURE_STEP"):
+        #             try:
+        #                 group_name = line.split(":")[0][12:].strip(" ")
+        #                 features = map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(","))
+        #                 self.metainfo.feature_group_dict[group_name] = features
+        #             except ValueError:
+        #                 Printer.print_w("Cannot read Feature_Step")     
+        #         elif line.startswith("default_step"):
+        #             try:
+        #                 self.metainfo.feature_steps = filter(lambda x: True if x else False, map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(",")))
+        #             except ValueError:
+        #                 Printer.print_w("Cannot read DEFAULT_STEPS")                                         
+        #=======================================================================
                                       
         self.metainfo.algorithms = list(set(self.metainfo.algorithms_stochastic).union(self.metainfo.algortihms_deterministics))
                   
@@ -230,6 +274,11 @@ class CosealReader(object):
             Printer.print_w("Have not found algorithms_stochastic")
         if not self.metainfo.feature_group_dict:
             Printer.print_w("Have not found any feature step")
+           
+        for step, d in self.metainfo.feature_group_dict.items():
+            if  d.get("requires") and not isinstance(d["requires"], list):
+                self.metainfo.feature_group_dict[step]["requires"] = [d["requires"]]
+                
            
         feature_intersec = set(self.metainfo.features_deterministic).intersection(self.metainfo.features_stochastic)
         if feature_intersec:
@@ -652,6 +701,7 @@ class CosealReader(object):
         '''
             check that features are Na
         '''
+        
         feature_group_dict = self.metainfo.feature_group_dict
         
         for inst_ in self.instances.values():
@@ -660,11 +710,22 @@ class CosealReader(object):
                 if status.upper() != "OK":
                     not_ok_steps.append(step)
                     
-            unused_features = set()
+            not_ok_features = []
             for u_step in not_ok_steps:
-                not_processed_features = feature_group_dict[u_step]
-                unused_features = unused_features.union(set(not_processed_features))
-            not_ok_index_features = sorted(list(map(str,self.metainfo.features).index(un_feature) for un_feature in unused_features), reverse=True)
+                not_ok_features.extend(feature_group_dict[u_step]["provides"])
+                
+            not_ok_index_features = map(lambda x: self.metainfo.features.index(x), not_ok_features)
+            
+            
+                
+            #===================================================================
+            # unused_features = set()
+            # for u_step in not_ok_steps:
+            #     not_processed_features = feature_group_dict[u_step]
+            #     unused_features = unused_features.union(set(not_processed_features))
+            #===================================================================
+            #not_ok_index_features = sorted(list(map(str,self.metainfo.features).index(un_feature) for un_feature in unused_features), reverse=True)
+
             ok_index_features = set(range(len(self.metainfo.features))).difference(not_ok_index_features)
             
             warned = False
@@ -700,29 +761,58 @@ class CosealReader(object):
             feature_steps = set()
             for f in features:
                 for f_group, f_list in feature_group_dict.iteritems():
-                    if f in f_list:
+                    if f in f_list["provides"]:
                         feature_steps.add(f_group)
+                        
+            changed = True
+            while changed:
+                changed = False
+                for step in feature_steps:
+                    missing_steps = set(feature_group_dict[step].get("requires",set())).difference(feature_steps)
+                    if missing_steps:
+                        changed = True
+                        feature_steps = feature_steps.union(missing_steps)
+                        Printer.print_w("Adding missing feature step because of a pre-condition: %s" %(",".join(missing_steps)))
+                        
             unused_steps = set(feature_group_dict.keys()).difference(set(feature_steps))
-            Printer.print_c("Used feature steps: %s" %(",".join(feature_steps)))
-        else:
+            Printer.print_c("Used feature steps (%d): %s" %(len(feature_steps), ",".join(feature_steps)))
             
+        else:
             if not feature_steps:
                 feature_steps = list(self.metainfo.feature_steps) # if no steps are specified, use default
             
-            Printer.print_c("Used Feature Steps: %s" % (",".join(feature_steps)))
             empty_check = set(feature_steps).difference(set(feature_group_dict.keys()))
             if empty_check:
                 Printer.print_e("Feature steps (--feature-steps [list]) are not defined in data: %s" %(",".join(empty_check)), -2)
 
-            unused_features = set()
-            unused_steps = set(feature_group_dict.keys()).difference(set(feature_steps))
-            for u_step in unused_steps:
-                not_processed_features = feature_group_dict[u_step]
-                unused_features = unused_features.union(set(not_processed_features))
+            # check preconditions of features
+            available_steps = set()
+            used_features = set()
+            for step in feature_steps: #TODO: order of feature steps could be an issue
+                req_steps = set(feature_group_dict[step].get("requires", set()))
+                miss_steps = req_steps.difference(feature_steps)
+                if miss_steps:
+                    Printer.print_w("Feature Step %s does not met his pre-conditions (%s). Adding feature step to set (but not to feature set!)." %(step, ",".join(miss_steps)))
+                
+                available_steps.add(step)
+                for f in feature_group_dict[step]["provides"]:
+                    used_features.add(f) 
+                    
+                for ms in miss_steps:
+                    available_steps.add(ms)
+                    for f in feature_group_dict[ms]["provides"]:
+                        used_features.add(f)            
+                        
+            feature_steps = available_steps
+            Printer.print_c("Used Feature Steps (%d): %s" % (len(feature_steps), ",".join(feature_steps)))        
+            
+            unused_features = set(self.metainfo.features).difference(set(used_features))
+            unused_steps = set(feature_group_dict.keys()).difference(set(available_steps))
+            
         
         Printer.print_nearly_verbose("Remove features: %s\n" %(",".join(unused_features)))
         used_features = set(self.metainfo.features).difference(unused_features)
-        Printer.print_c("Used features: %s\n" %(",".join(used_features)))
+        Printer.print_c("Used features (%d): %s\n" %(len(used_features), ",".join(used_features)))
         
         if not used_features:
             Printer.print_w("Empty feature set - fall back to default feature set.")
