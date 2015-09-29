@@ -544,9 +544,10 @@ class Trainer(object):
         '''
         if core_solver_time_dict is None:
             core_solver_time_dict = {1:{}}
-        for pre_entry in external_pre_schedule:
-            solver, time_ = pre_entry.split(",")
-            core_solver_time_dict[1][solver] = max(core_solver_time_dict[1].get(solver,0), float(time_))
+        if external_pre_schedule:
+            for pre_entry in external_pre_schedule:
+                solver, time_ = pre_entry.split(",")
+                core_solver_time_dict[1][solver] = max(core_solver_time_dict[1].get(solver,0), float(time_))
             
         Printer.print_c("Pre-Solving schedule: %s" %(core_solver_time_dict))
         for core, solver_time_dict in core_solver_time_dict.items():
