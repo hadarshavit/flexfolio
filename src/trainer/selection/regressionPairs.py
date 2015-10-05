@@ -1,5 +1,5 @@
 '''
-Created on Feb, 2013
+Created on Oct, 2015
 
 @author: manju
 '''
@@ -11,9 +11,9 @@ import abc
 from trainer.selection.selector import SelectorTrainer
 from misc.printer import Printer
 
-class ClassifierVoter(SelectorTrainer):
+class RegressionPairs(SelectorTrainer):
     '''
-       trainer with pairwise comparison classification models
+       train for each pair of algorithms a regression model to predict the difference in performance
     '''
 
 
@@ -28,7 +28,7 @@ class ClassifierVoter(SelectorTrainer):
     def train(self, instance_dic, solver_list, config_dic, cutoff,
               model_dir, f_indicator, n_feats):
         '''
-            train models for flexfolio 
+            train models for flexfolio based 
             Args:
                 instance_dic: instance name -> Instance()
                 solver_list: list of solver names
@@ -67,7 +67,7 @@ class ClassifierVoter(SelectorTrainer):
     def __collect_and_train_data(self, instance_dic, n_solver, cutoff):
         '''
             collects all necessary data for a pairwise comparison
-            and trains pairwise classification models
+            and trains pairwise svm models
             Args:
                 instance_dic : instance name -> Instance()
                 n_solver: number of solvers
@@ -91,35 +91,25 @@ class ClassifierVoter(SelectorTrainer):
                     f = inst._normed_features
                     y_i = inst._transformed_cost_vec[i]
                     y_j = inst._transformed_cost_vec[j]
-                    if (y_i >= cutoff and y_j >= cutoff): # useless if both solver have timeout
-                        continue
+                    #if (y_i >= cutoff and y_j >= cutoff): # useless if both solver have timeout
+                    #    continue
                     if (y_i == self._UNKNOWN_CODE or y_j == self._UNKNOWN_CODE): # one of the solvers has an unkown runtime, comparison not possible
                         continue
                     else: 
                         feats.append(f)
                         # penalize timouts
                         if y_i >= cutoff:
-                            y_i *= 10 
+                            y_i = cutoff * 10 
                         if y_j >= cutoff:
-                            y_j *= 10 
-                        penalized_weight = inst._weight 
-                        weights.append(math.fabs(y_i - y_j) * penalized_weight)
-                        if y_i > y_j:
-                            labels.append(1)
-                        else:
-                            labels.append(0)
-                # train model
-                if not labels:
-                    Printer.print_w("At least one pair of solvers never solved an instance. Use --contr-filter 0.00001 to filter them out.")
-                    model = -1 # not applicable -> not used later on at voting
-                else: 
-                    model = self._train(labels, feats, weights)
-                
+                            y_j = cutoff * 10 
+                        weights.append(inst._weight) 
+                        labels.append(y_i - y_j)
+                model = self._train_regression(labels, feats, weights)
                 models[(i,j)] = model
         return models
     
     #@abc.abstractmethod
-    def _train(self, y, X, weights):
+    def _train_regression(self, y, X, weights):
         '''
             trains the actual model
             dummy implementation - override in subclasses
@@ -167,7 +157,7 @@ class ClassifierVoter(SelectorTrainer):
         
         selector_dic = {
                         "approach": {
-                                     "approach" : "classvoter",
+                                     "approach" : "regressionpairs",
                                      "models" : files
                                      },
                         "normalization": {

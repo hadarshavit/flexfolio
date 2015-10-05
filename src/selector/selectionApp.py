@@ -24,6 +24,7 @@ class SelectionBase(object):
         
         # algorithm selection methods import
         from regression import Regression
+        from regPairs import RegPairs
         from NN import NearestNeighbor
         from SBS import SBS
         from Ensemble import Ensemble
@@ -36,6 +37,7 @@ class SelectionBase(object):
         selector = {"CLASSVOTER": ClassVoter,
                 "CLASSMULTI": ClassMulti,
                 "REGRESSION" : Regression,
+                "REGRESSIONPAIRS" : RegPairs,
                 "NN": NearestNeighbor, 
                 "kNN": KNearestNeighbor,
                 "CLUSTERING": Clustering, 

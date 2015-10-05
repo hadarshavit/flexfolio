@@ -67,7 +67,7 @@ class TainerParser(object):
         TRA_GROUP = self._arg_parser.add_argument_group("Training Options")
         TRA_GROUP.add_argument('--feature-class', dest='feat_class', action='store', default="claspre2", choices=["claspre", "claspre2", "satzilla"], help='Class to extract features')
         TRA_GROUP.add_argument('--feature-extractor', dest='feature_path', action='store', help='Path to feature extractor binary')
-        TRA_GROUP.add_argument('--approach', dest='approach', action='store', default="CLASSVOTER", choices=["REGRESSION", "CLASSVOTER", "CLASSMULTI", "NN", "kNN", "CLUSTERING", "SNNAP", "SBS", "ENSEMBLE", "ASPEED"], help='selection approach')
+        TRA_GROUP.add_argument('--approach', dest='approach', action='store', default="CLASSVOTER", choices=["REGRESSION", "REGRESSIONPAIRS", "CLASSVOTER", "CLASSMULTI", "NN", "kNN", "CLUSTERING", "SNNAP", "SBS", "ENSEMBLE", "ASPEED"], help='selection approach')
         TRA_GROUP.add_argument('--classifier', dest='classifier', action='store', default="RANDOMFOREST", choices=["SVM", "GRADIENTBOOSTING", "RANDOMFOREST"], help='classifier used for approach \"CLASSVOTER\"')
         TRA_GROUP.add_argument('--classifiermulti', dest='classifiermulti', action='store', default="RANDOMFOREST", choices=["SVM", "RANDOMFOREST", "GRADIENTBOOSTING"], help='classifier used for approach \"CLASSVOTER\"')
         TRA_GROUP.add_argument('--regressor', dest='regressor', action='store', default="RANDOMFOREST", choices=["SVR", "RIDGE", "LASSO", "RANDOMFOREST"], help='regressor used for approach \"REGRESSION\" and \"SNNAP\"')
