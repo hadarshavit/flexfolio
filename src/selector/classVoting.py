@@ -8,6 +8,7 @@ import math
 import os
 import sys
 import operator
+import numpy
 
 from sklearn.externals import joblib
 
@@ -68,6 +69,7 @@ class ClassVoter(Selector):
             model_dict = model_files
             model_files = model_files.keys()
         
+        comparison_metric = numpy.zeros((n_solver, n_solver))
         for model_file in model_files:
             base_name = os.path.basename(model_file) # format: %d_%d.model
             tuple_solvers = base_name.split(".")[0].split("_")
@@ -85,8 +87,23 @@ class ClassVoter(Selector):
                 continue
             elif p_label == 1: # vote for j; low numbers are preferred
                 dic_solver_votes[j] -= 1
+                comparison_metric[j,i] = 1
             else:
                 dic_solver_votes[i] -= 1 # label = 0 -> vote for i
+                comparison_metric[i,j] = 1
+                
+        # break ties according to MIP-Hydra -- only for best predicted algos
+        # "Ties are broken by only counting the votes from those decision forests that involve algorithms which received equal votes"
+        sorted_scores = sorted(dic_solver_votes.iteritems(),key=operator.itemgetter(1))
+        tie_set = []
+        best_score = sorted_scores[0][1]
+        for solver_id, score in sorted_scores:
+            if best_score == score:
+                tie_set.append(solver_id)
+            else:
+                break
+        for tie_id in tie_set:
+            dic_solver_votes[tie_id] -= sum(comparison_metric[tie_id, tie_set]) 
             
         dic_solver_votes = self.__map_ids_2_names(dic_solver_votes, se_dic["configurations"])
         

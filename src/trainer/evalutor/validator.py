@@ -35,6 +35,8 @@ class Stats(object):
         self.presolved = 0
         self.unsolved = 0 # instances that are not solved by any algorithm AND not presolved
         
+        self.ties = 0 # how often two or more 
+        
     def print_stats(self, oracle_avg_time, oracle_spend_time_dict, oracle_par10, oracle_tos, cutoff):
         Printer.print_c("\n >>> Instances: %d <<<" %(self._test_n))
         Printer.print_c(" >>> Oracle Evaluation (w/o unsolved) <<<\n")
@@ -56,6 +58,7 @@ class Stats(object):
         solved = dict((thread, 1 - (float(to)/self._test_n)) for thread, to in self.thread_timeout_dic.items())
         Printer.print_c("\n >>> Cross Fold Evaluation <<<\n")
         Printer.print_c("Presolved: %s" %(str(self.presolved)))
+        Printer.print_c("Prediction ties: %d" %(self.ties))
         Printer.print_c(">>>With Unsolvable Instances")
         Printer.print_c("Timeouts (with unsolved): %d" %(self.thread_timeout_dic[1]))
         Printer.print_c("Solved (perc) (with unsolved): %.4f" %(solved[1]))
@@ -189,6 +192,8 @@ class Validator(object):
                                solver_list, 
                                meta_info.algorithm_cutoff_time,
                                solver_schedule, satzilla_mode = meta_info.options.test_mode == "satzilla")
+                if list_conf_scores[0][1] == list_conf_scores[1][1]:
+                    stats.ties += 1
             par10_per_set += thread_time_dic[1]
             stats._test_n += 1
             stats.spend_time = dict((solver,stats.spend_time.get(solver,0)+ spend_time_dict.get(solver,0)) for solver in solver_list)
