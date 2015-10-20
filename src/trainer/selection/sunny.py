@@ -29,13 +29,13 @@ class SunnyTrainer(SelectorTrainer):
         self.max_solvers = max_solvers
         
         self._UNKNOWN_CODE = -512
-        self._MAX_K = 32
+        self._MAX_K = 100
    
     def __repr__(self):
         return "SUNNY"
    
     def train(self, instance_dic, solver_list, config_dic, cutoff, model_dir, f_indicator, n_feats, 
-                meta_info, trainer):
+                meta_info, trainer, train_sunny):
         '''
             train model
             Args:
@@ -50,11 +50,15 @@ class SunnyTrainer(SelectorTrainer):
         
         self._cutoff = cutoff
 
-        if self.k == -1:
-            folds =  meta_info.options.crossfold
-            self.k = int(round(math.sqrt(len(instance_dic)*(float(folds-1)/folds))))
+        if train_sunny:
+            self.k, self.max_solvers = self.__guessParameters(meta_info, instance_dic, trainer, config_dic)
+
+        elif self.k == -1:
+            self.k = int(round(math.sqrt(len(instance_dic))))
         
         Printer.print_nearly_verbose("Chosen k: %d" %(self.k))
+        Printer.print_nearly_verbose("Chosen solver limit: %d" %(self.max_solvers))
+
 
 
         if self._save_models:
@@ -127,8 +131,45 @@ class SunnyTrainer(SelectorTrainer):
             save_list.append(point)
             
         return save_list
-        
-        
-        
-    
-    
+
+    def __guessParameters(self, meta_info, instance_dic, trainer, config_dic):
+        '''
+            guess k on PAR10 by cross validation
+        '''
+        evaluator = CrossValidator(meta_info.options.update_sup, None)
+
+        original_folds = meta_info.options.crossfold
+        meta_info.options.crossfold = 3
+
+        best_par10 = sys.maxint
+        best_k = 1
+        best_limit = 0
+        max_k = min(self._MAX_K, len(instance_dic) - 1)
+        max_limit = len(config_dic.items())
+        for k in self.__get_candidate_values(1):
+            if k > max_k:
+                break
+            for limit in self.__get_candidate_values(0):
+                if limit >= max_limit:
+                    break
+                meta_info.options.knn = k
+                meta_info.options.sunny_max_solver = limit
+                meta_info.options.train_sunny = False
+                Printer.disable_printing = True
+                par10, _ = evaluator.evaluate(trainer, meta_info, instance_dic, config_dic)
+                Printer.disable_printing = False
+                Printer.print_verbose("k: %d, solvermax = %d \t par10: %f" %(k, limit, par10))
+                if best_par10 > par10:
+                    best_par10 = par10
+                    best_k = k
+                    best_limit = limit
+
+        meta_info.options.crossfold = original_folds
+
+        return best_k, best_limit
+
+    def __get_candidate_values(self, start):
+        x = start
+        while 1:
+            yield x
+            x += max(1, int(math.sqrt(x)))

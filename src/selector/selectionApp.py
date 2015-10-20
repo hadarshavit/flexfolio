@@ -52,9 +52,11 @@ class SelectionBase(object):
 
         # static list of approaches that apply online scheduling
         schedulers = ["SUNNY", "ISA"]
-
+        # workaround for scheduler trainer TODO find a better solution
         if selector_name == "SCHEDULERS":
             selector_name = se_dic["approach"]["approach"]
+        if selector_name == "MAJORITY" or selector_name == "Majority":
+            selector_name = "SBS"
         list_conf_scores = selector[selector_name]().select_algorithms(se_dic, features, pwd)
 
         if list_conf_scores is None:

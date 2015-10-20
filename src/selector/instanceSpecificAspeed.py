@@ -99,9 +99,8 @@ class InstanceSpecificAspeed(Selector):
         average_perfs = reduce(lambda x,y: [sum(pair) for pair in zip(x, y)], k_nearest_perfs, [0]*n_perfs)
         dic_solver_scores = self.__map_ids_2_names(average_perfs, se_dic["configurations"])
 
-
         instance_dic = self.__write_instance_dic(k_nearest_perfs)
-        solver_list = dic_solver_scores.keys()
+        solver_list = self.__get_solver_list(se_dic["configurations"])
 
         scheduler = AspeedAll(se_dic["approach"]["clasp"],
                               se_dic["approach"]["gringo"],
@@ -124,10 +123,12 @@ class InstanceSpecificAspeed(Selector):
                                                       se_dic["approach"]["feat_time"],
                                                       se_dic["approach"]["model_dir"])
 
+
+
         if not printer_disabled:
             Printer.disable_printing = False
 
-        dic_thread_schedule = self.transform_schedule(schedule, dic_solver_scores, cutoff)
+        dic_thread_schedule = self.transform_schedule(schedule, dic_solver_scores, cutoff, se_dic["approach"]["descending"])
 
         # if aspeed delivers an empty schedule, give all time to the solver with the best score
         if not dic_thread_schedule:
@@ -154,6 +155,15 @@ class InstanceSpecificAspeed(Selector):
             dic_name_score[solver_name] = scores[int(id_)]
         return dic_name_score
 
+    def __get_solver_list(self, conf_dic):
+        tuples_solver_id = []
+        for solver_name, meta_dic in conf_dic.items():
+            id_ = meta_dic["id"]
+            tuples_solver_id.append((solver_name, id_))
+        tuples_solver_id.sort(key = lambda x:x[1])
+
+        return map(lambda x: x[0], tuples_solver_id)
+
     def __write_instance_dic(self, k_nearest_perfs):
         '''
             write a dictionary instance name -> Instance()
@@ -171,9 +181,9 @@ class InstanceSpecificAspeed(Selector):
 
         return instance_dic
 
-    def transform_schedule(self, aspeed_schedule, dic_solver_scores, cutoff):
+    def transform_schedule(self, aspeed_schedule, dic_solver_scores, cutoff, descending):
         '''
-            transform the schedule dictionary provided by aspeed into the list form of selectors
+            transform the schedule dictionary provided by aspeed into the format used for online scheduling
         '''
         cores = aspeed_schedule.keys()
         dic_thread_schedule = {}
@@ -184,7 +194,7 @@ class InstanceSpecificAspeed(Selector):
             solver_count = 0
             time_sum = 0
             for solver, time in aspeed_schedule[core].iteritems():
-                if solver == "claspfolio":
+                if solver == "claspfolio" or time == 0:
                     continue
                 solver_count += 1
                 time_sum += time
@@ -195,12 +205,14 @@ class InstanceSpecificAspeed(Selector):
 
             # write the score list
             for solver, time in aspeed_schedule[core].iteritems():
-                if solver == "claspfolio":
+                if solver == "claspfolio" or time == 0:
                     continue
                 schedule.append((solver, (dic_solver_scores[solver], time + bonus_time)))
 
-            dic_thread_schedule[core] = schedule
+            schedule.sort(key=lambda x:x[1][1], reverse=descending)
 
+
+            dic_thread_schedule[core] = schedule
 
 
         return dic_thread_schedule

@@ -240,6 +240,8 @@ class Trainer(object):
             correlation_dict = tester.pairwise_contribution(instance_dic, solver_list, args_.correlation)
             #correlation_dict = tester.correlation_test(instance_dic, solver_list, args_.correlation)
 
+
+        args_.aspeed_opt
         # pre-solver schedule via aspeed
         if args_.aspeed_opt:
             if args_.aspeed_pre_slice == -10:
@@ -461,7 +463,7 @@ class Trainer(object):
             selection_dic = trainer_obj.train(instance_dic, solver_list, config_dic,
                                                            meta_info.algorithm_cutoff_time, args_.model_dir,
                                                            feature_indicator, n_feats,
-                                                           meta_info, trainer)
+                                                           meta_info, trainer, args_.train_sunny)
 
         if args_.approach == "ISA":
             trainer_obj = self.selection_methods[args_.approach](k=args_.knn, save_models=save_models)
@@ -479,12 +481,13 @@ class Trainer(object):
                                                            args_.aspeed_opt_mode,
                                                            args_.aspeed_pre_slice,
                                                            args_.threads_aspeed,
-                                                           args_.train_k)
+                                                           args_.train_k,
+                                                           args_.isa_descending)
 
         if args_.approach == "SCHEDULERS":
             trainer_obj = self.selection_methods[args_.approach](save_models=save_models)
             Printer.print_c("Train with %s" %(str(trainer_obj)))
-            trainer_obj, selection_dic = trainer_obj.train(instance_dic, config_dic, meta_info, trainer)
+            return trainer_obj.train(instance_dic, config_dic, meta_info, trainer)
 
 
         selection_dic = trainer_obj.set_backup_solver(selection_dic, ranks)

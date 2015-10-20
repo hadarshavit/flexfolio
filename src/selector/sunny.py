@@ -74,7 +74,7 @@ class Sunny(Selector):
 
     def __build_schedule(self, data_list, features, k, cutoff, se_dic):
         '''
-            look through all training instances and remember for each encountered solver the nearest distance
+            construct a dictionary representing a schedule using the benchmark data
         '''
 
         tuples_dist_perfs = []
@@ -154,18 +154,19 @@ class Sunny(Selector):
             solver_times.append(slots[i] * time_slot)
             tot_time += solver_times[i]
 
+
         # save computed solver time slots and their average performances in pairs
         solver_times_scores = zip(average_perfs, solver_times)
 
         dic_solver_times = self.__map_ids_2_names(solver_times_scores, se_dic["configurations"])
         sorted_times = dic_solver_times.items()
-        sorted_times.sort(key = lambda x:x[1][0])
+        sorted_times.sort(key=lambda x:x[1][1], reverse=True)
 
         if tot_time < cutoff:
-            best_score = sorted_times[0]
-            solver = best_score[0]
-            score = best_score[1][0]
-            time = best_score[1][1] + cutoff - tot_time
+            backup_solver = sorted_times[0]
+            solver = backup_solver[0]
+            score = backup_solver[1][0]
+            time = backup_solver[1][1] + cutoff - tot_time
             sorted_times[0] = (solver, (score, time))
 
         sorted_times = [element for element in sorted_times if element[1][1] > 0]

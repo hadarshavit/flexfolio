@@ -29,14 +29,14 @@ class ISATrainer(SelectorTrainer):
         self.k = k
         
         self._UNKNOWN_CODE = -512
-        self._MAX_K = 64
+        self._MAX_K = 42
    
     def __repr__(self):
         return "Instance Specific Aspeed"
    
     def train(self, instance_dic, solver_list, config_dic, cutoff, model_dir, f_indicator, n_feats, 
                 feat_time, meta_info, trainer, clasp, gringo, runsolver, enc, mem_limit,
-                max_solver, opt_mode, pre_sclice, threads, train_k):
+                max_solver, opt_mode, pre_sclice, threads, train_k, descending):
         '''
             train model
             Args:
@@ -51,12 +51,13 @@ class ISATrainer(SelectorTrainer):
         
         self._cutoff = cutoff
 
+        instance_dic = self.__filter_instances(instance_dic)
+
         if train_k:
             self.k = self.__guessK(meta_info, instance_dic, trainer, config_dic)
 
         elif self.k == -1:
-            folds = meta_info.options.crossfold
-            self.k = int(round(math.sqrt(len(instance_dic)*(float(folds-1)/folds))))
+            self.k = int(round(math.sqrt(len(instance_dic))))
 
         Printer.print_nearly_verbose("Chosen k: %d" %(self.k))
         
@@ -93,7 +94,8 @@ class ISATrainer(SelectorTrainer):
                                 "opt_mode": opt_mode,
                                 "pre_slice": pre_sclice,
                                 "threads": threads,
-                                "n_feats": n_normed_feats
+                                "n_feats": n_normed_feats,
+                                "descending": descending
 
                                 },
                    "normalization" : {
@@ -109,20 +111,29 @@ class ISATrainer(SelectorTrainer):
         '''
         evaluator = CrossValidator(meta_info.options.update_sup, None)
 
+        original_folds = meta_info.options.crossfold
+        meta_info.options.crossfold = 3
+
         k = 1
         best_par10 = sys.maxint
         best_k = 1
-        while k <= self._MAX_K and k < len(instance_dic):
+        max_k = min(self._MAX_K, len(instance_dic) - 1)
+
+        for k in self.__get_candidate_values(1):
+            if k > max_k:
+                break
             meta_info.options.knn = k
             meta_info.options.train_k = False
             Printer.disable_printing = True
-            par10, _ = evaluator.evaluate(trainer, meta_info, instance_dic, config_dic, folds)
+            par10, _ = evaluator.evaluate(trainer, meta_info, instance_dic, config_dic)
             Printer.disable_printing = False
-            Printer.print_nearly_verbose("k: %d \t par10: %f" %(k, par10))
+            Printer.print_verbose("k: %d \t par10: %f" %(k, par10))
             if best_par10 > par10:
                 best_par10 = par10
                 best_k = k
-            k *= 2
+
+        meta_info.options.crossfold = original_folds
+
         return best_k
         
     def __write_arff(self, instance_dic, solver_list, model_dir, n_feats):
@@ -166,6 +177,32 @@ class ISATrainer(SelectorTrainer):
         return save_list
         
         
-        
+    def __get_candidate_values(self, start):
+        x = start
+        while 1:
+            yield x
+            x += max(1, int(math.sqrt(x)))
+
+
+    def __filter_instances(self, instance_dic):
+        '''
+            remove instances that are either too easy or too hard from the given instance dic
+        '''
+
+        new_dic = {}
+        for name, instance in instance_dic.items():
+            easy = True
+            hard = True
+            for perf in instance._transformed_cost_vec:
+                if perf < self._cutoff:
+                    hard = False
+                if perf > 1:
+                    easy = False
+                if not easy and not hard:
+                    break
+            if not easy and not hard:
+                new_dic[name] = instance
+
+        return new_dic
     
     
