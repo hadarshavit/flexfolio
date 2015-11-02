@@ -13,7 +13,7 @@
   * setup a predefined set of configurations of the scheduling approaches SUNNY-like, aspeed and instance-specifc aspeed,
    which are described later on
   * evaluate the performance of those approaches on training data (using cross-validation)
-  * choose the candidate with the best par10 score to be run on the current scenario and train it if necessary
+  * choose the candidate with the best PAR10 score to be run on the current scenario and train it if necessary
   * employ the chosen portfolio on the current test set 
 
 ### SUNNY-like
@@ -38,11 +38,10 @@ this problem as follows:
 1. The benchmark data is rewritten as a set of ASP facts.
 2. The ASP solver clasp is applied to those facts together with aspeed's encoding, assigning the available time to the
  candidate solvers in a way that minimizes the total number of timeouts on the training data.
-3. As a second optimization criterion, this time assignment is aligned, minimizing the total runtime.
 
 ### instance-specific aspeed
 
-The approach of instance-specific aspeed is inspired by a scheduling enhancement proposed for the solver 3S by ... et al ...[4]
+The approach of instance-specific aspeed is inspired by a scheduling enhancement proposed for the solver 3S by S. Kadioglu et al. [4]
 Unlike the original aspeed, this approach builds an individual schedule for each instance:
  
 1. A set of k nearest neighbors of benchmark instances is selected, whereby the distance of instances is defined as the
