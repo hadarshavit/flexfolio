@@ -482,7 +482,8 @@ class Trainer(object):
                                                            args_.aspeed_pre_slice,
                                                            args_.threads_aspeed,
                                                            args_.train_k,
-                                                           args_.isa_descending)
+                                                           args_.isa_descending,
+                                                           args_.isa_filter)
 
         if args_.approach == "SCHEDULERS":
             trainer_obj = self.selection_methods[args_.approach](save_models=save_models)

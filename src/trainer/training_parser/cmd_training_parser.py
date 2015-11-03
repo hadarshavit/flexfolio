@@ -128,6 +128,7 @@ class TainerParser(object):
         ISA_GROUP = self._arg_parser.add_argument_group("Instance Specific Aspeed Options (requires --approach ISA)")
         ISA_GROUP.add_argument('--train-isa', dest='train_k', action='store_true', default=False, help="determine the k of kNN using training (overwrites --kNN)")
         ISA_GROUP.add_argument('--isa-descending', dest='isa_descending', action='store_true', default=False, help="order the schedule descending instead of ascending")
+        ISA_GROUP.add_argument('--isa-filter', dest='isa_filter', action='store_true', default=False, help="remove instances that are either too hard or too easy from the training set")
 
         ASPEED_GROUP = self._arg_parser.add_argument_group("ASPEED Options (requires --aspeed-opt or --approach ISA|SCHEDULERS)")
         ASPEED_GROUP.add_argument('--aspeed-opt', dest='aspeed_opt', action='store_true', default=False, help="Combine flexfolio with an algorithm schedule computed with aspeed")
@@ -396,7 +397,8 @@ class TainerParser(object):
         if args_.pre_conf == "isa":
             args_.approach = "ISA"
             args_.train_k = True
-            args_.aspeed_max_solver =10000
+            args_.isa_filter = True
+            args_.aspeed_max_solver = 10000
 
         return args_
     

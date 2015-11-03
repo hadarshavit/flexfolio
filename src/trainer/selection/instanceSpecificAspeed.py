@@ -29,14 +29,14 @@ class ISATrainer(SelectorTrainer):
         self.k = k
         
         self._UNKNOWN_CODE = -512
-        self._MAX_K = 42
+        self._MAX_K = 40
    
     def __repr__(self):
         return "Instance Specific Aspeed"
    
     def train(self, instance_dic, solver_list, config_dic, cutoff, model_dir, f_indicator, n_feats, 
                 feat_time, meta_info, trainer, clasp, gringo, runsolver, enc, mem_limit,
-                max_solver, opt_mode, pre_sclice, threads, train_k, descending):
+                max_solver, opt_mode, pre_sclice, threads, train_k, descending, filter):
         '''
             train model
             Args:
@@ -51,7 +51,8 @@ class ISATrainer(SelectorTrainer):
         
         self._cutoff = cutoff
 
-        instance_dic = self.__filter_instances(instance_dic)
+        if filter:
+            instance_dic = self.__filter_instances(instance_dic)
 
         if train_k:
             self.k = self.__guessK(meta_info, instance_dic, trainer, config_dic)
@@ -95,7 +96,8 @@ class ISATrainer(SelectorTrainer):
                                 "pre_slice": pre_sclice,
                                 "threads": threads,
                                 "n_feats": n_normed_feats,
-                                "descending": descending
+                                "descending": descending,
+                                "filter": filter,
 
                                 },
                    "normalization" : {
@@ -114,7 +116,6 @@ class ISATrainer(SelectorTrainer):
         original_folds = meta_info.options.crossfold
         meta_info.options.crossfold = 3
 
-        k = 1
         best_par10 = sys.maxint
         best_k = 1
         max_k = min(self._MAX_K, len(instance_dic) - 1)
