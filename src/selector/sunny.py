@@ -98,7 +98,7 @@ class Sunny(Selector):
         n_perfs = len(k_nearest_perfs[0])
         average_perfs = reduce(lambda x,y: [sum(pair) for pair in zip(x, y)], k_nearest_perfs, [0]*n_perfs)
 
-        # get the total number of timeslots
+        # get the total number of time slots
         slots = []  # slots per solver
         scores = [] # score sum for each solver (needed for tie breaking if solver count is limited)
         backup_slots = 0
@@ -160,7 +160,11 @@ class Sunny(Selector):
 
         dic_solver_times = self.__map_ids_2_names(solver_times_scores, se_dic["configurations"])
         sorted_times = dic_solver_times.items()
-        sorted_times.sort(key=lambda x:x[1][1], reverse=True)
+        if se_dic["approach"]["sort_mode"]:
+            sorted_times.sort(key=lambda x:x[1][0])
+        else:
+            sorted_times.sort(key=lambda x:x[1][1], reverse=True)
+
 
         if tot_time < cutoff:
             backup_solver = sorted_times[0]
@@ -169,6 +173,7 @@ class Sunny(Selector):
             time = backup_solver[1][1] + cutoff - tot_time
             sorted_times[0] = (solver, (score, time))
 
+        # omit all times that are zero
         sorted_times = [element for element in sorted_times if element[1][1] > 0]
 
         Printer.print_verbose(str(sorted_times))

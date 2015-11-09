@@ -124,11 +124,12 @@ class TainerParser(object):
         SUNNY_GROUP = self._arg_parser.add_argument_group("SUNNY Options (requires --approach SUNNY)")
         SUNNY_GROUP.add_argument('--sunny-max-solver', dest='sunny_max_solver', action='store', default=0, type=int, help="maximal size of schedule (0 means no maximum)")
         SUNNY_GROUP.add_argument('--train-sunny', dest='train_sunny', action='store_true', default=False, help="determine the k of kNN and SUNNY's solver limit using training (overwrites --kNN and --sunny-max-solver)")
+        SUNNY_GROUP.add_argument('--sort-alternative', dest='sunny_sort', action='store_true', default=False, help="align schedule using the solver's average PAR10 score instead of amount of timeslots")
 
         ISA_GROUP = self._arg_parser.add_argument_group("Instance Specific Aspeed Options (requires --approach ISA)")
         ISA_GROUP.add_argument('--train-isa', dest='train_k', action='store_true', default=False, help="determine the k of kNN using training (overwrites --kNN)")
-        ISA_GROUP.add_argument('--isa-descending', dest='isa_descending', action='store_true', default=False, help="order the schedule descending instead of ascending")
-        ISA_GROUP.add_argument('--isa-filter', dest='isa_filter', action='store_true', default=False, help="remove instances that are either too hard or too easy from the training set")
+        ISA_GROUP.add_argument('--sort-descending', dest='isa_descending', action='store_true', default=False, help="order the schedule descending instead of ascending")
+        ISA_GROUP.add_argument('--instance-filter', dest='isa_filter', action='store_true', default=False, help="remove instances that are either too hard or too easy from the training set")
 
         ASPEED_GROUP = self._arg_parser.add_argument_group("ASPEED Options (requires --aspeed-opt or --approach ISA|SCHEDULERS)")
         ASPEED_GROUP.add_argument('--aspeed-opt', dest='aspeed_opt', action='store_true', default=False, help="Combine flexfolio with an algorithm schedule computed with aspeed")
@@ -187,7 +188,7 @@ class TainerParser(object):
         ADD_GROUP.add_argument('--verbose', dest='verbose', action='store', default=0, type=int, help='verbosity level of stdout')
     
         PRE_GROUP = self._arg_parser.add_argument_group("Pre-Configurations (overwrites other arguments")
-        PRE_GROUP.add_argument('--preconf', dest='pre_conf', action='store', required=False, default=None, choices=["satzilla09","satzilla11","isac","3s", "claspfolio", "measp", "sbs", "aspeed", "sunny", "isa"], help='use configurations like satzilla, ISAC or 3S')
+        PRE_GROUP.add_argument('--preconf', dest='pre_conf', action='store', required=False, default=None, choices=["satzilla09","satzilla11","isac","3s", "claspfolio", "measp", "sbs", "aspeed", "sunny", "isa", "tsunny"], help='use configurations like satzilla, ISAC or 3S')
     
         HIDDEN_GROUP = self._arg_parser.add_argument_group("HIDDEN Options")
         HIDDEN_GROUP.add_argument('--table-format', dest='table_format', action='store_true', default=False, help=argparse.SUPPRESS)
@@ -399,6 +400,11 @@ class TainerParser(object):
             args_.train_k = True
             args_.isa_filter = True
             args_.aspeed_max_solver = 10000
+
+        if args_.pre_conf == "tsunny":
+            args_.approach = "SUNNY"
+            args_.train_sunny = True
+            args_.sunny_sort = True
 
         return args_
     

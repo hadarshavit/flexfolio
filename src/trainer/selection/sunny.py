@@ -35,7 +35,7 @@ class SunnyTrainer(SelectorTrainer):
         return "SUNNY"
    
     def train(self, instance_dic, solver_list, config_dic, cutoff, model_dir, f_indicator, n_feats, 
-                meta_info, trainer, train_sunny):
+                meta_info, trainer, train_sunny, sort_mode):
         '''
             train model
             Args:
@@ -83,7 +83,8 @@ class SunnyTrainer(SelectorTrainer):
                                 "max_solvers" : self.max_solvers,
                                 "model" : model_name,
                                 "cutoff": self._cutoff,
-                                "n_feats" : n_normed_feats
+                                "n_feats" : n_normed_feats,
+                                "sort_mode" : sort_mode
                                 },
                    "normalization" : {
                                       "filter"  : f_indicator

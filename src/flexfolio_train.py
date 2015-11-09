@@ -463,7 +463,7 @@ class Trainer(object):
             selection_dic = trainer_obj.train(instance_dic, solver_list, config_dic,
                                                            meta_info.algorithm_cutoff_time, args_.model_dir,
                                                            feature_indicator, n_feats,
-                                                           meta_info, trainer, args_.train_sunny)
+                                                           meta_info, trainer, args_.train_sunny, args_.sunny_sort)
 
         if args_.approach == "ISA":
             trainer_obj = self.selection_methods[args_.approach](k=args_.knn, save_models=save_models)
