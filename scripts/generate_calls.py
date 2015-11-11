@@ -20,5 +20,5 @@ for scen in os.listdir(scenarios):
             conf_string = ""
             conf = "default"
             
-        print("%s --aslib %s --model . %s  1> %s_%s.log 2>&1" %(flex_path, scen_path, conf_string, scen, conf))
+        print("/home/lindauer/git/flexfolio/virtualenv/bin/python %s --aslib %s --model . %s --print-times %s_%s.csv  1> %s_%s.log 2>&1" %(flex_path, scen_path, conf_string, scen, conf, scen, conf))
     
