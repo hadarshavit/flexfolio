@@ -14,5 +14,11 @@ for scen in os.listdir(scenarios):
     
     for conf in preconfs:
         
-        print("%s --aslib %s --model . --preconf %s 1> %s_%s.log 2>&1" %(flex_path, scen_path, conf, scen, conf))
+        if conf:
+           conf_string = "--preconf %s" %(conf)
+        else:
+            conf_string = ""
+            conf = "default"
+            
+        print("%s --aslib %s --model . %s  1> %s_%s.log 2>&1" %(flex_path, scen_path, conf_string, scen, conf))
     
