@@ -9,14 +9,17 @@ import re
 num_regex = "[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?"
 regex_size = re.compile(r'%% Average schedule size = (?P<size>%s)$' %(num_regex))
 regex_pos = re.compile(r"^%% Average schedule position of first successful solver= (?P<pos>%s)$" %(num_regex))
+regex_k = re.compile(r"^%% Chosen k: (?P<k>%s)$" %(num_regex))
 
 scen_system_size = {}
 scen_system_pos = {}
+scen_system_k = {}
 for f in os.listdir("."):
     if f.endswith(".log"):
         scen, system = f.replace(".log","").split("_")
         scen_system_size[scen] = scen_system_size.get(scen,{})
         scen_system_pos[scen] = scen_system_pos.get(scen,{})
+        scen_system_k[scen] = scen_system_k.get(scen,{})
         with open(f) as fp:
             for line in fp:
                 m = regex_size.match(line)
@@ -27,6 +30,11 @@ for f in os.listdir("."):
                 if m:
                     pos = m.group("pos")
                     scen_system_pos[scen][system] = pos
+                m = regex_k.match(line)
+                if m:
+                    k = m.group("k")
+                    scen_system_k[scen][system] =  scen_system_k[scen].get(system, [])
+                    scen_system_k[scen][system].append(int(k))
                     
 #print(scen_system_pos)
 #print(scen_system_size)
@@ -37,13 +45,15 @@ systems = scen_system_size[scens[0]].keys()
 systems.remove("sbs")
 systems.remove("default")
 
+systems = ["aspeed", "isa", "sunny", "tsunny"]
+
 header = [""]
 header.extend(systems)
 
 METRIC = "PAR10"
 tab = []
 for scen in sorted(scens):
-    row = ["$%s$ ($%s$)" %(scen_system_size[scen].get(sys_,-1), scen_system_pos[scen].get(sys_,-1)) for sys_ in systems]
+    row = ["$%.2f$ | $%s$ | $%s$" %(numpy.mean(scen_system_k[scen].get(sys_,-1)), scen_system_size[scen].get(sys_,-1), scen_system_pos[scen].get(sys_,-1)) for sys_ in systems]
     row.insert(0, scen)
     tab.append(row)
     
