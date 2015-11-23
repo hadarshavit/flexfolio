@@ -7,6 +7,7 @@ import argparse
 from stat_tests.PermutationTester import PermutationTester
 from coseal_reader import CosealReader
 import logging
+import sys
 
 ASLIB_PATH = "/home/lindauer/projects/aslib/aslib_data-aslib-v1.0.1/"
 
