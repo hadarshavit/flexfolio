@@ -155,6 +155,7 @@ pt = PermutationTester()
 #print(tabulate.LATEX_ESCAPE_RULES)
 tabulate.LATEX_ESCAPE_RULES = {}
 systems.remove("sbs")
+systems = ["default", "autofolio", "aspeed", "sunny-ori", "tsunny", "isa"]
 header = [""]
 header.extend(systems)
 best_systems = dict((sys_, 0) for sys_ in systems)
