@@ -17,7 +17,7 @@ for scen in os.listdir(scenarios):
         if conf:
            conf_string = "--preconf %s" %(conf)
         else:
-            conf_string = ""
+            conf_string = "--aspeed-opt"
             conf = "default"
             
         print("/home/lindauer/git/flexfolio/virtualenv/bin/python %s --aslib %s --model . %s --print-times %s_%s.csv  1> %s_%s.log 2>&1" %(flex_path, scen_path, conf_string, scen, conf, scen, conf))
