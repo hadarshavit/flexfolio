@@ -115,7 +115,10 @@ for f in os.listdir("."):
             for line in fp:
                 inst, perf = line.replace("\n","").split(",")
                 if not inst in scen_unsolved[scen]:
-                    inst_perf[inst] = float(perf)
+                    try:
+                        inst_perf[inst] = float(perf)
+                    except ValueError:
+                        sys.path.stderr("[WARNING]: cannot read line: %s" %(line))
                 
                 
         scen_system_inst[scen] = scen_system_inst.get(scen,{})
