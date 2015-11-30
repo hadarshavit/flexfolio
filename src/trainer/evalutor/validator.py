@@ -37,7 +37,7 @@ class Stats(object):
         
         self.ties = 0 # how often two or more 
         
-    def print_stats(self, oracle_avg_time, oracle_spend_time_dict, oracle_par10, oracle_tos, cutoff):
+    def print_runtime_stats(self, oracle_avg_time, oracle_spend_time_dict, oracle_par10, oracle_tos, cutoff):
         Printer.print_c("\n >>> Instances: %d <<<" %(self._test_n))
         Printer.print_c(" >>> Oracle Evaluation (w/o unsolved) <<<\n")
         Printer.print_c("Unsolved (not by any algorithm and not by feature computation): %d" %(self.unsolved))
@@ -59,6 +59,7 @@ class Stats(object):
         Printer.print_c("\n >>> Cross Fold Evaluation <<<\n")
         Printer.print_c("Presolved: %s" %(str(self.presolved)))
         Printer.print_c("Prediction ties: %d" %(self.ties))
+        
         Printer.print_c(">>>With Unsolvable Instances")
         Printer.print_c("Timeouts (with unsolved): %d" %(self.thread_timeout_dic[1]))
         Printer.print_c("Solved (perc) (with unsolved): %.4f" %(solved[1]))
@@ -81,7 +82,23 @@ class Stats(object):
         Printer.print_nearly_verbose(str(json.dumps(self.solver_stats, indent=2)))
         Printer.print_c("Time used by each solver: %s" %(str(self.spend_time)))
         Printer.print_c("Optimal Time used by each solver: %s" %(str(oracle_spend_time_dict)))
-    
+        
+    def print_qual_stats(self, oracle_avg_time, maximize=False):
+        Printer.print_c("\n >>> Instances: %d <<<" %(self._test_n))
+        Printer.print_c(" >>> Oracle Evaluation (w/o unsolved) <<<\n")
+        Printer.print_c("Unsolved (not by any algorithm and not by feature computation): %d" %(self.unsolved))
+        #TODO: maybe normalize also oracle with self.unsolved; however, perfect system can be better than oracle than
+        Printer.print_c("quality: %.2f " %(oracle_avg_time if maximize else -1*oracle_avg_time))
+        
+        for thread, time in self.thread_time_dic.items():
+            self.thread_par10_dic[thread] = time / self._test_n
+        
+        Printer.print_c("\n >>> Cross Fold Evaluation <<<\n")
+        Printer.print_c("Prediction ties: %d" %(self.ties))
+        
+        qual = self.thread_par10_dic[1] if maximize else -1*self.thread_par10_dic[1]
+        Printer.print_c("quality: %.2f" %(qual))
+        
     def _extract_par1_from_par10 (self, par10, timeouts, cutoff):
         '''
             extract the par1 score based on given par10 and number of timeouts
@@ -166,7 +183,7 @@ class Validator(object):
         par10_per_set = 0
         
         for instance in instance_test.values():
-            #print(instance._name)
+            Printer.print_verbose(instance._name)
             # predict only if features available, intime computable and not presolved
             if meta_info.options.approach != "SBS": # SBS and aspeed do not need feature and therefore no time is wasted
                 feature_time = instance._feature_cost_total
@@ -431,8 +448,8 @@ class Validator(object):
             min_timeout = min(min_timeout, thread_timeout_dic[thread])
             thread_timeout_dic[thread] = min_timeout
             
-            rmse = math.pow(math.log(min_time) - math.log(oracle_time), self.__RMSE_NORM)
-            thread_rmse_dic[thread] = rmse       
+            #rmse = math.pow(math.log(min_time) - math.log(oracle_time), self.__RMSE_NORM)
+            #thread_rmse_dic[thread] = rmse       
         
         return thread_time_dic, thread_rmse_dic, thread_timeout_dic, [] ,spend_time_dic
 

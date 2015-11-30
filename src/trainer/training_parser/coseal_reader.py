@@ -92,6 +92,8 @@ class CosealReader(object):
         
         if self.metainfo.options.feat_time == -1:
             self.metainfo.options.feat_time = int(self.metainfo.algorithm_cutoff_time) / 10
+            
+        self.post_process()
         
         return self.instances, self.metainfo, algo_dict
         
@@ -169,81 +171,15 @@ class CosealReader(object):
             self.metainfo.algorithms_stochastic = set()
         self.metainfo.feature_group_dict = description.get('feature_steps')
         self.metainfo.feature_steps = description.get('default_steps')
+        
+        for step, d in self.metainfo.feature_group_dict.items():
+            if  d.get("requires") and not isinstance(d["requires"], list):
+                self.metainfo.feature_group_dict[step]["requires"] = [d["requires"]]
 
         self.metainfo.algorithms = list(
             set(self.metainfo.algorithms_stochastic).union(
                 self.metainfo.algortihms_deterministics))
         
-        
-        #=======================================================================
-        # with open(file_,"r") as fp:
-        #     for line in fp:
-        #         line = line.replace("\n","").strip(" ")
-        #         if line.upper().startswith("SCENARIO_ID"):
-        #             self.metainfo.scenario = line.split(":")[1].strip(" ")
-        #         elif line.upper().startswith("PERFORMANCE_MEASURES" ):
-        #             self.metainfo.performance_measure = map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(","))
-        #         elif line.upper().startswith("MAXIMIZE"):
-        #             try:
-        #                 self.metainfo.maximize = line.split(":")[1].strip(" ").split(",")
-        #             except ValueError:
-        #                 Printer.print_w("Cannot read MAXIMIZE")
-        #         elif line.upper().startswith("PERFORMANCE_TYPE"):
-        #             self.metainfo.performance_type = map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(","))
-        #         elif line.upper().startswith("ALGORITHM_CUTOFF_TIME"):
-        #             try:
-        #                 self.metainfo.algorithm_cutoff_time= float(line.split(":")[1])
-        #             except ValueError:
-        #                 Printer.print_w("Cannot read ALGORITHM_CUTOFF_TIME")
-        #         elif line.upper().startswith("ALGORITHM_CUTOFF_MEMORY"):
-        #             try:
-        #                 self.metainfo.algorithm_cutoff_memory = float(line.split(":")[1])
-        #             except ValueError:
-        #                 Printer.print_w("Cannot read ALGORITHM_CUTOFF_MEMORY")
-        #         elif line.upper().startswith("FEATURES_CUTOFF_TIME"):
-        #             try:
-        #                 self.metainfo.features_cutoff_time = float(line.split(":")[1])
-        #             except ValueError:
-        #                 Printer.print_w("Cannot read FEATURES_CUTOFF_TIME")
-        #         elif line.upper().startswith("FEATURES_CUTOFF_MEMORY"):
-        #             try:
-        #                 self.metainfo.features_cutoff_memory = float(line.split(":")[1])
-        #             except ValueError:
-        #                 Printer.print_w("Cannot read FEATURES_CUTOFF_MEMORY")
-        #         elif line.upper().startswith("FEATURES_DETERMINISTIC"):
-        #             try:
-        #                 self.metainfo.features_deterministic = map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(","))
-        #             except ValueError:
-        #                 Printer.print_w("Cannot read FEATURES_DETERMINISTIC")               
-        #         elif line.upper().startswith("FEATURES_STOCHASTIC"):
-        #             try:
-        #                 self.metainfo.features_stochastic = map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(","))
-        #             except ValueError:
-        #                 Printer.print_w("Cannot read FEATURES_STOCHASTIC")      
-        #         elif line.upper().startswith("ALGORITHMS_DETERMINISTIC"):
-        #             try:
-        #                 self.metainfo.algortihms_deterministics = filter(lambda x: True if x else False, map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(",")))
-        #             except ValueError:
-        #                 Printer.print_w("Cannot read ALGORTIHMS_DETERMINISTIC")               
-        #         elif line.upper().startswith("ALGORITHMS_STOCHASTIC"):
-        #             try:
-        #                 self.metainfo.algorithms_stochastic = filter(lambda x: True if x else False, map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(",")))
-        #             except ValueError:
-        #                 Printer.print_w("Cannot read ALGORITHMS_STOCHASTIC")     
-        #         elif line.upper().startswith("FEATURE_STEP"):
-        #             try:
-        #                 group_name = line.split(":")[0][12:].strip(" ")
-        #                 features = map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(","))
-        #                 self.metainfo.feature_group_dict[group_name] = features
-        #             except ValueError:
-        #                 Printer.print_w("Cannot read Feature_Step")     
-        #         elif line.startswith("default_step"):
-        #             try:
-        #                 self.metainfo.feature_steps = filter(lambda x: True if x else False, map(lambda x: x.strip(" "), line.split(":")[1].strip(" ").split(",")))
-        #             except ValueError:
-        #                 Printer.print_w("Cannot read DEFAULT_STEPS")                                         
-        #=======================================================================
-                                      
         self.metainfo.algorithms = list(set(self.metainfo.algorithms_stochastic).union(self.metainfo.algortihms_deterministics))
                   
         if not self.metainfo.scenario:
@@ -274,11 +210,6 @@ class CosealReader(object):
             Printer.print_w("Have not found algorithms_stochastic")
         if not self.metainfo.feature_group_dict:
             Printer.print_w("Have not found any feature step")
-           
-        for step, d in self.metainfo.feature_group_dict.items():
-            if  d.get("requires") and not isinstance(d["requires"], list):
-                self.metainfo.feature_group_dict[step]["requires"] = [d["requires"]]
-                
            
         feature_intersec = set(self.metainfo.features_deterministic).intersection(self.metainfo.features_stochastic)
         if feature_intersec:
@@ -342,8 +273,9 @@ class CosealReader(object):
             
             for p_measure, p_type, perf in zip(self.metainfo.performance_measure, self.metainfo.performance_type, perf_list):       
                 if perf is None:
-                    Printer.print_e("The following performance data has missing values.\n"+ 
+                    Printer.print_w("The following performance data has missing values.\n"+ 
                                     "%s" % (",".join(map(str,data))))
+                    perf = sys.maxint
                 if p_type == "runtime" and status.upper() != "OK": # if broken run, replace with cutoff time
                     perf = self.metainfo.algorithm_cutoff_time + 1
                 inst_._cost[p_measure] = inst_._cost.get(p_measure,{})
@@ -849,6 +781,27 @@ class CosealReader(object):
                     inst_._features = None
                     
         return True
+        
+        
+    def post_process(self):
+        
+        if self.metainfo.maximize[0]:
+            Printer.print_w("Since we maximize performance, we multiply all performance values with 1 such that we can minimize afterwards.")
+            for inst_ in self.instances.values():
+                for c_n, c_a in inst_._cost.items():
+                    for algo, c in c_a.items():
+                        inst_._cost[c_n][algo] = -1 * c
+                for c_idx, c in enumerate(inst_._cost_vec):
+                    inst_._cost_vec[c_idx] = -1 * c
+                    inst_._transformed_cost_vec[c_idx] = -1 * c
+            self.metainfo.maximize[0] = False
+        
+        if self.metainfo.performance_type[0].upper() != "RUNTIME":
+            Printer.print_w("Since we don't optimize runtime, the cutoff time is set to maxint and aspeed is disabled.")
+            self.metainfo.algorithm_cutoff_time = sys.maxint
+            self.metainfo.options.aspeed_opt = False
+            
+                    
         
 #===============================================================================
 # if __name__ == '__main__':

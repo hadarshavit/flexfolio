@@ -76,7 +76,10 @@ class CrossValidator(Validator):
         oracle_avg_time, oracle_spend_time_dict, oracle_par10, oracle_dict, oracle_tos = \
             self._oracle_performance(instance_train_dic, solver_list, meta_info.algorithm_cutoff_time, stats)
         
-        stats.print_stats(oracle_avg_time, oracle_spend_time_dict, oracle_par10, oracle_tos, meta_info.algorithm_cutoff_time)
+        if meta_info.performance_type[0].upper() == "RUNTIME":
+            stats.print_runtime_stats(oracle_avg_time, oracle_spend_time_dict, oracle_par10, oracle_tos, meta_info.algorithm_cutoff_time)
+        else:
+            stats.print_qual_stats(oracle_avg_time, maximize=meta_info.maximize[0])
         
         if self._print_file:
             self._write_csv_runtimes(self._print_file, instance_train_dic, stats.inst_par10_dict[threads], solver_list)
