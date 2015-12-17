@@ -119,7 +119,7 @@ for f in os.listdir("."):
                     try:
                         inst_perf[inst] = float(perf)
                     except ValueError:
-                        sys.path.stderr("[WARNING]: cannot read line: %s" %(line))
+                        sys.stderr.write("[WARNING]: cannot read line: %s" %(line))
                 
                 
         scen_system_inst[scen] = scen_system_inst.get(scen,{})
@@ -176,7 +176,7 @@ for scen in sorted(scens):
     best_vec = scen_system_inst[scen][best_system]["insts"]
     for idx, system in enumerate(systems):
         challenger_vec = scen_system_inst[scen][system]["insts"]
-        rejected,_,pValue = pt.doTest(best_vec, challenger_vec, permutations=1000)
+        rejected,_,pValue = pt.doTest(best_vec, challenger_vec, permutations=100000)
         if max_idx == idx:
             row[idx] = "$\mathbf{%.2f}^{*}$" %(row[idx])
             best_systems[system] += 1
