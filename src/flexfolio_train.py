@@ -42,6 +42,11 @@ from trainer.selection.regressors.ridgeregression import RidgeRegression
 from trainer.selection.regressors.svr import SVRRegressor
 from trainer.selection.regressors.rfregression import RandomForrestRegression
 
+from trainer.selection.regressorsPairs.lassoregression import LassoRegressionPairs
+from trainer.selection.regressorsPairs.ridgeregression import RidgeRegressionPairs
+from trainer.selection.regressorsPairs.svr import SVRRegressorPairs
+from trainer.selection.regressorsPairs.rfregression import RandomForrestRegressionPairs
+
 from trainer.selection.regressorsSNNAP.lassoregression import LassoRegressionSNNAP 
 from trainer.selection.regressorsSNNAP.ridgeregression import RidgeRegressionSNNAP
 from trainer.selection.regressorsSNNAP.svr import SVRRegressorSNNAP
@@ -95,6 +100,12 @@ class Trainer(object):
                                                   "RIDGE" : RidgeRegression,
                                                   "LASSO" : LassoRegression,
                                                   "RANDOMFOREST" : RandomForrestRegression
+                                                 },
+                                  "REGRESSIONPAIRS": {
+                                                  "SVR" : SVRRegressorPairs,
+                                                  "RIDGE" : RidgeRegressionPairs,
+                                                  "LASSO" : LassoRegressionPairs,
+                                                  "RANDOMFOREST" : RandomForrestRegressionPairs
                                                  },
                                   "SNNAP": {
                                                   "SVR" : SVRRegressorSNNAP,
@@ -321,6 +332,29 @@ class Trainer(object):
             Printer.print_c("Train with %s" %(str(trainer_obj)))    
             selection_dic = trainer_obj.train(instance_dic, solver_list, config_dic,
                                               meta_info.algorithm_cutoff_time, args_.model_dir, feature_indicator, n_feats)
+        if args_.approach == "REGRESSIONPAIRS":
+            if args_.regressor == "SVR":
+                trainer_obj = self.selection_methods[args_.approach][args_.regressor](args_.svm_gamma,
+                                                                                      args_.svm_C,
+                                                                                      args_.svm_epsilon,
+                                                                                      save_models
+                                                                                      )
+            if args_.regressor == "RIDGE":
+                trainer_obj = self.selection_methods[args_.approach][args_.regressor](args_.ridge_alpha,
+                                                                                      save_models
+                                                                                      )
+            if args_.regressor == "LASSO":
+                trainer_obj = self.selection_methods[args_.approach][args_.regressor](args_.lasso_alpha,
+                                                                                      save_models
+                                                                                      )            
+            if args_.regressor == "RANDOMFOREST":
+                trainer_obj = self.selection_methods[args_.approach][args_.regressor](args_.rf_max_features,
+                                                                                       args_.rf_min_samples_leaf,
+                                                                                       save_models
+                                                                                       )    
+            Printer.print_c("Train with %s" %(str(trainer_obj)))    
+            selection_dic = trainer_obj.train(instance_dic, solver_list, config_dic,
+                                              meta_info.algorithm_cutoff_time, args_.model_dir, feature_indicator, n_feats)            
         if args_.approach == "SNNAP":
             if args_.regressor == "SVR":
                 trainer_obj = self.selection_methods[args_.approach][args_.regressor](args_.knn,

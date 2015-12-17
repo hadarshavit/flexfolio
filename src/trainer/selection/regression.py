@@ -111,8 +111,8 @@ class Regression(SelectorTrainer):
             
             for id_solver in range(0,n_solver):
                 runtime = labels_inst[id_solver]
-                label = max(runtime, self.__MINIMAL_RUNTIME)
-                label_matrix[id_solver].append(label) 
+                #label = max(runtime, self.__MINIMAL_RUNTIME)
+                label_matrix[id_solver].append(runtime) 
         
         joined_feats = []
         class_labels = []
