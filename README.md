@@ -2,7 +2,7 @@
 an algorithm selection tool and the successor of claspfolio 2.0 (see POTASSCO)
 
 ##LICENSE
-  flexfolio is part of the XXX project.
+  flexfolio is part of the ml4aad project (www.ml4aad.org).
   It is distributed under the GNU Public License. See COPYING for
   details regarding the license.
   
