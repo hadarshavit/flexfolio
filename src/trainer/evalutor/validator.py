@@ -97,7 +97,7 @@ class Stats(object):
         Printer.print_c("Prediction ties: %d" %(self.ties))
         
         qual = self.thread_par10_dic[1] if maximize else -1*self.thread_par10_dic[1]
-        Printer.print_c("quality: %.2f" %(qual))
+        Printer.print_c("quality: %.6f" %(qual))
         
     def _extract_par1_from_par10 (self, par10, timeouts, cutoff):
         '''
@@ -197,7 +197,7 @@ class Validator(object):
                 spend_time_dict = {}
                 stats.presolved += 1
             else:
-                if not instance._features is None and feature_time < meta_info.options.feat_time: #TODO: does not make sense in case of feature imputation
+                if not instance._features is None and feature_time <= meta_info.options.feat_time: #TODO: does not make sense in case of feature imputation
                     list_conf_scores = self._select(meta_info.options.approach, selection_dic, copy.deepcopy(instance._features))
                 else:
                     list_conf_scores = self._extract_backup_scores(selection_dic)
