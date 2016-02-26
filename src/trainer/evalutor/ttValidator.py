@@ -61,7 +61,10 @@ class TrainTestValidator(Validator):
         oracle_avg_time, oracle_spend_time_dict, oracle_par10, oracle_dict, oracle_tos = \
             self._oracle_performance(instance_test, solver_list, meta_info.algorithm_cutoff_time)
         
-        stats.print_stats(oracle_avg_time, oracle_spend_time_dict, oracle_par10, oracle_tos, meta_info.algorithm_cutoff_time)
+        if meta_info.performance_type[0].upper() == "RUNTIME":
+            stats.print_runtime_stats(oracle_avg_time, oracle_spend_time_dict, oracle_par10, oracle_tos, meta_info.algorithm_cutoff_time)
+        else:
+            stats.print_qual_stats(oracle_avg_time, maximize=meta_info.maximize[0])
         
         if self._print_file:
             self._write_csv_runtimes(self._print_file, instance_test, stats.inst_par10_dict[1], solver_list)
@@ -70,8 +73,11 @@ class TrainTestValidator(Validator):
         
         if args_.smac:
             par10 = stats.thread_par10_dic[1]
-            cut = meta_info.algorithm_cutoff_time
-            par10_wo_unsolvable = (par10*len(instance_test) - cut*10*oracle_tos) # without average normalization
+            if meta_info.performance_type[0].upper() == "RUNTIME":
+                cut = meta_info.algorithm_cutoff_time
+                par10_wo_unsolvable = (par10*len(instance_test) - cut*10*oracle_tos) # without average normalization
+            else:
+                par10_wo_unsolvable = par10
             print("Result for SMAC: %f" %(par10_wo_unsolvable))
         
         if args_.table_format:
