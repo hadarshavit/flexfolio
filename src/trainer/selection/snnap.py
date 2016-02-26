@@ -40,6 +40,7 @@ class SNNAPTrainer(SelectorTrainer):
             Printer.print_e("k has to be > 0", 88)
         
         self._UNKNOWN_CODE = -512
+        self._CACHE_SIZE = 1000 # memory size of libsvm
    
     def __repr__(self):
         return "SNNAP"
