@@ -281,7 +281,13 @@ class CosealReader(object):
                 inst_._cost[p_measure] = inst_._cost.get(p_measure,{})
                 perf_measure_dict = inst_._cost[p_measure]
                 perf_measure_dict[algorithm] = perf_measure_dict.get(algorithm,[])
-                perf_measure_dict[algorithm].append(max(float(perf),0.00001))
+                if p_type == "runtime":
+                    perf = max(float(perf),0.00001)
+                else:
+                    perf = float(perf)
+                
+                perf_measure_dict[algorithm].append()
+                
             
             inst_._status[algorithm] = status.upper()
             
