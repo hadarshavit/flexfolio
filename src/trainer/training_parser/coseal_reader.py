@@ -286,7 +286,7 @@ class CosealReader(object):
                 else:
                     perf = float(perf)
                 
-                perf_measure_dict[algorithm].append()
+                perf_measure_dict[algorithm].append(perf)
                 
             
             inst_._status[algorithm] = status.upper()
