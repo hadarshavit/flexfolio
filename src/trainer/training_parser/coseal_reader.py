@@ -136,8 +136,8 @@ class CosealReader(object):
         ''' 
         Printer.print_c("Read %s" %(file_))
         
-        with open(file_, "r") as fh:
-            description = yaml.load(fh)
+        with open(file_, "rb") as fh:
+            description = yaml.safe_load(fh)
             
         self.metainfo.scenario = description.get('scenario_id')
         self.metainfo.performance_measure = description.get('performance_measures')
@@ -239,7 +239,7 @@ class CosealReader(object):
         '''
         Printer.print_c("Read %s" %(file_))
         
-        with open(file_,"rb") as fp:
+        with open(file_,"r") as fp:
             try:
                 arff_dict = arff.load(fp)
             except arff.BadNominalValue:
@@ -313,7 +313,7 @@ class CosealReader(object):
         '''
         Printer.print_c("Read %s" %(file_))
         
-        with open(file_,"rb") as fp:
+        with open(file_,"r") as fp:
             try:
                 arff_dict = arff.load(fp)
             except arff.BadNominalValue:
@@ -365,7 +365,7 @@ class CosealReader(object):
         
         Printer.print_c("Read %s" %(file_))
         
-        with open(file_,"rb") as fp:
+        with open(file_,"r") as fp:
             try:
                 arff_dict = arff.load(fp)
             except arff.BadNominalValue:
@@ -401,7 +401,8 @@ class CosealReader(object):
             inst_ = self.instances[inst_name]
             
             inst_._features = features #TODO: handle feature repetitions
-                
+            
+            from functools import reduce # TODO pythonise
             # not only Nones in feature vector and previously seen
             if reduce(lambda x,y: True if (x or y) else False, features, False) and features in encoutered_features:
                 Printer.print_w("Feature vector found twice: %s" %(",".join(map(str,features))))
@@ -427,7 +428,7 @@ class CosealReader(object):
         '''
         Printer.print_c("Read %s" %(file_))
         
-        with open(file_,"rb") as fp:
+        with open(file_,"r") as fp:
             try:
                 arff_dict = arff.load(fp)
             except arff.BadNominalValue:
@@ -485,7 +486,7 @@ class CosealReader(object):
         
         Printer.print_c("Read %s" %(file_))
         
-        with open(file_,"rb") as fp:
+        with open(file_,"r") as fp:
             try:
                 arff_dict = arff.load(fp)
             except arff.BadNominalValue:
@@ -534,7 +535,7 @@ class CosealReader(object):
         Printer.print_c("Read %s" %(file_))
         self.metainfo.cv_given = True
         
-        with open(file_,"rb") as fp:
+        with open(file_,"r") as fp:
             try:
                 arff_dict = arff.load(fp)
             except arff.BadNominalValue:
@@ -756,12 +757,13 @@ class CosealReader(object):
             Printer.print_w("Empty feature set - fall back to default feature set.")
             return False
         
-        unused_index_features = sorted(list(map(str,self.metainfo.features).index(un_feature) for un_feature in unused_features), reverse=True)
+        # TOOD unused features
+        # unused_index_features = sorted(list(map(str,self.metainfo.features).index(un_feature) for un_feature in unused_features), reverse=True)
         
-        # remove unused features
-        for inst_ in self.instances.values():
-            for un_feature_indx in unused_index_features:
-                inst_._features.pop(un_feature_indx)
+        # # remove unused features
+        # for inst_ in self.instances.values():
+        #     for un_feature_indx in unused_index_features:
+        #         inst_._features.pop(un_feature_indx)
                 
         # compute feature costs
         for inst_ in self.instances.values():
@@ -778,9 +780,10 @@ class CosealReader(object):
             inst_._feature_cost_total = total_cost
             inst_._pre_solved = "PRESOLVED" in map(lambda x: x.upper(), inst_._features_status.values())
             
-        for un_feature_indx in unused_index_features:
-            self.metainfo.features.pop(un_feature_indx)        
-        
+
+        # for un_feature_indx in unused_index_features: TODO unused features
+        #     self.metainfo.features.pop(un_feature_indx)        
+        from functools import reduce
         if self.metainfo.options.impute == "none":
             for inst_ in self.instances.values():
                 if reduce(lambda x,y: False if ((not x) and y.upper() == "OK") else True, inst_._features_status.values(), False):

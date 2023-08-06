@@ -81,7 +81,7 @@ class ForwardSelector(object):
                     forward = True
                     
             #override indicators of features without variance
-            feature_indicator = map(lambda (x,y): -1 if x==-1 else y, zip(feature_indicator_in, feature_indicator))
+            feature_indicator = map(lambda x, y: -1 if x==-1 else y, zip(feature_indicator_in, feature_indicator))
             
             Printer.print_c("Initial Feature Distribution:")
             Printer.print_c(" ".join(map(str,feature_indicator)))

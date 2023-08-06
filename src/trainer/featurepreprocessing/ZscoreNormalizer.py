@@ -7,7 +7,7 @@ Created on Jul 26, 2012
 #import math
 from math import sqrt
 from misc.printer import Printer
-from TrainPreprocessor import TrainPreprocessor
+from trainer.featurepreprocessing.TrainPreprocessor import TrainPreprocessor
 
 class ZNormalizer(TrainPreprocessor):
     '''

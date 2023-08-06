@@ -129,7 +129,7 @@ class Trainer(object):
                                   "ENSEMBLE": Ensemble
                                   }
         
-    def main(self,sys_argv):
+    def main(self, sys_argv):
         '''
             main method for training
             Parameter:
@@ -221,6 +221,7 @@ class Trainer(object):
         args_ = meta_info.options
         n_feats = len(meta_info.features)
         
+        import pdb; pdb.set_trace()
         # remove algorithms that are not listed
         if args_.algorithms:
             rem = AlgoRemover()
@@ -228,6 +229,7 @@ class Trainer(object):
             
         # find the best solver on the training set
         ranks = self.find_backup_solver(instance_dic, meta_info.algorithm_cutoff_time) # index of best par10 solver
+        Printer.print_c(f'{ranks}')
         Printer.print_c("Backup Solver: %s" % (solver_list[ranks.index(0)]))
         
         # contribution filtering wrt VBS
@@ -510,8 +512,9 @@ class Trainer(object):
             Returns:
                 index of best solver
         '''
+        import pdb; pdb.set_trace()
         n_solver = len(instance_dic[list(instance_dic.keys())[0]]._cost_vec)
-        par10 = [0]*n_solver
+        par10 = [0] * n_solver
         for inst in instance_dic.values():
             times = inst._cost_vec
             times = map(lambda x: cutoff*10 if x >= cutoff else x, times )

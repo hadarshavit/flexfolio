@@ -313,7 +313,7 @@ class TainerParser(object):
         #=======================================================================
 
         try:
-            args_.ensemble_num_models = map(int,args_.ensemble_num_models.split(","))
+            args_.ensemble_num_models = [int(n) for n in args_.ensemble_num_models.split(",")]
         except:
             Printer.print_e("The option --n-models expects a list with 6 elements (comma seperated)")
         if len(args_.ensemble_num_models) != 6:

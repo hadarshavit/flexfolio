@@ -4,7 +4,7 @@ Created on Jun 28, 2013
 @author: manju
 '''
 import numpy
-from sklearn.mixture import GMM
+from sklearn.mixture import GaussianMixture
 
 from trainer.selection.Clustering import ClusteringTrainer
 from misc.printer import Printer
@@ -12,7 +12,7 @@ from misc.printer import Printer
 
 class GMTrainer(ClusteringTrainer):
     '''
-        see http://scikit-learn.org/stable/modules/generated/sklearn.mixture.GMM.html
+        see https://scikit-learn.org/stable/modules/generated/sklearn.mixture.GaussianMixture.html
     '''
     
     def __init__(self, max_clusters='log', plot_cluster=False, save_models=True):
@@ -36,7 +36,7 @@ class GMTrainer(ClusteringTrainer):
         
         Printer.print_verbose("Train Clustering with GM")  
         
-        trainer = GMM(n_components=n_clusters, n_init=self._REPETITIONS, random_state=self.__SEED)
+        trainer = GaussianMixture(n_components=n_clusters, n_init=self._REPETITIONS, random_state=self.__SEED)
         
         model = trainer.fit(X)
         labels = model.predict(X)

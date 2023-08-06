@@ -5,7 +5,7 @@ Created on Jul 26, 2012
 '''
 
 import numpy as np
-from sklearn.preprocessing import Imputer as SKImputer
+from sklearn.impute import SimpleImputer as SKImputer
 
 class Imputer(object):
     '''

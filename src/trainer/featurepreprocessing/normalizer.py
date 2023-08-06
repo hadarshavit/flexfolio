@@ -51,7 +51,7 @@ class Normalizer(object):
         zero_var = self.__get_invariant_features(normed_feature_dic)
 
         if f_indicator:
-            f_indicator = map(lambda (x,y): -1 if x else y, zip(zero_var, f_indicator))
+            f_indicator = map(lambda x, y: -1 if x else y, zip(zero_var, f_indicator))
         else:
             f_indicator = map(lambda x: -1 if x else 0, zero_var == 0)
 

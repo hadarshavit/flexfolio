@@ -4,7 +4,7 @@ Created on Nov 20, 2012
 @author: manju
 '''
 from misc.printer import Printer
-from selector import SelectorTrainer
+from trainer.selection.selector import SelectorTrainer
 import numpy
 
 import os

@@ -5,7 +5,7 @@ Created on Nov 5, 2012
 '''
 
 from misc.printer import Printer
-from Preprocessor import Preprocessor
+from selector.preprocessing.Preprocessor import Preprocessor
 
 class Zscore(Preprocessor):
     '''

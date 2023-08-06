@@ -4,7 +4,7 @@ Created on Nov 5, 2012
 @author: manju
 '''
 from misc.printer import Printer
-from Preprocessor import Preprocessor
+from selector.preprocessing.Preprocessor import Preprocessor
 
 
 class PCATransformer(Preprocessor):

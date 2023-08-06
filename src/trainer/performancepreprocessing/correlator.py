@@ -37,7 +37,7 @@ class Correlator(object):
         runtime_matrix = list([] for _ in solver_list)
         for inst_ in instance_dic.values():
             times = map(lambda x: sum(inst_._cost["runtime"][x])/len(inst_._cost["runtime"][x]), solver_list)
-            runtime_matrix = map(lambda (x,y): x.append(y) or x, zip(runtime_matrix,times))
+            runtime_matrix = map(lambda x, y: x.append(y) or x, zip(runtime_matrix,times))
         
         correlation_matrix = dict((solver,{}) for solver in solver_list)
         for index1,solver1 in zip(range(0,n_solver),solver_list):
@@ -58,7 +58,7 @@ class Correlator(object):
         runtime_matrix = list([] for _ in solver_list)
         for inst_ in instance_dic.values():
             times = map(lambda x: sum(inst_._cost["runtime"][x])/len(inst_._cost["runtime"][x]), solver_list)
-            runtime_matrix = map(lambda (x,y): x.append(y) or x, zip(runtime_matrix,times))
+            runtime_matrix = map(lambda x, y: x.append(y) or x, zip(runtime_matrix,times))
         
         bias_matrix = dict((solver,{}) for solver in solver_list)
         for index1,solver1 in zip(range(0,n_solver),solver_list):

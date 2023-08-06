@@ -4,7 +4,7 @@ Created on Jul 26, 2012
 @author: manju
 '''
 
-from TrainPreprocessor import TrainPreprocessor
+from trainer.featurepreprocessing.TrainPreprocessor import TrainPreprocessor
 
 class LNormalizer(TrainPreprocessor):
     '''

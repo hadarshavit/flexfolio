@@ -5,15 +5,14 @@ Created on Nov 5, 2012
 '''
 
 import numpy as np
-from types import UnicodeType
 import pickle
 
 from misc.printer import Printer
 #normalizations
-from preprocessing.zscore import Zscore
-from preprocessing.linear import Linear
-from preprocessing.dec import Dec
-from preprocessing.pcaSklearn import PCATransformer
+from selector.preprocessing.zscore import Zscore
+from selector.preprocessing.linear import Linear
+from selector.preprocessing.dec import Dec
+from selector.preprocessing.pcaSklearn import PCATransformer
 
 #selections
 from abc import ABCMeta, abstractmethod
@@ -55,7 +54,7 @@ class Selector(object):
             if self._normalization["impute"] == -512:
                 features = np.where(features == np.array(None), -512, features)
             else:
-                if type(self._normalization["impute"]) is UnicodeType:
+                if isinstance(type(self._normalization["impute"]), str):
                     impute_file = open(self._normalization["impute"], "r")
                     self._normalization["impute"] = pickle.load(impute_file)
                     impute_file.close()

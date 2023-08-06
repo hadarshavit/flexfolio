@@ -91,7 +91,7 @@ class SBSTrainer(SelectorTrainer):
                 solver_index += 1
                 
         #average runtime
-        par10_solver_list = map(lambda (x,y): x/y ,zip(par10_solver_list,known_times_list))
+        par10_solver_list = map(lambda x,y: x / y ,zip(par10_solver_list, known_times_list))
         par10_solver_dict = dict(zip(par10_solver_list, solver_list))
 
         sorted_solvers = []

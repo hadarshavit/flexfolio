@@ -5,7 +5,7 @@ Created on Jul 26, 2012
 '''
 import math
 from decimal import Decimal, ROUND_UP
-from TrainPreprocessor import TrainPreprocessor
+from trainer.featurepreprocessing.TrainPreprocessor import TrainPreprocessor
 
 class DNormalizer(TrainPreprocessor):
     '''

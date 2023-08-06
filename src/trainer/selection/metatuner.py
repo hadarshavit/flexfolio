@@ -6,7 +6,7 @@ Created on 30.05.2013
 
 import traceback
 
-from sklearn.grid_search import GridSearchCV
+from sklearn.model_selection import GridSearchCV
 from misc.printer import Printer
 
 class MetaTuner(object):
